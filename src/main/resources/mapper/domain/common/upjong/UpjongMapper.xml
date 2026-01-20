@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.common.upjong.mapper.UpjongMapper">
+
+    <!-- 대분류 업종 목록 조회 -->
+    <select id="selectUpjong1List" resultType="map">
+        SELECT 
+            upjong1_cd AS "upjong1Cd",
+            upjong1_nm AS "upjong1Nm"
+        FROM tb_upjong1
+        WHERE 1 = 1
+        ORDER BY upjong1_cd
+    </select>
+
+    <!-- 중분류 업종 목록 조회 -->
+    <select id="selectUpjong2List" resultType="map">
+        SELECT 
+            upjong1_cd AS "upjong1Cd",
+            upjong2_cd AS "upjong2Cd",
+            upjong2_nm AS "upjong2Nm"
+        FROM tb_upjong2
+        WHERE 1 = 1
+        <if test="upjong1Cd != null and upjong1Cd != ''">
+            AND upjong1_cd = #{upjong1Cd}
+        </if>
+        ORDER BY upjong1_cd, upjong2_cd
+    </select>
+
+    <!-- 소분류 업종 목록 조회 -->
+    <select id="selectUpjong3List" resultType="map">
+        SELECT 
+            upjong2_cd AS "upjong2Cd",
+            upjong3_cd AS "upjong3Cd",
+            upjong3_nm AS "upjong3Nm"
+        FROM tb_upjong3
+        WHERE svc_yn = 'Y'
+        <if test="upjong2Cd != null and upjong2Cd != ''">
+            AND upjong2_cd = #{upjong2Cd}
+        </if>
+        ORDER BY upjong2_cd, upjong3_cd
+    </select>
+
+    <!-- 전체 업종 계층구조 조회 -->
+    <select id="selectUpjongHierarchy" resultType="map">
+        SELECT 
+            a.upjong1_cd AS "upjong1Cd", 
+            a.upjong1_nm AS "upjong1Nm", 
+            b.upjong2_cd AS "upjong2Cd", 
+            b.upjong2_nm AS "upjong2Nm", 
+            c.upjong3_cd AS "upjong3Cd", 
+            c.upjong3_nm AS "upjong3Nm"
+        FROM tb_upjong1 a 
+        JOIN tb_upjong2 b ON a.upjong1_cd = b.upjong1_cd 
+        JOIN tb_upjong3 c ON b.upjong2_cd = c.upjong2_cd 
+        WHERE c.svc_yn = 'Y'
+        ORDER BY a.upjong1_cd, b.upjong2_cd, c.upjong3_cd
+    </select>
+
+    <!-- 업종 계층구조 조회 (필터링 가능) -->
+    <select id="selectUpjongHierarchyByCode" resultType="map">
+        SELECT 
+            a.upjong1_cd AS "upjong1Cd", 
+            a.upjong1_nm AS "upjong1Nm", 
+            b.upjong2_cd AS "upjong2Cd", 
+            b.upjong2_nm AS "upjong2Nm", 
+            c.upjong3_cd AS "upjong3Cd", 
+            c.upjong3_nm AS "upjong3Nm"
+        FROM tb_upjong1 a 
+        JOIN tb_upjong2 b ON a.upjong1_cd = b.upjong1_cd 
+        JOIN tb_upjong3 c ON b.upjong2_cd = c.upjong2_cd 
+        WHERE c.svc_yn = 'Y'
+        <if test="upjongCode != null and upjongCode != ''">
+            <!-- 업종 코드 길이에 따른 동적 필터링 -->
+            <choose>
+                <when test="upjongCode.length() == 1">
+                    <!-- 대분류 필터링 (예: 'Q') -->
+                    AND a.upjong1_cd = #{upjongCode}
+                </when>
+                <when test="upjongCode.length() == 3">
+                    <!-- 중분류 필터링 (예: 'Q13') -->
+                    AND b.upjong2_cd = #{upjongCode}
+                </when>
+                <when test="upjongCode.length() == 6">
+                    <!-- 소분류 필터링 (예: 'Q13007') -->
+                    AND c.upjong3_cd = #{upjongCode}
+                </when>
+            </choose>
+        </if>
+        ORDER BY a.upjong1_cd, b.upjong2_cd, c.upjong3_cd
+    </select>
+
+    <!-- 특정 행정동의 업종별 가맹점 수 조회 -->
+    <select id="selectUpjongStoreCountByAdmi" resultType="map">
+        SELECT 
+            s.upjong3_cd AS "upjong3Cd",
+            u.upjong3_nm AS "upjong3Nm",
+            u.upjong2_cd AS "upjong2Cd",
+            u2.upjong2_nm AS "upjong2Nm",
+            u2.upjong1_cd AS "upjong1Cd",
+            u1.upjong1_nm AS "upjong1Nm",
+            COUNT(*) AS "storeCount",
+            CASE 
+                WHEN COUNT(*) >= 3 THEN 'Y'
+                ELSE 'N'
+            END AS "analyzable"
+        FROM tb_store s
+        INNER JOIN tb_upjong3 u ON s.upjong3_cd = u.upjong3_cd
+        INNER JOIN tb_upjong2 u2 ON u.upjong2_cd = u2.upjong2_cd
+        INNER JOIN tb_upjong1 u1 ON u2.upjong1_cd = u1.upjong1_cd
+        WHERE s.admi_cd = #{admiCd}
+          AND s.use_yn = 'Y'
+          AND u.svc_yn = 'Y'
+          AND u2.svc_yn = 'Y'
+          AND u1.svc_yn = 'Y'
+        GROUP BY s.upjong3_cd, u.upjong3_nm, u.upjong2_cd, u2.upjong2_nm, u2.upjong1_cd, u1.upjong1_nm
+        ORDER BY COUNT(*) DESC, s.upjong3_cd
+    </select>
+
+    <!-- 업종명으로 업종 검색 -->
+    <select id="selectUpjongByName" resultType="map">
+        /** 🟢 UpjongMapper.selectUpjongByName - 업종명으로 업종 검색
+         *  API: GET /api/common/upjong/search
+         *  목적: 업종명 키워드로 일치하는 중분류 코드 목록 조회
+         */
+        SELECT DISTINCT 
+            UPJONG2_CD AS "upjong2Cd"
+        FROM 
+            TB_UPJONG3
+        WHERE 
+            UPJONG3_NM LIKE CONCAT('%', #{upjong3Nm}, '%')
+            AND SVC_YN = 'Y'
+        ORDER BY 
+            UPJONG2_CD
+    </select>
+
+    <!-- 특정 중분류 코드들의 전체 계층구조 조회 -->
+    <select id="selectUpjongHierarchyByCodes" resultType="map">
+        /** 🔴 UpjongMapper.selectUpjongHierarchyByCodes - 특정 중분류 코드들의 전체 계층구조 조회 */
+        SELECT 
+            a.upjong1_cd AS "upjong1Cd", 
+            a.upjong1_nm AS "upjong1Nm", 
+            b.upjong2_cd AS "upjong2Cd", 
+            b.upjong2_nm AS "upjong2Nm", 
+            c.upjong3_cd AS "upjong3Cd", 
+            c.upjong3_nm AS "upjong3Nm"
+        FROM tb_upjong1 a 
+        JOIN tb_upjong2 b ON a.upjong1_cd = b.upjong1_cd 
+        JOIN tb_upjong3 c ON b.upjong2_cd = c.upjong2_cd 
+        WHERE c.svc_yn = 'Y'
+          AND b.upjong2_cd IN
+          <foreach collection="upjong2Cds" item="upjong2Cd" open="(" close=")" separator=",">
+              #{upjong2Cd}
+          </foreach>
+        ORDER BY a.upjong1_cd, b.upjong2_cd, c.upjong3_cd
+    </select>
+
+    <!-- 특정 중분류 코드들의 전체 계층구조 + 확장 점포수/분석가능 여부 포함 -->
+    <select id="selectUpjongHierarchyByCodesWithExpandedStore" resultType="map">
+        /** 🟢 UpjongMapper.selectUpjongHierarchyByCodesWithExpandedStore - 업종 계층구조 + 점포수 조회
+         *  API: GET /api/common/upjong/search
+         *  목적: 중분류 코드로 전체 업종 계층구조 + 기본/확장 점포수 및 분석상태 조회
+         */
+        SELECT 
+            A.UPJONG1_CD AS "upjong1Cd", 
+            A.UPJONG1_NM AS "upjong1Nm", 
+            B.UPJONG2_CD AS "upjong2Cd", 
+            B.UPJONG2_NM AS "upjong2Nm", 
+            C.UPJONG3_CD AS "upjong3Cd", 
+            C.UPJONG3_NM AS "upjong3Nm",
+            /* 기본 점포수 (선택 행정동만) */
+            COALESCE((
+                SELECT SUM(H0.STORE_CNT)
+                FROM TBSS_SUM_ADMI_HIS_V3 H0
+                WHERE H0.ADMI_CD = #{admiCd}
+                  AND H0.UPJONG3_CD = C.UPJONG3_CD
+                  AND H0.BUPIN_GB = '1'
+                  AND H0.YYYYMM = (
+                      SELECT BL0.BATCH_YM FROM TB_BATCH_LOG BL0 ORDER BY BL0.BATCH_YM DESC LIMIT 1
+                  )
+            ), 0) AS "basicStoreCnt",
+            /* 확장 점포수 (인접동 포함) */
+            COALESCE((
+                SELECT SUM(H.STORE_CNT)
+                FROM TB_ADMI_TOUCH T
+                INNER JOIN TBSS_SUM_ADMI_HIS_V3 H ON T.STD_ADMI_CD = H.ADMI_CD
+                WHERE T.STD_ADMI_CD = #{admiCd}
+                  AND H.UPJONG3_CD = C.UPJONG3_CD
+                  AND H.BUPIN_GB = '1'
+                  AND H.YYYYMM = (
+                      SELECT BL.BATCH_YM FROM TB_BATCH_LOG BL ORDER BY BL.BATCH_YM DESC LIMIT 1
+                  )
+            ), 0) AS "expandedStoreCnt",
+            CASE 
+                WHEN COALESCE((
+                    SELECT SUM(HB.STORE_CNT)
+                    FROM TBSS_SUM_ADMI_HIS_V3 HB
+                    WHERE HB.ADMI_CD = #{admiCd}
+                      AND HB.UPJONG3_CD = C.UPJONG3_CD
+                      AND HB.BUPIN_GB = '1'
+                      AND HB.YYYYMM = (
+                          SELECT BLB.BATCH_YM FROM TB_BATCH_LOG BLB ORDER BY BLB.BATCH_YM DESC LIMIT 1
+                      )
+                ), 0) >= 4 THEN 'BASIC'
+                WHEN COALESCE((
+                    SELECT SUM(H2.STORE_CNT)
+                    FROM TB_ADMI_TOUCH T2
+                    INNER JOIN TBSS_SUM_ADMI_HIS_V3 H2 ON T2.STD_ADMI_CD = H2.ADMI_CD
+                    WHERE T2.STD_ADMI_CD = #{admiCd}
+                      AND H2.UPJONG3_CD = C.UPJONG3_CD
+                      AND H2.BUPIN_GB = '1'
+                      AND H2.YYYYMM = (
+                          SELECT BL2.BATCH_YM FROM TB_BATCH_LOG BL2 ORDER BY BL2.BATCH_YM DESC LIMIT 1
+                      )
+                ), 0) >= 4 THEN 'EXPANDED'
+                ELSE 'NOT'
+            END AS "analysisStatus"
+        FROM 
+            TB_UPJONG1 A 
+        INNER JOIN 
+            TB_UPJONG2 B ON A.UPJONG1_CD = B.UPJONG1_CD 
+        INNER JOIN 
+            TB_UPJONG3 C ON B.UPJONG2_CD = C.UPJONG2_CD 
+        WHERE 
+            C.SVC_YN = 'Y'
+            AND B.UPJONG2_CD IN
+            <foreach collection="upjong2Cds" item="upjong2Cd" open="(" close=")" separator=",">
+                #{upjong2Cd}
+            </foreach>
+        ORDER BY 
+            A.UPJONG1_CD, B.UPJONG2_CD, C.UPJONG3_CD
+    </select>
+
+</mapper> 

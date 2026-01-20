@@ -1,0 +1,194 @@
+<!-- ============================== 수행 내역 as 상세 페이지 ============================== -->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+    
+</head>
+
+<body>
+    <div class="wrap">
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+        <!-- ============================== 헤더 설정 ============================== -->
+        <th:block th:replace="~{fragments/header :: mainHeader}" />
+        <div class="scrollBox">
+            <div class="subPageContent ">
+                <div class="badgeGubun processingFilter status1 hidden">
+                    <p>현재 작업이 진행중인 요청 입니다</p>
+                </div>
+                <div class="badgeGubun completeFilter status2 hidden">
+                    <p>작업이 완료되었습니다</p>
+                </div>
+                <section>
+                    <p class="checkBadge asBadge mb-1">A/S</p>
+                    <p class="sectionTitle installNm"></p>
+                    <div class="flexBetween !items-start">
+                        <p class="areaCopyTxt installAddr">서울시 영등포구 은행로 30 1층</p>
+                        <button type="button" class="btn areaCopyBtn flex justify-content items-center gap-0-5 text-sm/5 font-medium text-zinc-500 w-[80px]"><img src="/assets/images/icons/file_icon_gray.svg" class="size-4" alt="">주소복사</button>
+                    </div>
+                    <div class="map installMap" id="mapContainer"></div>
+                    <p class="sectionTitle">문제 증상</p>
+                    <ul class="subInfoList mb-4">
+                        <li>
+                            <p class="subInfoListTitle">사용 단말기</p>
+                            <p class="subInfoListTxt vanId"></p>
+                        </li>
+                    </ul>
+                    <div class="grayBox">
+                        <p class="serviceContent"></p> 
+                    </div>
+
+                    <div>
+                        <p class="text-sm/5 font-medium text-zinc-400 mt-4">문제 증상 사진</p>
+                        <div class="fileList symptom mt-2"></div>
+                    </div>
+                </section>
+                <section class="relative">
+                    <a href="tel:" class="callBtn" id="callRequesterBtn">
+                        <img src="/assets/images/icons/call_icon.svg" class="size-4-5" alt="">
+                        <p>요청자에게 문의</p>
+                    </a>
+                    <p class="sectionTitle">요청자 정보</p>
+                    <ul class="subInfoList">
+                        <li>
+                            <p class="subInfoListTitle">요청자 이름</p>
+                            <p class="subInfoListTxt crtName"></p>
+                        </li>
+                        <li>
+                            <p class="subInfoListTitle">대리점 연락처</p>
+                            <p class="subInfoListTxt storeCallNumber"></p>
+                        </li>
+                        <li>
+                            <p class="subInfoListTitle">휴대폰 번호</p>
+                            <p class="subInfoListTxt crtPhoneNumber"></p>
+                        </li>
+                        <li>
+                            <p class="subInfoListTitle">요청일</p>
+                            <p class="subInfoListTxt strCrtDt"></p>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <p class="sectionTitle">결제 정보</p>
+                    <ul class="subInfoList">
+                        <li>
+                            <p class="subInfoListTitle">금액</p>
+                            <p class="subInfoListTxt payAmt"></p>
+                        </li>
+                    </ul>
+                </section>
+
+                <!--수행 완료일때 완료 증빙 ST-->
+                <section class="hidden status2">
+                    <p class="sectionTitle !pb-0">완료 증빙</p>
+                    <p class="text-xs/4 text-zinc-500 mt-1 mb-4">아래와 동일한 내용이 요청자에게 공유됩니다.</p>
+                    <div class="whiteBox filterBox">
+                        <div class="">
+                            <p class="sectionTitle">작업자 정보</p>
+                            <ul class="subInfoList">
+                                <li>
+                                    <p class="subInfoListTitle">작업자 이름</p>
+                                    <p class="subInfoListTxt execName"></p>
+                                </li>
+                                <li>
+                                    <p class="subInfoListTitle">휴대폰 번호</p>
+                                    <p class="subInfoListTxt execPhoneNumber"></p>
+                                </li>
+                                <li>
+                                    <p class="subInfoListTitle">작업일</p>
+                                    <p class="subInfoListTxt executeDate"></p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="sectionTitle">작업 내용</p>
+                            <div>
+                                <ul class="subInfoList">
+                                    <li>
+                                        <p class="subInfoListTitle">사용 단말기</p>
+                                        <p class="subInfoListTxt vanId"></p>
+                                    </li>
+                                </ul>
+                                <div class="grayBox mt-4">
+                                    <p class="executeContent"></p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm/5 font-medium text-zinc-400 mt-4">작업 완료 사진</p>
+                                <div class="fileList complete mt-2"></div>
+                            </div>                        
+                        </div>
+                        <div class="">
+                            <p class="sectionTitle">결제 정보</p>
+                            <ul class="subInfoList">
+                                <li>
+                                    <p class="subInfoListTitle">계좌번호</p>
+                                    <div class="copyBox">
+                                        <p class="copyBoxTxt !gap-1 !items-end ![flex-flow:column]">
+                                            <span class="flexLeft gap-1-5">
+                                                <span class="bankSmallIcon"></span>
+                                                <span class="bank"></span>
+                                            </span>
+                                            <span class="accountNumber"></span>
+                                        </p>
+                                        <button type="button" class="btn copyBtn"><img src="/assets/images/icons/file_icon_gray.svg" class="size-5" alt=""></button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <p class="subInfoListTitle">예금주</p>
+                                    <p class="subInfoListTxt accountHolder"></p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="flexBetween !border-b-0 !mb-0 !pb-0">
+                            <p class="text-sm/5 font-medium text-zinc-400">금액</p>
+                            <p class="text-lg/7 font-bold text-primary-600 payAmt"></p>
+                        </div>
+                    </div>
+                </section>
+                <!--수행 완료일때 완료 증빙 ED-->
+
+                <!--진행중일때 버튼 ST-->
+                <div class="py-4 px-5">
+                    <button type="button" class="btn text-sm/6 font-medium underline underline-offset-2 text-zinc-600 m-auto" id="requestCancelBtn">수행 취소</button>
+                </div>
+                <!--진행중일때 버튼 ED-->
+            </div>
+        </div>
+        <!--진행중일때 버튼 ST-->
+        <div class="subPageBottom px-6 pt-12 pb-6">
+            <button type="button" class="btn grayLineBtn w-full rounded-full py-3 px-4 text-md/6 font-medium workCompletion" >완료 증빙</button>
+        </div>
+        <!--진행중일때 버튼 ED-->
+    </div>
+
+    <!-- 요청 등록 취소 팝업 ST-->
+    <div class="errorRequestModal modalLayout">
+        <div class="alertModalContent">
+            <div class="p-2-5 mb-4 text-center">
+                <div class="size-14 mb-3 mx-auto"><img src="/assets/images/icons/error_icon02.svg" class="size-full" alt=""></div>
+                <p class="alertModalContentText01">작업 수행을 정말 취소하시겠습니까?</p>
+            </div>
+            <div class="flexBetween gap-2">
+                <button type="button" class="btn redBtn h-10 w-full rounded-full px-4 text-md/6 font-medium" id="requestCancelDoneBtn">수행 취소</button>
+                <button type="button" class="btn grayLineBtn h-10 w-full rounded-full px-4 text-md/6 font-medium close">닫기</button>
+            </div>
+        </div>
+        <div class="modalBg"></div>
+    </div>
+    <!-- 요청 등록 취소 팝업 ED-->
+
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=33poukh5ab&submodules=geocoder"></script>
+    <script type="text/javascript" th:src="@{/assets/js/common/map-common.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script src="/assets/js/requests/work-history-view.js"></script>
+    <script>
+        $(function(){$('.changeTitle').text('수행 내역 상세보기');})
+    </script>
+</body>
+</html> 

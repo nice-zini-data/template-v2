@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+</head>
+
+<body>
+    <div class="wrap dashboardWrap changeServiceWrap">
+        <div class="changeServiceTop">
+            <img src="/assets/images/icons/filter_close_icon.svg" alt="">
+        </div>
+        <div class="dashSubContent overflow-y-auto">
+            <p class="changeServiceTitle">가맹점 관리 서비스</p>
+            <p class="changeServiceSubTitle">NCS</p>
+            <ul class="changeServiceList">
+                <li onclick="location.href='/'">
+                    <div>
+                        <p class="changeServiceListTitle">가맹점 인력 관리 서비스</p>
+                        <p class="changeServiceListText">단말기 설치·수리 요청 관리</p>
+                    </div>
+                    <img src="/assets/images/content/change_service_list_img01.png" alt="">
+                </li>
+                <li onclick="location.href='/dashboard'">
+                    <div>
+                        <p class="changeServiceListTitle">가맹점 관리 대시보드</p>
+                        <p class="changeServiceListText">내가 관리하는 가맹점<br/>매출 현황 보기</p>
+                    </div>
+                    <img src="/assets/images/content/change_service_list_img02.png" alt="">
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />    
+</body>
+</html> 

@@ -1,0 +1,373 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  profiles:
+    active: develop
+  
+  application:
+    name: nicevanas
+    
+  output:
+    ansi:
+      enabled: ALWAYS
+
+# 애플리케이션 메타데이터
+app:
+  code: NVPS
+  version: 1.0.3
+
+# JWT 설정
+jwt:
+  secret: ENC(OrLrVJv6qCFbcnjbvQ7EUkRLiOrn7bMfw/otXwRFq0as5/nc7izP0eZ9wJI9Yfz7zj2z3inrjm2TDtRSjiXeNA==)
+
+# SMS 발송 설정
+sms:
+  callback:
+    number: 1566-2122
+  templates:
+    certification: "[지니데이타] 인증번호: {code} (유효시간 10분)"
+    temp-password: "[지니데이타] 임시 비밀번호: {password}\n로그인 후 비밀번호를 변경해주세요."
+    subscription: "[지니데이타] 보고서가 준비되었습니다.\n{url}"
+    general: "[지니데이타] {message}"
+  rate-limit:
+    max-count: 10
+    time-window: 1  # hours
+  db:
+    driver: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.81.190.121:3306/cmap?useUnicode=true&characterEncoding=euc-kr
+    username: cmapap
+    password: nice1234
+
+# 업종 데이터 소스 설정
+upjong:
+  datasource: database  # database (기본), redis (캐시 최적화)
+  description: "Spring Boot Enterprise Template with JSP & TailwindCSS"
+  build:
+    profile: "@profileActive@"
+    time: "@timestamp@"
+
+# Actuator용 정보
+info:
+  app:
+    name: ${spring.application.name}
+    code: ${app.code}
+    version: ${app.version}
+    description: ${app.description}
+
+  # JSP 설정 (Spring Boot 표준 방식)
+  # mvc:
+  #   view:
+  #     prefix: /WEB-INF/views/
+  #     suffix: .jsp
+  
+  # Thymeleaf 설정
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
+    template-resolver-order: 1  # 높은 우선순위로 설정
+
+  
+  
+  # Redis 설정
+  data:
+    redis:
+      host: 43.202.226.198
+      port: 6379
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
+          max-wait: 3000ms
+        shutdown-timeout: 200ms
+  
+  # 세션 설정 (Redis 기반)
+  session:
+    store-type: redis
+    redis:
+      namespace: "${spring.application.name}:session"
+      flush-mode: on-save
+      cleanup-cron: "0 * * * * *"
+    timeout: 30m         # 서버 세션 30분
+    cookie:
+      max-age: 1800      # 쿠키 30분 (초 단위 정수)
+      http-only: true
+      secure: false
+      same-site: lax
+  
+  # 캐시 설정
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+      cache-null-values: false
+      key-prefix: "${spring.application.name}:cache:"
+      use-key-prefix: true
+  
+  # 파일 업로드 설정
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB  # 최소 30MB 이상의 이미지 파일도 받을 수 있도록 설정 (이미지는 서버에서 1MB로 자동 리사이징)
+      max-request-size: 50MB
+      location: /tmp
+      file-size-threshold: 1MB
+  
+  # 메일 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.zinidata.enterprise.core.vo,com.zinidata.enterprise.core.dto
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    multiple-result-sets-enabled: true
+    use-column-label: true
+    use-generated-keys: true
+    auto-mapping-behavior: partial
+    default-executor-type: reuse
+    default-statement-timeout: 30
+    default-fetch-size: 100
+    safe-row-bounds-enabled: true
+    safe-result-handler-enabled: true
+    local-cache-scope: session
+    jdbc-type-for-null: null
+    lazy-load-trigger-methods: "equals,clone,hashCode,toString"
+    call-setters-on-nulls: true
+    return-instance-for-empty-row: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,beans,env,loggers
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+    metrics:
+      access: unrestricted
+    prometheus:
+      access: unrestricted
+    info:
+      access: unrestricted
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 60s
+        descriptions: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+      percentiles:
+        "[http.server.requests]": 0.5, 0.75, 0.95, 0.99
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    build:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    com.zinidata: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    org.mybatis: INFO
+    com.zaxxer.hikari: INFO
+    org.springframework.session: INFO
+    org.springframework.session.web.http.SessionRepositoryFilter: WARN
+    redis.clients.jedis: INFO
+    org.springframework.cache: INFO
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+  file:
+    name: ${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+      total-size-cap: 1GB
+      clean-history-on-start: true
+
+# OpenAPI 설정
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operations-sorter: method
+    disable-swagger-default-url: true
+    use-root-path: false
+    try-it-out-enabled: true
+    filter: true
+    tags-sorter: alpha
+    syntax-highlight:
+      activated: true
+      theme: agate
+  show-actuator: false
+  group-configs:
+    - group: zinidata-api
+      display-name: ZiniData API
+      paths-to-match: /api/**
+      paths-to-exclude: /actuator/**
+
+# 커스텀 설정
+custom:
+  security:
+    session:
+      max-sessions: 1  # 중복 로그인 금지: 1개 세션만 허용
+      prevent-login-if-maximum-exceeded: false
+      session-registry-enabled: true
+    rate-limit:
+      enabled: false
+      requests-per-minute: 30000000
+      burst-capacity: 5000000
+    cors:
+      allowed-origins: "http://localhost:8001,https://*.nicebizmap.co.kr"
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+    csrf:
+      enabled: false
+      cookie-http-only: true
+      cookie-secure: false
+  
+  upload:
+    base-path: /home/nice/upload/${spring.application.name}
+    allowed-extensions: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z
+    max-file-size: 100MB
+    max-image-size: 1048576  # 이미지 최대 크기 (바이트 단위) - 기본값: 1MB (1048576 bytes)
+    create-date-folder: true
+    virus-scan-enabled: false
+  
+  cache:
+    default-ttl: 600
+    max-entries: 1000
+    caffeine:
+      spec: "maximumSize=1000,expireAfterWrite=10m"
+    redis:
+      key-prefix: "${spring.application.name}:cache:"
+      default-ttl: 600
+  
+  async:
+    core-pool-size: 5
+    max-pool-size: 20
+    queue-capacity: 100
+    thread-name-prefix: "${spring.application.name}-async-"
+    keep-alive-seconds: 60
+    rejection-policy: "CallerRunsPolicy"
+  
+  audit:
+    enabled: true
+    include-request-body: true
+    include-response-body: false
+    max-body-size: 1024
+    
+  debug:
+    enabled: true  # 기본값: 콘솔 로그 비활성화 (개발환경에서만 true)
+    
+  # AWS S3 설정
+  aws:
+    s3:
+      bucket-name: ENC(xj+55YsZbqMmHuTFpFVV0YbBBKxfbkwr0PfhVHStm3BUiObeHbmy6L+vwBeGEP31) #ENC(가짜암호화된버킷명)
+      region: ENC(4b3jg1HjiXVKtBzsUs0rU+1OkdQ4MiPaAxqkn6elmVk=) # ENC(가짜암호화된리전)
+      access-key: ENC(FzAPYaVb+bXzz9pdRvzWHALZm4+xXC7xyzKUNu+lHxkOJTDCL1Xl0pxCBj3+9k3s) # ENC(가짜암호화된액세스키)
+      secret-key: ENC(VNuZrirgY1OZ2lixHraaXMps+5lDg/sikBX7x1tpjmdruh6wJMgBrZ/R+Z5vJlyahb9hi9+y3Nh1vD+Us+V0Mg==) # ENC(가짜암호화된시크릿키)
+      presigned-url-expiration: 5  # 5초
+      folder-prefix: "webapp/soil/"
+      
+  # 파일 다운로드 설정
+  file:
+    storage-type: s3  # local 또는 s3
+    download:
+      max-daily-downloads: 100
+      max-file-downloads: 10
+      allowed-extensions: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z
+      max-file-size: 100MB
+  
+  performance:
+    monitoring-enabled: true
+    slow-query-threshold: 1000
+    connection-pool-monitoring: true
+
+# 카카오 API 설정
+kakao:
+  # 위치검색 API
+  location:
+    api-key: 24dc3b1811af6e55a95ce27b23e1bb9f
+    api-url:
+      address: https://dapi.kakao.com/v2/local/search/address.json
+      keyword: https://dapi.kakao.com/v2/local/search/keyword.json
+      coord2address: https://dapi.kakao.com/v2/local/geo/coord2address.json
+  
+  # OAuth 간편로그인
+  oauth:
+    client-id: 24dc3b1811af6e55a95ce27b23e1bb9f
+    auth-url: https://kauth.kakao.com/oauth/authorize
+    token-url: https://kauth.kakao.com/oauth/token
+    user-info-url: https://kapi.kakao.com/v2/user/me
+    scope: profile_nickname,account_email,phone_number
+    redirect-uri: http://localhost:8091/api/oauth/callback/kakao
+
+# BetterBoss AI 설정 (공통)
+betterboss:
+  enabled: true 
+
+# AES 256 암호화 키 (반드시 32 자리여야 함.)
+key:
+  aes256Key: 3f9be62dea07a54b18cd908e5b4f23aa

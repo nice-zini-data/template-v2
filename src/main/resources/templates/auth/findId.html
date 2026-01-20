@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+    <!-- <link rel="stylesheet" href="/assets/css/login.css"> -->
+    <style>
+        html{height:auto !important;overflow:auto !important;}
+    </style>
+</head>
+<body>
+    <div class="wrap loginPage min-h-screen flex flex-col">
+        <!-- ============================== 헤더 설정 ============================== -->
+        <th:block th:replace="~{fragments/header :: mainHeader}" />
+
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+        <main class="flexCenter flex-1">
+            <div class="max-w-md w-full mx-auto mt-8 sm:mt-12 md:mt-20 md:-mt-8 px-6 py-8 pb-10 sm:pb-12">
+                <p class="titleText pb-10">아이디 찾기</p>
+                <p class="titleSubText pb-10">가입시 입력하신 이름과 휴대폰 번호를 입력해 주세요.</p>
+                <div class="nullAccountBox flex hidden" id="noAccountMessage">
+                <img src="/assets/images/icons/error_icon_red.svg" alt="" class=""/>
+                <p class="">입력하신 정보로 가입한 내역이 없습니다.<br/>확인 후 다시 시도해주세요.</p>
+                </div>
+                <form class="">
+                    <div class="pb-3 formCheck">
+                        <label class="inputLabel" for="name">이름</label>
+                        <input type="text" class="inputCustom mt-2" id="name" placeholder="이름을 입력해주세요"/>
+                    </div>
+                    <div class="formCheck">
+                        <label class="inputLabel" for="phone">휴대폰 번호</label>
+                        <div class="flexBetween mt-2">
+                            <input type="tel" class="inputCustom mr-2 numberValue" maxlength="11" id="phone" placeholder="'-'를 제외한 숫자만 입력해주세요"/>
+                            <button type="button" class="softBtn btn min-w-[140px] h-10" id="cert">인증번호 받기</button>
+                        </div>
+                    </div>
+                    <div class="pt-3 formCheck verifyCode hidden">
+                        <label class="inputLabel" for="verifyCode">인증번호 입력</label>
+                        <div class="flexBetween mt-2">
+                            <div class="relative mr-2 w-full">
+                                <input type="tel" class="inputCustom numberValue" id="verifyCode" placeholder="인증번호 6자리 입력"/>
+                                <span class="certTime time"></span>
+                            </div>
+                            <button type="button" class="primaryLineBtn btn min-w-[140px] h-10" id="getCert">인증 확인</button>
+                        </div>
+                    </div>
+                    <button type="button" class="primaryBtn btn w-full mt-10 mb-6 h-10" id="findIdBtn">아이디 찾기</button>
+                    <button type="button" class="textBtn btn muted m-auto" id="goBackBtn">이전</button>
+                </form>
+            </div>
+        </main>
+
+        <!-- ============================== 푸터 설정 ============================== -->
+        <th:block th:replace="~{fragments/footer :: footer}" />
+
+        <!-- ============================== 스크립트 파일 로드 ============================== -->
+        <th:block th:replace="~{fragments/script :: script}" />
+    </div>
+</body>
+</html>

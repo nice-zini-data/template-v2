@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 연결 오류</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SUIT', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e293b;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            padding: 0 20px;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            color: #e2e8f0;
+            line-height: 1;
+            margin-bottom: 24px;
+            letter-spacing: -0.05em;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 32px;
+            color: #1e40af;
+        }
+        
+        .status-info .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .status-info .message {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .auto-refresh {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 32px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .refresh-timer {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .status-info {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">502</div>
+        <h1>서비스 연결 오류</h1>
+        <p>서버와의 연결에 문제가 발생했습니다.<br>잠시 후 다시 시도해주세요.</p>
+        
+        <div class="status-info">
+            <div class="icon">⚠️</div>
+            <div class="message">서비스 재시작 중이거나 일시적인 연결 문제일 수 있습니다.</div>
+        </div>
+        
+        <div class="auto-refresh">
+            <span class="refresh-timer">30</span>초 후 자동으로 새로고침됩니다.
+        </div>
+        
+        <div class="actions">
+            <a href="javascript:location.reload()" class="btn-primary">지금 새로고침</a>
+            <a href="/" class="btn-secondary">홈으로 이동</a>
+        </div>
+    </div>
+    
+    <script>
+        // 자동 새로고침 타이머
+        let countdown = 30;
+        const timerElement = document.querySelector('.refresh-timer');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            timerElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                location.reload();
+            }
+        }, 1000);
+        
+        // 페이지 포커스 시 즉시 새로고침 시도
+        window.addEventListener('focus', () => {
+            if (countdown > 25) { // 5초 이내에 포커스된 경우만
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>

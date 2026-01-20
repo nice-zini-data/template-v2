@@ -1,0 +1,115 @@
+<div th:fragment="script">
+    <!-- ============================== 기본 라이브러리 (jQuery 생태계) ============================== -->
+    <!-- jQuery 코어 및 확장 -->
+    <script th:src="@{/assets/lib/jquery/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/assets/lib/jquery/jquery-extend-3.4.0.js}"></script>
+    <script th:src="@{/assets/lib/jquery/jquery.cookie.min.js}"></script>
+    <script th:src="@{/assets/lib/jquery/jquery-ui.js}"></script>
+
+    <!-- 지니데이타 핵심 3계층 모듈 (Core + modules + utils + Advanced) -->
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-core.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-modules.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-utils.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-advanced.js(v=${@environment.getProperty('app.version')})}"></script>
+        
+    <!-- ============================== 전역 인증 모듈 ============================== -->
+    <!-- 로그아웃 기능은 모든 페이지에서 사용되므로 전역 로드 -->
+    <script type="text/javascript" th:src="@{/assets/js/auth/zinidata-auth.js(v=${@environment.getProperty('app.version')})}"></script>
+
+    <!-- 독립 기능 모듈들 -->
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-header.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/core/zinidata-location.js(v=${@environment.getProperty('app.version')})}"></script>
+    <!-- <script type="text/javascript" th:src="@{/assets/js/core/zinidata-file.js(v=${@environment.getProperty('app.version')})}"></script> -->
+
+    <!-- ============================== 공통 모듈 ============================== -->
+    <script type="text/javascript" th:src="@{/assets/js/common/com.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/common/commonUtil.js(v=${@environment.getProperty('app.version')})}"></script>
+    <!-- 휴대폰 인증 -->
+    <script type="text/javascript" th:src="@{/assets/js/auth/zinidata-cert.js(v=${@environment.getProperty('app.version')})}"></script>
+    <!-- 하드코딩 대상 코드 목록 -->
+    <script type="text/javascript" th:src="@{/assets/js/common/codeList.js(v=${@environment.getProperty('app.version')})}"></script>
+    
+    
+    <div th:if="${currentPage == 'requests/address-search'}">
+        <script type="text/javascript" th:src="@{/assets/js/requests/address-search.js(v=${@environment.getProperty('app.version')})}"></script>
+        
+    </div>
+    
+    <!-- 홈 페이지 스크립트: home.html로 이동됨 (2025-10-12) -->
+    <div th:if="${currentPage == 'home'}">
+        <script type="text/javascript" th:src="@{/assets/js/home/home.js(v=${@environment.getProperty('app.version')})}"></script>
+    </div>
+    
+    <!-- ============================== 페이지별 스크립트 ============================== -->
+    <div th:if="${currentPage == 'requests/request-history-install-view' || currentPage == 'requests/request-history-as-view'}">
+        <script type="text/javascript" th:src="@{/assets/js/requests/requests-history-view.js(v=${@environment.getProperty('app.version')})}"></script>
+    </div>
+    
+
+
+    <div th:if="${currentPage == 'docs'}">
+        <!-- Prism.js CSS (구문 강조 스타일) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+        <!-- Prism.js JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+        <!-- 코드 블록 커스텀 스타일 -->
+        <style>
+            /* 코드 블록 검은색 배경 스타일 */
+            .code-block {
+                background: #1f2937;
+                color: #e5e7eb;
+                padding: 16px;
+                border-radius: 8px;
+                font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+                font-size: 14px;
+                line-height: 1.5;
+                overflow-x: auto;
+                margin: 12px 0;
+            }
+
+            .code-block pre {
+                margin: 0;
+                padding: 0;
+                background: none !important;
+            }
+
+            .code-block code {
+                background: none !important;
+                padding: 0 !important;
+                color: inherit !important;
+                font-family: inherit !important;
+            }
+
+            /* Prism.js 스타일 오버라이드 */
+            .code-block .token.comment {
+                color: #6b7280 !important;
+            }
+
+            .code-block .token.string {
+                color: #10b981 !important;
+            }
+
+            .code-block .token.number {
+                color: #f59e0b !important;
+            }
+
+            .code-block .token.keyword {
+                color: #3b82f6 !important;
+            }
+
+            .code-block .token.function {
+                color: #8b5cf6 !important;
+            }
+
+            .code-block .token.property {
+                color: #ef4444 !important;
+            }
+        </style>
+    </div>
+
+    <!-- ============================== 페이지 전용 스크립트는 각 페이지에서 추가 ============================== -->
+    
+    <!-- 홈 페이지 팝업 스크립트: home.html로 이동됨 (2025-10-12) -->
+</div>

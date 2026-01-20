@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.requests.mapper.RequestMapper">
+
+    <select id="getRequestSeq" resultType="java.lang.Long">
+        --getRequestSeq 요청 번호 가져오기
+        select nextval('seq_tbnvps_service') as seq
+    </select>
+
+    <!-- 신규 설치 요청 등록 -->
+    <insert id="insertRequest" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --insertRequest 신규/AS 요청 등록
+        INSERT INTO tbnvps_service_request VALUES (
+            #{seq}
+            , #{serviceGb}
+            , #{crtId}
+            , #{crtName}
+            , #{crtPhoneNumber}
+            , #{vanId}
+            , #{serviceContent}
+            , #{installNm}
+            , #{address} || ' ' || #{addressDetail}
+            , #{centerX}
+            , #{centerY}
+            , #{payAmt}
+            , '0'
+            , 'N'
+            , now()
+            , null
+            , #{storeCallNumber}
+        )
+    </insert>
+
+    <!-- 여러 파일 정보 일괄 등록 -->
+    <insert id="insertRequestImgs" parameterType="java.util.List">
+        --insertRequestImgs 여러 파일 정보 일괄 등록
+        INSERT INTO tbnvps_service_img (
+            seq
+            , crt_id
+            , service_gb
+            , execute_sw
+            , file_nm
+            , file_path
+            , org_file_nm
+            , file_size
+            , status
+            , crt_dt
+            , upd_dt
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.seq}
+            , #{item.crtId}
+            , #{item.serviceGb}
+            , #{item.executeSw}
+            , #{item.fileNm}
+            , #{item.filePath}
+            , #{item.orgFileNm}
+            , #{item.fileSize}
+            , #{item.status}
+            , now()
+            , null
+        )
+        </foreach>
+    </insert>
+
+    <!-- 요청 내역 조회(페이징 처리) -->
+    <select id="selectRequestHistory" resultType="com.zinidata.domain.requests.vo.RequestVO">
+        --selectRequestHistory 요청 내역 조회
+        with tmp_dist as (
+            SELECT *
+                 , ST_Distance(
+                        ST_SetSRID(ST_MakePoint(#{centerX}, #{centerY}), 4326)::geography,
+                        ST_SetSRID(ST_MakePoint(CAST(center_x AS float), CAST(center_y AS float)), 4326)::geography
+                    ) AS distance
+            FROM tbnvps_service_request
+            WHERE crt_id = #{memNo}
+        )
+        SELECT *
+            , total_count
+            , (total_count - rn + 1) AS row_num
+        FROM (
+            SELECT *
+                , count(*) over() as total_count
+                , row_number() OVER(ORDER BY ${columnSortType}) AS rn
+            FROM tmp_dist
+            WHERE 1=1
+            <if test="searchText != null and searchText != ''">
+                AND (install_nm LIKE concat('%',#{searchText},'%')
+                OR install_addr LIKE concat('%',#{searchText},'%'))
+            </if>
+            <if test="status != '99'">
+                and status = #{status}
+            </if>
+            LIMIT #{size} OFFSET #{pageNo}
+        )
+    </select>
+
+    <!-- 요청 상세 내역 조회 -->
+    <select id="selectRequestHistoryDetail" resultType="com.zinidata.domain.requests.vo.RequestVO">
+        --selectRequestHistoryDetail 요청 상세 내역 조회
+        SELECT a.*
+            , to_char(a.crt_dt, 'YYYY-MM-DD') as str_crt_dt
+            , b.seq as exec_seq
+            , b.crt_id as exec_id, b.crt_name as exec_name, b.crt_phone_number as exec_phone_number, b.execute_content
+            , b.bank, b.account_number , b.account_holder , b.crt_dt as exec_dt, to_char(b.crt_dt, 'YYYY-MM-DD') as str_exec_dt
+            , b.van_id, b.execute_date
+        FROM tbnvps_service_request a
+        left join tbnvps_service_execute b on a.seq = b.service_seq
+        WHERE a.seq = #{seq}
+    </select>
+
+    <!-- 요청 취소 -->
+    <delete id="cancelRequest" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --cancelRequest 요청 취소 (DELETE)
+        DELETE FROM tbnvps_service_request
+        WHERE seq = #{seq}
+        AND crt_id = #{memNo}
+        AND status = '0'
+    </delete>
+
+    <delete id="deleteExecute" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --deleteExecute 수행 내역 삭제
+        DELETE FROM tbnvps_service_execute
+        WHERE service_seq = #{seq}
+        AND crt_id = #{memNo}
+    </delete>
+
+    <!-- 요청 번호로 파일 목록 조회 -->
+    <select id="selectRequestFilesBySeq" resultType="com.zinidata.domain.requests.vo.RequestFileVO">
+        --selectRequestFilesBySeq 요청 번호로 파일 목록 조회
+        SELECT *
+        FROM tbnvps_service_img
+        WHERE seq = #{seq} or seq = #{execSeq}
+        ORDER BY crt_dt desc
+    </select>
+
+    <!-- 수행 내역 조회(페이징 처리) -->
+    <select id="selectExecuteHistory" resultType="com.zinidata.domain.requests.vo.RequestVO">
+        -- selectExecuteHistory 수행 내역 조회(페이징 처리)
+        SELECT *
+                , count(*) OVER() AS total_count
+                , ROW_NUMBER() OVER(ORDER BY ${columnSortType}) AS rn
+        FROM (
+            SELECT b.*
+                    ,  ST_Distance(
+                        ST_SetSRID(ST_MakePoint(#{centerX}, #{centerY}), 4326)::geography,
+                        ST_SetSRID(ST_MakePoint(CAST(b.center_x AS float), CAST(b.center_y AS float)), 4326)::geography
+                    ) AS distance
+            FROM tbnvps_service_execute a
+            JOIN tbnvps_service_request b on a.service_seq = b.seq
+            WHERE a.crt_id = #{memNo}
+            AND b.status != 0
+            <if test="searchText != null and searchText != ''">
+                AND (b.install_nm LIKE concat('%',#{searchText},'%')
+                OR b.install_addr LIKE concat('%',#{searchText},'%'))
+            </if>
+            <if test="status != '99'">
+                and status = #{status}
+            </if>
+            LIMIT #{size} OFFSET #{pageNo}
+        )
+    </select>
+
+    <!-- 요청 내역 상태변경 -->
+    <update id="updateRequestStatus" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --updateRequestStatus 요청 내역 상태 변경
+        UPDATE tbnvps_service_request
+        SET
+            status = #{status}
+            , upd_dt = now()
+        WHERE seq = #{seq}
+    </update>
+
+
+    <!-- 수행 내역 등록 -->
+    <insert id="insertExecute" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --insertExecute 수행 내역 등록
+        INSERT INTO tbnvps_service_execute (
+            seq
+            , service_seq
+            , crt_id
+            , crt_name
+            , crt_phone_number
+            , execute_date
+            , crt_dt
+        ) VALUES (
+            #{execSeq}
+            , #{seq}
+            , #{execId}
+            , #{execName}
+            , #{execPhoneNumber}
+            , #{executeDate}
+            , now()
+        )
+    </insert>
+
+    <!-- 수행 내역 업데이트 (완료 증빙) -->
+    <update id="updateExecute" parameterType="com.zinidata.domain.requests.vo.RequestVO">
+        --updateExecute 수행 내역 업데이트 (완료 증빙)
+        UPDATE tbnvps_service_execute
+        SET
+            execute_content = #{executeContent}
+            , bank = #{bank}
+            , account_number = #{accountNumber}
+            , account_holder = #{accountHolder}
+            , van_id = #{vanId}
+            , upd_dt = now()
+        WHERE service_seq = #{seq}
+        AND crt_id = #{memNo}
+    </update>
+
+    <!-- 파일명, 파일경로, 원본파일명으로 파일 조회 -->
+    <select id="selectFileByFileNmFilePathOrgFileNm" resultType="com.zinidata.domain.requests.vo.RequestFileVO">
+        --selectFileByFileNmFilePathOrgFileNm 파일명, 파일경로, 원본파일명으로 파일 조회
+        SELECT *
+        FROM tbnvps_service_img
+        WHERE file_nm = #{fileNm}
+        AND file_path = #{filePath}
+        AND org_file_nm = #{orgFileNm}
+        LIMIT 1
+    </select>
+
+</mapper>

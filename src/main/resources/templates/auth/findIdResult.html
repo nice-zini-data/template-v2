@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+    <!-- <link rel="stylesheet" href="/assets/css/login.css"> -->
+    <style>
+        html{height:auto !important;overflow:auto !important;}
+    </style>
+</head>
+<body>
+    <div class="wrap loginPage min-h-screen flex flex-col">
+        <!-- ============================== 헤더 설정 ============================== -->
+        <th:block th:replace="~{fragments/header :: mainHeader}" />
+
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+        <main class="flexCenter flex-1">
+            <div class="max-w-md w-full mx-auto mt-8 sm:mt-12 md:mt-20 md:-mt-8 px-6 py-8 pb-10 sm:pb-12">
+                <p class="titleText pb-10">아이디 찾기</p>
+                <p class="titleSubText pb-10">입력하신 정보로 가입된 아이디입니다.</p>
+                <div class="successAccountBox flex">
+                <img src="/assets/images/icons/success_icon_green.svg" alt="" class=""/>
+                <p class="" id="foundIdMessage">회원님의 아이디는 <strong id="foundId">-</strong> 입니다.</p>
+                </div>
+                <button type="button" class="primaryBtn btn w-full mt-10 mb-6 h-10" id="goToLoginBtn">로그인</button>
+                <button type="button" class="textBtn btn muted m-auto" id="goBackToFindBtn">이전</button>
+            </div>
+        </main>
+
+        <!-- ============================== 푸터 설정 ============================== -->
+        <th:block th:replace="~{fragments/footer :: footer}" />
+
+        <!-- ============================== 스크립트 파일 로드 ============================== -->
+        <th:block th:replace="~{fragments/script :: script}" />
+    </div>
+</body>
+</html> 

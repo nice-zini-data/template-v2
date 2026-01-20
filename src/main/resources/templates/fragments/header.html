@@ -1,0 +1,138 @@
+<header th:fragment="mainHeader">
+    <div class="header">
+        <p class="headerTitle"></p>
+        <p class="changeTitle"></p>
+        <div class="headerMenuBtn">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="headerMenuOpen">
+        <div class="headerMenu">
+            <ul>
+                <li onclick="location.href='/'">
+                    <div class="flexLeft">
+                        <img src="/assets/images/icons/header_menu_icon01.svg" alt="">
+                        <p class="">HOME</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="flexLeft" onclick="location.href='/requests/map'">
+                        <img src="/assets/images/icons/header_menu_icon02.svg" alt="">
+                        <p class="">요청 탐색</p>
+                    </div>
+                </li>
+                <li>
+                    <p class="text-xs/4 text-zinc-400 py-2 px-4">요청 등록</p>
+                    <div class="flexLeft" onclick="location.href='/requests/install'">
+                        <img src="/assets/images/icons/header_menu_icon03.svg" alt="">
+                        <p class="">신규 설치</p>
+                    </div>
+                    <div class="flexLeft" onclick="location.href='/requests/as'">
+                        <img src="/assets/images/icons/header_menu_icon04.svg" alt="">
+                        <p class="">A/S 요청</p>
+                    </div>
+                </li>
+                <li>
+                    <p class="text-xs/4 text-zinc-400 py-2 px-4">내 활동</p>
+                    <div class="flexLeft" onclick="location.href='/requests/request-history'">
+                        <img src="/assets/images/icons/header_menu_icon05.svg" alt="">
+                        <p class="">요청 내역</p>
+                    </div>
+                    <div class="flexLeft" onclick="location.href='/requests/work-history'">
+                        <img src="/assets/images/icons/header_menu_icon06.svg" alt="">
+                        <p class="">수행 내역</p>
+                    </div>
+                </li>
+                <li class="!border-b-0">
+                    <div class="flexLeft" onclick="location.href='/requests/map'">
+                        <img src="/assets/images/icons/header_logout.svg" alt="">
+                        <p class="!text-red-700">로그아웃</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- 지도 헤더 -->
+<header th:fragment="mapHeader">
+    
+    <div class="mapSearchHeader flexBetween relative">        
+        <div class="mapSearchBack"></div>
+        <div class="mapSearchBox">            
+            <div class="mapSearchForm pointer-events-none">
+                <input type="text" class="mapSearchInput" placeholder="지역을 입력해주세요">
+                <div class="mapSearchInputRemove hidden"><img src="/assets/images/icons/remove_icon.svg" class="size-4" alt=""></div>
+            </div>
+        </div>
+
+        <div class="header w-14">
+            <p class="headerTitle"></p>
+            <p class="changeTitle"></p>
+            <div class="headerMenuBtn">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+    <div class="mapSearchList hidden">
+        <div class="addressNull">
+            <div>
+                <img src="/assets/images/icons/map_img.svg" class="size-12 mb-2 m-auto" alt="">
+                <p class="addressNullText">검색하실 주소를 입력해 주세요.</p>
+            </div>
+        </div>
+        <ul class="mapSearchListUl hidden">
+        </ul>
+    </div>
+    <div class="headerMenuOpen">
+        <div class="headerMenu">
+            <ul>
+                <li onclick="location.href='/'">
+                    <div class="flexLeft">
+                        <img src="/assets/images/icons/header_menu_icon01.svg" alt="">
+                        <p class="">HOME</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="flexLeft" onclick="location.href='/requests/map'">
+                        <img src="/assets/images/icons/header_menu_icon02.svg" alt="">
+                        <p class="">요청 탐색</p>
+                    </div>
+                </li>
+                <li>
+                    <p class="text-xs/4 text-zinc-400 py-2 px-4">요청 등록</p>
+                    <div class="flexLeft" onclick="location.href='/requests/install'">
+                        <img src="/assets/images/icons/header_menu_icon03.svg" alt="">
+                        <p class="">신규 설치</p>
+                    </div>
+                    <div class="flexLeft" onclick="location.href='/requests/as'">
+                        <img src="/assets/images/icons/header_menu_icon04.svg" alt="">
+                        <p class="">A/S 요청</p>
+                    </div>
+                </li>
+                <li>
+                    <p class="text-xs/4 text-zinc-400 py-2 px-4">내 활동</p>
+                    <div class="flexLeft" onclick="location.href='/requests/request-history'">
+                        <img src="/assets/images/icons/header_menu_icon05.svg" alt="">
+                        <p class="">요청 내역</p>
+                    </div>
+                    <div class="flexLeft" onclick="location.href='/requests/work-history'">
+                        <img src="/assets/images/icons/header_menu_icon06.svg" alt="">
+                        <p class="">수행 내역</p>
+                    </div>
+                </li>
+                <li class="!border-b-0">
+                    <div class="flexLeft" onclick="location.href='/requests/map'">
+                        <img src="/assets/images/icons/header_logout.svg" alt="">
+                        <p class="!text-red-700">로그아웃</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>    
+</header>

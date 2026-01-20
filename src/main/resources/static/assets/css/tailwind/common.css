@@ -1,0 +1,735 @@
+/*
+  @layer components → 재사용 가능한 "UI 패턴" (의미 있음)
+  @layer utilities → 단순한 속성 단위 (의미 없음)
+*/
+
+/*반응형 max-__:__ */
+
+/*공통 사용*/
+@layer components {
+  button {@apply flex justify-center items-center cursor-pointer;}
+  .skeleton-ui p, .skeleton-ui span, .skeleton-ui li, .skeleton-ui input, .skeleton-ui select, .skeleton-ui .chartBox, .skeleton-ui .reportTable {height: auto;background: #e2e8f0;border-radius: 8px;animation: pulse 1.5s ease-in-out infinite;}
+
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.6; }
+  }
+
+  .mapMarker {@apply w-[30px] h-9 absolute top-[200px] left-[500px] z-[10];}
+  .mapMarkerText {@apply absolute -top-10 left-1/2 -translate-x-1/2 text-xs/4 font-medium text-white bg-zinc-800 py-2 px-3 rounded-lg whitespace-nowrap;}
+  .mapMarkerText:after {@apply content-[''] block absolute -bottom-1 left-1/2 -translate-x-1/2 rotate-45 w-3 h-3 bg-zinc-800}
+  /* 지도 마커(네이버 커스텀 마커 content용) */
+  .selectionMarkerWrapper {position: relative; transform: translate(-50%, -100%);} /* 기존 inline 대체 */
+  .mapMarkerOnMap {position: static; top: auto; left: auto;} /* 기존 inline 대체 */
+
+  p, span {@apply px-0-5}
+  p, span, li {@apply break-keep }
+  input {@apply outline-none }
+  .lineFocus.active{@apply relative}
+  .lineFocus.active:after {@apply content-[''] block absolute top-0 left-0 border-2 border-solid border-primary-500 bg-transparent rounded-2xl w-full h-full}
+  .lineFocus.active:before {@apply content-[''] block absolute -top-[2px] -left-[2px] border-3 border-solid border-primary-500/20 bg-transparent rounded-2xl;width:calc(100% + 4px); height: calc(100% + 4px); }
+
+  .inputLabel {@apply flex justify-start items-center text-zinc-500 text-sm/6 font-medium mb-2}
+  .inputLabel span {@apply text-zinc-400}
+  .inputCustom {@apply w-full rounded-lg border-solid border-1 text-zinc-950 text-sm/5 font-normal border-zinc-800/15 h-12 px-3 shadow-2xs}
+  .inputCustom:focus {@apply border-primary-500 outline-none}
+  .inputCustom:hover {@apply border-primary-500/30 outline-none}
+  .inputCustom.disabled {@apply border-zinc-800 border-opacity-10 bg-zinc-800/8 pointer-events-none}
+
+  /* .whiteBox {@apply p-10 bg-white rounded-xl shadow-lg max-md:w-full max-md:rounded-none max-md:shadow-none max-md:border-zinc-800/0 max-md:px-5;} */
+  .grayLineBox {@apply p-5 bg-zinc-50 rounded-md border border-solid border-zinc-800/15;}
+  .linkText {@apply text-sm/5 font-medium text-zinc-500 cursor-pointer}
+  .gubunLine {@apply flex justify-center items-center relative}
+  .gubunLine p {@apply text-md/6 font-medium relative z-1 bg-white;color:var(--gubun-color);}
+  .gubunLine:after {@apply absolute left-0 top-1/2 -translate-y-1/2 w-full h-px content-[''];background:var(--gubun-bg);}
+  .borderLine {@apply border-zinc-800/15 border-solid border}
+
+  .titleText {@apply text-xl/7 font-semibold text-zinc-950;}
+  .titleSubText {@apply text-sm/5 font-normal text-zinc-500}c
+  .subTitle {@apply text-base/6 text-zinc-700 font-medium}
+}
+
+/*chart*/
+@layer components {
+  .chartBox {@apply w-full h-full}
+  .tableDataDom {@apply overflow-auto pb-1-5;}
+  .tableDataDom::-webkit-scrollbar-thumb{@apply bg-zinc-200 rounded-xs}
+  .tableDataDom table {@apply w-full text-sm/5 text-center table-auto whitespace-nowrap}
+  .tableDataDom tr {@apply border-b-1 border-solid border-zinc-800/8}
+  .tableDataDom tr:last-child {@apply border-b-0}
+  .tableDataDom thead tr:hover{@apply bg-transparent}
+  .tableDataDom tr:hover {background:rgba(39, 39, 42, 0.02)}
+  .tableDataDom th {@apply bg-zinc-50}
+  .tableDataDom th:first-child {@apply text-left max-w-[220px]}
+  .tableDataDom table th {@apply text-sm/5 text-zinc-500 py-2 px-3 font-semibold}
+  .tableDataDom table td {@apply text-sm/5 font-normal text-zinc-700 py-2 px-3 cursor-pointer tabular-nums}
+  .tableDataDom table td.sticky {@apply bg-white}
+  .tableDataDom table td .iconBox {@apply rounded-sm mr-2}
+  .tableScrollOn th.fixText {@apply bg-zinc-50}
+  .tableScrollOn .fixText {@apply sticky left-0 z-1 bg-white}
+  .tableScrollOn .fixText:after{@apply content-[''] absolute top-0 -right-3 w-3 h-full block;background: linear-gradient(270deg, transparent, rgba(0, 0, 0, 0.06) 100%);}
+  .reportRemarkBox .tableScrollOn .fixText:after{background: linear-gradient(270deg, #fafafa, rgba(0, 0, 0, 0.06) 100%);}
+  .reportRemarkBox .tableScrollOn .fixText {@apply bg-zinc-50}
+  .reportRemarkBox thead tr{@apply border-b-2}
+}
+
+/*form*/
+@layer components {
+  [type='checkbox'] + label {@apply cursor-pointer}
+  .checkboxCustom[type='checkbox']{}
+  .checkboxCustom[type='checkbox'] + label{@apply text-sm/5 font-medium text-zinc-600 pl-8 relative block}
+  .checkboxCustom[type='checkbox'] + label:hover{@apply cursor-pointer}
+  .checkboxCustom[type='checkbox'] + label:before {@apply absolute left-2 top-1/2 w-4 h-4 border-solid border-1 border-zinc-500/15 rounded-sm bg-white content-[''] -translate-y-1/2}
+  .checkboxCustom[type='checkbox'] + label:hover:before {@apply border-zinc-800/25}
+  .checkboxCustom[type='checkbox']:checked + label:before {background:var(--main-color) url('/assets/images/icons/checkbox_white_check.svg') no-repeat center center / 14px 14px}
+  .checkboxCustom[type='checkbox']:checked + label:hover:before {background:var(--secondary-color) url('/assets/images/icons/checkbox_white_check.svg') no-repeat center center / 14px 14px}
+  .checkboxCustomArrow[type='checkbox'] + label{@apply text-sm/5 font-medium text-zinc-600 pl-8 relative}
+  .checkboxCustomArrow[type='checkbox'] + label:hover{@apply cursor-pointer}
+  .checkboxCustomArrow[type='checkbox'] + label:before {@apply absolute left-0-5 top-1/2 w-4 h-4 rounded-sm content-[''] -translate-y-1/2;background:transparent url('/assets/images/icons/check_gray.svg') no-repeat center center / 14px 14px}
+  .checkboxCustomArrow[type='checkbox'] + label:hover:before {background:rgba(39, 39, 42, 0.04) url('/assets/images/icons/check_gray.svg') no-repeat center center / 14px 14px}
+  .checkboxCustomArrow[type='checkbox']:checked + label:before {background:transparent url('/assets/images/icons/check_primary.svg') no-repeat center center / 14px 14px}
+  .checkboxCustomArrow[type='checkbox']:checked + label:hover:before {background:rgba(39, 39, 42, 0.04) url('/assets/images/icons/check_primary.svg') no-repeat center center / 14px 14px}
+  .formCheck .inputLabel{@apply relative inline-block}
+  .formCheck .inputLabel:after{@apply content-['*'] absolute -right-[12px] top-1/2 -translate-y-1/2 text-primary-600}
+  .certTime {@apply text-sm/5 text-primary-600 font-normal absolute right-3 top-1/2 -translate-y-1/2}
+  .passwordInfoBox {@apply absolute left-0 top-11 !p-3 !rounded-md border border-solid border-zinc-800/15 w-full z-9 bg-white;}
+  .passwordCheckList li{@apply flex justify-start items-center text-xs/4 text-red-700 pb-1-5}
+  .passwordCheckIcon {@apply w-[12px] h-[12px] mr-1;background:url('/assets/images/icons/close_red.svg') no-repeat center center / 12px 12px}
+  .passwordCheckList li.success {@apply text-green-700}
+  .passwordCheckList li.success .passwordCheckIcon{background:url('/assets/images/icons/check_success.svg') no-repeat center center / 12px 12px}
+  .inputError input {@apply border-red-700}
+  .inputError input:hover, .inputError input:focus {border:1px solid var(--destructive) !important;}
+  .errorText {@apply text-sm/4 text-red-700 font-medium pt-2;display:none}
+  .inputError .errorText {display:block}
+  .passwordToggle {@apply w-5 h-5 absolute top-1/2 right-2 -translate-y-1/2 bg-no-repeat bg-contain cursor-pointer bg-[url('/assets/images/icons/password_on_gray.svg')] hover:bg-[url('/assets/images/icons/password_on_dark.svg')]}
+  .passwordToggle.active {@apply  bg-[url('/assets/images/icons/password_off_gray.svg')] hover:bg-[url('/assets/images/icons/password_off_dark.svg')]}
+  .mypageWrap .checkboxCustom[type='checkbox']:checked + label:before{background:var(--blue-600) url('/assets/images/icons/checkbox_white_check.svg') no-repeat center center / 14px 14px}
+  .mypageWrap .checkboxCustom[type='checkbox'] + label:before{@apply left-0}
+  .dotList li {@apply relative text-xs/4 text-zinc-600 pl-3 mb-2}
+  .dotList li:last-child{@apply mb-0}
+  .dotList li:after {@apply content-[''] block absolute top-2 left-0-5 w-0-5 h-0-5 rounded-full bg-zinc-600}
+  .bannerDotList li:after {@apply bg-white}
+  .bannerDotList li {@apply !text-xs/5 !text-white !mb-1}
+  .orderHistoryBtn {@apply justify-end w-full underline underline-offset-[3px]}
+  .no-underline {text-decoration: none !important; pointer-events: none;}
+  .no-underline:hover {cursor: default !important} 
+  input[type="file"]{@apply hidden}
+  .fileBtn {@apply ml-2 w-[85px] h-10 border border-solid border-zinc-800/15 !inline-flex justify-center items-center rounded-md whitespace-nowrap text-md/6 font-medium hover:bg-zinc-500/8 cursor-pointer shadow-default}
+  .fileBtn:after {@apply !hidden}
+}
+
+/*modal*/
+@layer components {
+  .modalLayout {@apply fixed top-0 left-0 z-[99] w-full h-full hidden;}
+  .modalLayout.active {@apply block}
+  .modalInner {@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[480px] z-10 max-h-[90vh]}
+  .modalBg {@apply absolute top-0 left-0 w-full h-full bg-black opacity-15 cursor-pointer}
+  .doneModalBg {@apply absolute top-0 left-0 w-full h-full bg-black opacity-15 cursor-pointer}
+  .modalContent{@apply max-h-[500px] overflow-y-scroll bg-zinc-50 p-3 rounded-md}
+  .modalContent::-webkit-scrollbar{@apply w-1 bg-transparent}
+  .modalContent::-webkit-scrollbar-thumb{@apply bg-zinc-300 rounded-md cursor-pointer}
+  .modalContent p {@apply text-sm/5 text-zinc-600 font-normal}
+  .modalTitle{@apply text-lg/7 text-zinc-950 font-bold pb-1-5}
+  .modalSubTitle{@apply text-sm/5 text-zinc-500 font-normal pb-4}
+  .passwordHide {@apply absolute top-5 right-5 cursor-pointer w-7 h-7 flex justify-center items-center}
+  .modalClose{@apply absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer w-10 h-10 flex justify-center items-center}
+  .alertModal {@apply hidden fixed top-6 left-1/2 z-[102] rounded-md p-3 border border-solid justify-center items-center shadow-lg;animation: modalShow 4s forwards}
+
+  .alertModal .alertIcon {@apply w-4 h-4 mr-2 min-w-4}
+  .alertModal .alertText {@apply text-sm/5 font-medium}
+  .alertModal.doneGreen {@apply bg-green-50 border-green-600/30}
+  .alertModal.doneGreen .alertIcon{background:url('/assets/images/icons/success_icon_green.svg') no-repeat center center / 16px 16px}
+  .alertModal.doneGreen .alertText {@apply text-green-700}
+  .alertModal.doneRed {@apply bg-red-50 border-red-500/30}
+  .alertModal.doneRed .alertIcon{background:url('/assets/images/icons/error_icon_red.svg') no-repeat center center / 16px 16px}
+  .alertModal.doneRed .alertText {@apply text-red-700}
+  .nullAccountBox {@apply px-3 py-2 rounded-md bg-red-50 justify-start items-center mb-10}
+  .nullAccountBox img{@apply w-4 h-4 mr-2}
+  .nullAccountBox p {@apply text-sm/5 font-normal text-red-700}
+
+  .layerModal {@apply fixed top-0 left-1/2 -translate-x-1/2 w-full h-full z-[101]}
+  .layerModalContent {@apply absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-[320px] py-5 px-4 bg-white rounded-2xl shadow-lg z-1 border border-solid border-zinc-800/15 max-sm:min-w-[unset] max-sm:w-[90%] max-sm:max-h-[calc(100%-4rem)] max-sm:overflow-y-scroll}
+  .flowPopupModal .layerModalContent{@apply max-sm:w-full max-sm:h-full max-sm:max-h-full max-sm:!rounded-none}
+  .layerModalTitle {@apply text-lg/7 font-bold pb-4}
+  .layerModalInner {@apply py-3}
+  .layerModalText {@apply text-sm/5 font-normal text-zinc-600 }
+  .layerModalContent button {@apply text-md/6 font-medium}
+  .layerPopupBg {@apply w-full h-full absolute top-0 left-0}
+
+  .marketsUpjongChart {@apply h-[228px] w-[912px] py-4 max-lg:w-full}
+  .marketsPopup .layerPopupBg {@apply bg-[rgba(0,0,0,.08)]}
+  .marketsPopup .layerModalContent {@apply max-lg:w-full max-lg:top-auto max-lg:-translate-y-0 max-lg:-bottom-full max-lg:rounded-b-none}
+  .marketsPopup.active .layerModalContent {@apply max-lg:bottom-0 max-lg:duration-300}
+ 
+}
+
+/*button*/
+@layer components {
+  .primaryBtn {@apply rounded-md !text-white text-md/6 font-medium bg-primary-600}
+  .primaryBtn:hover {@apply bg-primary-500}
+  .cyanBtn {@apply rounded-md !text-white text-md/6 font-medium bg-cyan-500}
+  .cyanBtn:hover {background: linear-gradient(0deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.30) 100%), var(--cyan-500);}
+  .primaryLineBtn {@apply rounded-md text-primary-600 text-md/6 font-medium border-primary-500/60 border border-solid}
+  .primaryLineBtn:hover {@apply bg-zinc-50}
+  .softBtn{@apply rounded-md text-primary-600 text-md/6 font-medium bg-primary-500/6}
+  .softBtn:hover {@apply bg-primary-500/8}
+  .grayBtn{@apply rounded-md text-zinc-950 text-md/6 font-medium bg-zinc-800/4}
+  .grayBtn:hover {@apply bg-zinc-500/8}
+  .blackBtn{@apply rounded-md text-white text-md/6 font-medium bg-zinc-900}
+  .blackBtn:hover {@apply bg-zinc-900/80}
+  .grayLineBtn{@apply rounded-md text-zinc-950 text-md/6 font-medium bg-white border border-solid border-zinc-500/15 cursor-pointer}
+  .grayLineBtn:hover {@apply bg-zinc-50 border-zinc-500/15}
+  .redBtn {@apply rounded-md text-white text-md/6 font-medium bg-red-700 border-0}
+  .redBtn:hover {@apply bg-red-600}
+  .redLineBtn{@apply rounded-md text-red-700 text-md/6 font-medium bg-white border border-solid border-red-500/15 cursor-pointer}
+  .redLineBtn:hover {@apply bg-red-50 border-red-500/15}
+  button.disabled {@apply bg-zinc-800/8 !text-zinc-950/30 pointer-events-none}
+  .reportBtnDisabled.disabled {@apply !bg-blue-500/6 !text-blue-400 !opacity-100}
+  .textBtn {@apply h-5 rounded-sm font-medium text-sm/5 cursor-pointer}
+  .textBtn.primary {@apply text-primary-600}
+  .textBtn.primary:hover {@apply rounded-sm bg-zinc-800/4}
+  .textBtn.muted {@apply bg-zinc-800/0 text-zinc-500}
+  .textBtn.muted:hover {@apply rounded-sm bg-zinc-800/4 text-zinc-700}
+  .textBtn.disabled {@apply bg-zinc-800/0 text-zinc-950/2 pointer-events-none }
+}
+
+/*pagination, calendar */
+@layer components {
+  .paginationWrap {@apply m-auto;}
+  .paginationWrap ul{@apply flex justify-center items-center}
+  .paginationWrap ul li {@apply relative mx-1 w-[26px] h-[26px] rounded-sm border-none cursor-pointer text-xs/4 font-medium text-zinc-600 flex justify-center items-center}
+  .paginationWrap ul li.active {@apply bg-zinc-800/4 text-zinc-950}
+  .paginationWrap ul li:hover {@apply bg-zinc-800/4}
+  .paginationWrap ul li.disabled {@apply pointer-events-none opacity-20}
+  .paginationWrap .prevAll:after {@apply content-[''] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 rotate-180 w-4 h-4;background:url('/assets/images/icons/pagination_arrow_all.svg') no-repeat center center / 16px 16px}
+  .paginationWrap .prev:after {@apply content-[''] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 rotate-180 w-4 h-4;background:url('/assets/images/icons/pagination_arrow.svg') no-repeat center center / 16px 16px}
+  .paginationWrap .next:after {@apply content-[''] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4;background:url('/assets/images/icons/pagination_arrow.svg') no-repeat center center / 16px 16px}
+  .paginationWrap .nextAll:after {@apply content-[''] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4;background:url('/assets/images/icons/pagination_arrow_all.svg') no-repeat center center / 16px 16px}
+
+  .calendarInput {@apply relative py-1-5 pr-8 pl-3 text-md/6 font-medium text-zinc-950 rounded-md cursor-pointer w-[170px] h-[36px] border border-solid border-zinc-500/15 shadow-2xs; background:url('/assets/images/icons/calendar_icon.svg') no-repeat center right 12px / 16px 16px;}
+  .ui-widget.ui-widget-content {@apply mt-2 !border-zinc-500/15 rounded-md bg-white shadow-sm !py-4 !px-3 !w-[248px];font-family: 'SUIT' !important;}
+  .ui-datepicker .ui-datepicker-header, .month-picker .month-picker-header.ui-widget-header{@apply !p-0 !bg-white !border-0 !h-7 mb-3}
+  .ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year{@apply !w-auto}
+  .month-picker-year-table .month-picker-title a.ui-button.ui-corner-all {@apply !p-0}
+  .month-picker table.month-picker-year-table {@apply !border-spacing-0}
+  .ui-datepicker-year {@apply !text-md/6 !font-semibold !text-zinc-950}
+  .ui-datepicker .ui-datepicker-title select {@apply !m-0 !text-md/6 !font-semibold !text-zinc-950 !appearance-none !px-1-5;font-family: 'SUIT' !important;}
+  .ui-datepicker .ui-datepicker-title, .month-picker-year-table .month-picker-title .ui-button{@apply !text-md/6 !font-semibold !text-zinc-950 !h-7 flex justify-center items-center !bg-white !border-0 cursor-pointer}
+  .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next, .month-picker-previous a, .month-picker-next a{@apply !w-7 !h-7 !top-0 !bg-transparent !border-transparent !cursor-pointer relative}
+  .ui-datepicker .ui-datepicker-prev, .month-picker-previous {@apply !left-px}
+  .ui-datepicker .ui-datepicker-next, .month-picker-next {@apply !right-px}
+  .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-prev:hover, .month-picker-previous a, .month-picker-previous a:hover {background:url('/assets/images/icons/prev_icon.svg') no-repeat center center / 16px 16px !important;}
+  .ui-datepicker .ui-datepicker-next, .ui-datepicker .ui-datepicker-next:hover, .month-picker-next a, .month-picker-next a:hover {background:url('/assets/images/icons/next_icon.svg') no-repeat center center / 16px 16px !important;transform: rotate(180deg)}
+  .month-picker-previous a.ui-state-disabled, .month-picker-next a.ui-state-disabled {@apply !bg-transparent}
+  .ui-datepicker th {@apply !pt-1 !px-1-5 !pb-4}
+  .ui-datepicker th span {@apply !text-xs/4 !font-medium !text-zinc-500 }
+  .ui-datepicker-week-end .ui-state-active {@apply !text-white}
+  .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .month-picker-month-table .ui-button {@apply !border-transparent text-center !bg-transparent rounded-sm !text-zinc-950 }
+  .month-picker-month-table .ui-button {@apply !m-0 !text-sm/5 !font-medium }
+  .month-picker-header {@apply !mt-0 !mx-0}
+  .month-picker-month-table {@apply !w-full}
+  .ui-datepicker-today .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight{@apply !bg-zinc-800/80 !text-zinc-950 !border-0}
+  .ui-state-default, .ui-widget-content .ui-state-default:hover, .ui-widget-header .ui-state-default:hover{@apply !bg-zinc-800/80}
+  .ui-datepicker td {@apply !py-1 !px-px}
+  .ui-datepicker td:last-child .ui-state-default {@apply !text-primary-600}
+  .ui-datepicker td:first-child .ui-state-default {@apply !text-red-500}
+  .ui-datepicker td:last-child .ui-state-default.ui-state-active, .ui-datepicker td:first-child .ui-state-default.ui-state-active {@apply !text-white}
+  .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {@apply !bg-primary-600 shadow-default !text-white}
+  .ui-state-active, .ui-widget-content .ui-state-active:hover, .ui-widget-header .ui-state-active:hover {@apply !bg-primary-500}
+  .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {@apply !opacity-40 !cursor-not-allowed !bg-zinc-100 !text-zinc-400}
+  .ui-state-disabled:hover, .ui-widget-content .ui-state-disabled:hover, .ui-widget-header .ui-state-disabled:hover {@apply !bg-zinc-100 !text-zinc-400}
+  .calendarWrap > span {@apply text-md/6 font-medium text-zinc-500 px-1}
+}
+
+/*대리점향*/
+@layer components {
+  /*common*/
+  .whiteBox{@apply bg-white rounded-2xl py-5 px-4 mb-3}
+  .tabBox {@apply px-5}
+  .tabButton {@apply bg-[#F1F1F3] p-0-5 rounded-md text-sm/5 font-medium text-zinc-500 h-auto overflow-hidden flex justify-between items-stretch}
+  .tabButton li {@apply py-1-5 px-2 w-1/2 text-center border-1 border-solid border-transparent}
+  .tabButton li.active {@apply bg-white text-zinc-950 shadow-xs rounded-sm border-zinc-800/10}
+  .tabLineBox {@apply px-5 bg-white border-b border-solid border-b-zinc-800/10 fixed top-14 left-1/2 -translate-x-1/2 w-full max-w-5xl h-10 z-[8]}
+  .tabLineButton {@apply flex justify-start items-stretch gap-4}
+  .tabLineButton li {@apply text-md/6 font-medium text-zinc-600 px-0-5 py-2 h-10 border-b-2 border-solid border-b-transparent}
+  .tabLineButton li.active {@apply border-b-primary-500 text-primary-600}
+  
+  /*header*/
+  header{@apply border-b-1 border-solid border-b-transparent}
+  .header {@apply h-14 w-full flex justify-between items-center px-2 relative z-[13]}
+  .headerTitle {@apply text-lg/7 font-semibold text-zinc-700 opacity-0 duration-300}
+  .headerTitle.bakBtn, .mapSearchBack {@apply size-10 bg-[url('/assets/images/icons/back_arrow_gray.svg')] bg-no-repeat bg-center bg-[length:40px_40px] !opacity-100}
+  .mapSearchBack {@apply absolute top-1/2 -translate-y-1/2 left-3 hidden}
+  .mapSearchHeader  {@apply border-b-1 border-solid border-zinc-800/10}
+  .mapSearchHeader.active .mapSearchBack {@apply block z-9}
+  .mapSearchHeader.active .mapSearchInput {@apply pl-[60px] bg-none}
+  .header.open .headerTitle {@apply opacity-100 duration-300}
+  .headerMenuBtn {@apply w-10 h-10 relative p-3}
+  .headerMenuBtn div {@apply w-4 h-0-5 bg-zinc-600 duration-300 absolute }
+  .header .headerMenuBtn div:nth-child(1) {@apply rotate-0 top-3 left-1/2 -translate-x-1/2}
+  .header .headerMenuBtn div:nth-child(2) {@apply opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2}
+  .header .headerMenuBtn div:nth-child(3) {@apply rotate-0 bottom-3 left-1/2 -translate-x-1/2}
+  .header.open .headerMenuBtn div:nth-child(1) {@apply -rotate-45}
+  .header.open .headerMenuBtn div:nth-child(2) {@apply opacity-0}
+  .header.open .headerMenuBtn div:nth-child(3) {@apply rotate-45}
+  .header.open .headerMenuBtn div {@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-300}
+  
+  .headerMenuOpen {@apply bg-white absolute top-0 left-0 w-full h-full z-[12] max-w-5xl pt-[56px] translate-x-full duration-500 opacity-0}
+  .headerMenuOpen.show {@apply translate-x-0 animate-[menuOpen_500ms_forwards]}
+  .headerMenuOpen.hide {@apply translate-x-full animate-[menuOpen_500ms_forwards]}
+  .headerMenu li {@apply border-b-1 border-solid border-zinc-800/10 py-2}
+  .headerMenu li > div {@apply gap-2 py-3 px-2}
+  .headerMenu li > div p {@apply text-base/6 font-semibold text-zinc-950}
+
+  /*main*/
+  .wrap {@apply max-w-5xl mx-auto h-[100vh] w-full relative overflow-hidden}
+  .mainContent {@apply w-full px-5 pb-8}
+  .mainContent.scrollBox {@apply !h-[calc(100vh-57px)] pb-[100px]}
+  .scrollBox {@apply overflow-y-auto h-[calc(100vh-57px)]}
+  .scrollBox::-webkit-scrollbar{@apply hidden}
+  .subTitle {@apply text-sm/5 text-zinc-700 font-semibold}
+  .title {@apply text-xl/7 font-extrabold}
+  .mainSection01 {@apply !p-0 }
+  .mainSection01Content {@apply min-h-[160px] border-b-1 border-solid border-zinc-800/6 py-6 px-5 bg-[url('/assets/images/content/main_bg_img.svg')] bg-no-repeat bg-[top_-10px_right_-30px] bg-[length:175px_181px]}
+  .mainSection01Content02 {@apply py-6 px-4 flex justify-between items-stretch gap-6}
+  .mainSection01Content02 ul {@apply h-auto overflow-hidden}
+  .mainSection02Content li{@apply flex justify-between items-center gap-2 py-2 mt-2}
+  .mainSection03Content {@apply flex justify-start items-center gap-4}
+  .mainSection03Content li {@apply w-1/4 text-center}
+  .changeTitle {@apply text-base/6 text-zinc-900 font-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2}
+
+  /*sub*/
+  .subPageContent {@apply bg-white pb-[180px] min-h-full}
+  .subPageContent section{@apply py-6 px-5 border-b-[12px] border-solid border-b-zinc-100 bg-white }
+  .sectionTitle {@apply text-base/6 font-semibold text-zinc-800 pb-4}
+  .sectionTitle span {@apply text-zinc-400 text-md/6}
+  .subInfoList {@apply h-auto overflow-hidden}
+  .subInfoList li{@apply flex justify-between items-start gap-2 text-sm/5 font-medium mb-2}
+  .subInfoList li:last-child{@apply mb-0}
+  .subInfoListTitle {@apply text-zinc-400 w-[85px]}
+  .subInfoListTxt {@apply text-zinc-700 w-[calc(100%-85px)] text-right}
+
+  .inputBox {@apply mb-10}
+  .inputBox:last-child{@apply mb-0}
+  .photoList li {@apply py-3-5 px-3 bg-zinc-800/6 rounded-lg mb-2 text-sm/5 text-zinc-700 underline underline-offset-1 flex justify-between items-center gap-2}
+  .photoList .fileName {@apply flex justify-start items-center gap-2}
+  .photoPreview {@apply fixed top-0 left-1/2 -translate-x-1/2 max-w-5xl h-full w-full bg-white z-[11]}
+  .previewTop {@apply h-14 w-full flex justify-center items-center relative}
+  .previewTop button {@apply absolute top-1/2 right-4 -translate-y-1/2}
+  .previewTop .name {@apply text-base/6 font-bold text-zinc-900}
+  .previewImg {@apply max-h-[80vh] object-contain m-auto}
+
+  .storeSearchBox input {@apply bg-[url('/assets/images/icons/select_arrow.svg')] bg-no-repeat bg-[center_right_8px] bg-[length:18px_18px] }
+  .storeAddress input {@apply bg-[url('/assets/images/icons/search_icon.svg')] bg-no-repeat bg-[center_right_8px] bg-[length:20px_20px] }
+  
+  .requestModalWrap {@apply bg-white rounded-t-2xl fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl z-10 border-1 border-solid border-zinc-800/15}
+  .modalLayout.active .requestModalWrap {@apply animate-[requestModalShow_300ms_forwards]}
+  .requestModalTop {@apply h-14 w-full flex justify-center items-center px-4 relative}
+  .alertModalContent {@apply rounded-3xl bg-white py-5 px-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99] w-[calc(100%-40px)] max-w-[calc(1024px-40px)]}
+  .alertModalContentText01 {@apply text-base/6 font-bold text-zinc-950 mb-1}
+  .alertModalContentText02 {@apply text-sm/5 text-zinc-700}
+  .alertModalContentText02 span {@apply font-semibold}
+
+  .storeListUl li {@apply px-5 py-3 relative}
+  .storeListUl li p {@apply text-base/6 font-semibold text-zinc-950}
+  .storeListUl li span {@apply text-xs/4 text-zinc-600 mt-0-5}
+  .storeListUl li.check p{@apply text-primary-600}
+  .storeListUl li.check span{@apply text-blue-500/90}
+  .storeListUl li.check:after {@apply content-[''] absolute top-1/2 right-5 -translate-y-1/2 w-7 h-7 bg-[url('/assets/images/icons/check_blue.svg')] bg-no-repeat bg-center bg-[length:20px_20px]}
+  .requestModalContent {@apply max-h-[280px] overflow-y-auto}
+  .subPageBottom {@apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.00)_0%,#FFF_30%,#FFF_100%)]}
+  
+  /*내 활동*/
+  .historyContent {@apply p-5}
+  .historyContent .whiteBox {@apply border border-solid border-zinc-800/6 shadow-lg}
+
+  /*주소 검색*/
+  .addressSearchTop {@apply h-14 relative px-2}
+  .addressSearchInput {@apply w-full h-14 border border-solid border-transparent pl-4 pr-10 text-sm/5 text-zinc-950}
+  .addressSearchForm {@apply border-b-1 border-solid border-b-zinc-800/15 relative}
+  .addressInputRemove, .mapSearchInputRemove {@apply absolute top-1/2 right-4 -translate-y-1/2 size-4-5}
+  .addressSearchList {@apply max-h-[300px] overflow-y-auto border-b-1 border-solid border-b-zinc-800/15 shadow-xs absolute top-28 left-0 w-full z-10 bg-white}
+  .addressSearchListUl {@apply h-auto overflow-hidden py-2}
+  .addressSearchListUl li {@apply py-2 pl-4 pr-8 bg-[url('/assets/images/icons/right_arrow_dark.svg')] bg-no-repeat bg-[top_10px_right_12px] bg-[length:16px_16px]}
+  .addressSearchListUl li p {@apply text-sm/5 font-medium text-zinc-950}
+  .addressSearchListUl li span {@apply text-sm/5 text-zinc-600 mt-1}
+  .keyword {@apply !text-primary-600}
+  .addressBottom {@apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl z-10}
+  .addressText {@apply text-base/6 font-bold text-zinc-700 mb-2 border-none w-full pointer-events-none}
+  .subAddressView {@apply text-sm/5 text-zinc-500 border-none w-full pointer-events-none}
+  .addressViewInput {@apply border-b-1 border-solid border-zinc-800/15 bg-white}
+  .addressNull {@apply w-full h-[322px] bg-white flex justify-center items-center text-center absolute top-[113px] left-1/2 -translate-x-1/2}
+  .addressNullText, .historyNullText {@apply text-sm/5 text-zinc-400}
+  .selectBox {@apply bg-transparent p-1 text-sm/5 text-zinc-500 h-7 w-[76px] bg-[url('/assets/images/icons/down_arrow_gray.svg')] bg-no-repeat bg-[center_right_4px] bg-[length:18px_18px]; -webkit-appearance:none; appearance:none; }
+  .checkBadge{@apply text-xs/4 font-bold}
+  .installBadge{@apply text-emerald-600}
+  .asBadge{@apply text-violet-500}
+  .checkFilter{@apply rounded-full px-2 h-6 text-sm/5 font-semibold inline-flex justify-center items-center}
+  .waitFilter {@apply text-zinc-600 bg-zinc-800/10}
+  .completeFilter{@apply text-blue-500 bg-blue-500/10}
+  .processingFilter {@apply text-green-600 bg-green-600/10}
+  .doneFilter {@apply text-red-600 bg-red-600/10}
+  .historyListTitle {@apply text-lg/7 font-bold text-zinc-950 mb-4 pb-4 border-b-1 border-solid border-b-zinc-800/6}
+  .historyNull {@apply flex justify-center items-center w-full h-full min-h-[500px]}
+  .historySearchBox input{@apply pl-10 bg-[url('/assets/images/icons/search_icon_gray.svg')] bg-no-repeat bg-[center_left_12px] bg-[length:18px_18px] bg-white}
+  .grayBox{@apply py-5 px-3-5 bg-zinc-50 rounded-xl text-sm/5 font-medium text-zinc-700}
+  .badgeGubun{@apply py-1-5 px-5 text-center text-md/6 font-medium }
+  .filterBox.whiteBox{@apply border border-solid border-zinc-800/10 shadow-lg}
+  .filterBox.whiteBox > div {@apply pb-6 mb-6 border-b-1 border-solid border-b-zinc-800/6}
+  .filterBox {@apply relative !py-6}
+  .callBtn {@apply flex justify-center items-center gap-0-5 h-7 px-2 border border-solid border-primary-500/60 rounded-md text-xs/4 font-medium text-primary-600 absolute top-6 right-5}
+  .photoDown {@apply relative mb-2}
+  .photoDown:last-child{@apply mb-0}
+  .photoDown input {@apply px-[38px] bg-[url('/assets/images/icons/img_icon_gray.svg')] bg-no-repeat bg-[center_left_12px] bg-[length:20px_20px]}
+  .photoDown button {@apply absolute top-1/2 right-3-5 -translate-y-1/2 size-5}
+  .copyBox {@apply flex justify-end items-center gap-1}
+  .copyBoxTxt {@apply text-sm/5 font-medium text-zinc-700 flex justify-start items-center gap-2}
+  .bankSmallIcon {@apply block size-5 rounded-full bg-no-repeat bg-center bg-[length:20px_20px] border-1 border-solid border-zinc-800/10}
+  /*은행 아이콘*/
+  .wooriBank {@apply bg-[url('/assets/images/icons/bank_woori.svg')]}
+  .ibkBank {@apply bg-[url('/assets/images/icons/bank_ibk.svg')]} 
+  .hanaBank {@apply bg-[url('/assets/images/icons/bank_hana.svg')]} 
+  .imBank {@apply bg-[url('/assets/images/icons/bank_im.svg')]} 
+  .kakaobankBank {@apply bg-[url('/assets/images/icons/bank_kakaobank.svg')]} 
+  .nhBank {@apply bg-[url('/assets/images/icons/bank_nh.svg')]} 
+  .kbBank {@apply bg-[url('/assets/images/icons/bank_kb.svg')]} 
+  .shinhanBank {@apply bg-[url('/assets/images/icons/bank_shinhan.svg')]} 
+  .gyeongnamBank {@apply bg-[url('/assets/images/icons/bank_gyeongnam.svg')]} 
+  .gwangjuBank {@apply bg-[url('/assets/images/icons/bank_gwangju.svg')]} 
+  .deutscheBank {@apply bg-[url('/assets/images/icons/bank_deutsche.svg')]} 
+  .busanBank {@apply bg-[url('/assets/images/icons/bank_busan.svg')]} 
+  .forestBank {@apply bg-[url('/assets/images/icons/bank_forest.svg')]} 
+  .kdbBank {@apply bg-[url('/assets/images/icons/bank_kdb.svg')]} 
+  .mgBank {@apply bg-[url('/assets/images/icons/bank_mg.svg')]} 
+  .suhyupBank {@apply bg-[url('/assets/images/icons/bank_suhyup.svg')]} 
+  .shinhyupBank {@apply bg-[url('/assets/images/icons/bank_shinhyup.svg')]} 
+  .citibankBank {@apply bg-[url('/assets/images/icons/bank_citibank.svg')]} 
+  .korea_postBank {@apply bg-[url('/assets/images/icons/bank_korea_post.svg')]} 
+  .savings_bankBank {@apply bg-[url('/assets/images/icons/bank_savings_bank.svg')]} 
+  .jeonbukBank {@apply bg-[url('/assets/images/icons/bank_jeonbuk.svg')]} 
+  .jejuBank {@apply bg-[url('/assets/images/icons/bank_jeju.svg')]} 
+  .icbcBank {@apply bg-[url('/assets/images/icons/bank_icbc.svg')]} 
+  .bocBank {@apply bg-[url('/assets/images/icons/bank_boc.svg')]} 
+  .kbankBank {@apply bg-[url('/assets/images/icons/bank_kbank.svg')]} 
+  .tossbankBank {@apply bg-[url('/assets/images/icons/bank_tossbank.svg')]} 
+  .bnpBank {@apply bg-[url('/assets/images/icons/bank_bnp.svg')]} 
+  .boaBank {@apply bg-[url('/assets/images/icons/bank_boa.svg')]} 
+  .hsbcBank {@apply bg-[url('/assets/images/icons/bank_hsbc.svg')]} 
+  .jpBank {@apply bg-[url('/assets/images/icons/bank_jp.svg')]} 
+  .scBank {@apply bg-[url('/assets/images/icons/bank_sc.svg')]} 
+
+  .areaCopyTxt {@apply text-sm/5 text-zinc-700 w-[calc(100%-80px)]}
+  .installMap {@apply !h-[200px] w-full border-1 border-solid border-zinc-800/10 rounded-xl overflow-hidden relative mt-4 mb-6 relative}
+  .asMap .mapMarker p{@apply border-violet-400 text-violet-600}
+  .installMap img {@apply size-full}
+  .mapMarker {@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[10] flex justify-center items-center}
+  .mapMarker p {@apply text-xs/7 font-extrabold text-emerald-500 text-center min-w-[118px] h-8 bg-white border-2 border-solid border-emerald-500 bg-white rounded-xl whitespace-nowrap}
+  .mapMarker:after {@apply content-[''] block absolute -bottom-[3px] left-1/2 -translate-x-1/2 rotate-45 w-2-5 h-2-5 bg-emerald-500 -z-1}
+  .asMap .mapMarker:after {@apply bg-violet-400}
+  .bankSelect {@apply relative}
+  .bankSelect input{@apply bg-[url('/assets/images/icons/bottom_arrow_gray.svg')] bg-no-repeat bg-[center_right_8px] bg-[length:18px_18px] }
+  .bankSelect input.inputCustom {@apply !pr-[42px]}
+  .datepickerBtn input{@apply bg-[url('/assets/images/icons/calendar_icon.svg')] bg-no-repeat bg-[center_right_8px] bg-[length:18px_18px] }
+  #ui-datepicker-div {@apply hidden !fixed !bottom-0 !top-auto !left-1/2 -translate-x-1/2 !w-full !max-w-5xl max-h-[60vh] !z-[102] !rounded-t-2xl !rounded-b-none !border-1 !border-solid !border-zinc-800/15 !shadow-lg !bg-white animate-[requestModalShow_300ms_forwards]}
+  #ui-datepicker-div .ui-datepicker-header  {@apply flex justify-center items-center relative}
+  #ui-datepicker-div.ui-datepicker .ui-datepicker-prev {@apply bg-[url('/assets/images/icons/prev_icon.svg')] bg-no-repeat bg-[center_center] !bg-[length:28px_28px] absolute left-0 !top-1/2 -translate-y-1/2}
+  #ui-datepicker-div.ui-datepicker .ui-datepicker-next {@apply bg-[url('/assets/images/icons/next_icon.svg')] bg-no-repeat bg-[center_center] !bg-[length:28px_28px] absolute right-0 !top-1/2 -translate-y-1/2;}
+  #ui-datepicker-div .ui-datepicker-calendar{@apply w-full text-center}
+  #ui-datepicker-div .ui-datepicker-today {@apply !bg-zinc-800/8 rounded-sm}
+  #ui-datepicker-div td{@apply !py-0 h-8 text-sm/5 font-medium text-zinc-950}
+  #ui-datepicker-div .ui-state-active, #ui-datepicker-div .ui-state-hover {@apply w-full block h-8 }
+  #ui-datepicker-div td a {@apply !flex justify-center items-center }
+  #ui-datepicker-div .ui-state-highlight {@apply w-full block !bg-transparent}
+  .bankListIcon {@apply block size-12 mb-1-5 rounded-2xl overflow-hidden border border-solid border-zinc-800/10 bg-no-repeat bg-center bg-[length:48px_48px] mx-auto}
+  .bankList {@apply py-8 overflow-hidden h-auto}
+  .bankList li {@apply float-left w-1/4 text-center text-xs/4 text-zinc-600 mb-6}
+  .bankListModal .requestModalContent{@apply max-h-[60vh] overflow-y-auto}
+  .bankIcon {@apply absolute top-1/2 left-3 -translate-y-1/2 hidden}
+  .bankSelect.active .bankIcon {@apply block}
+  .bankSelect.active input.inputCustom {@apply !pl-[42px]}
+  .doneCheckTitle {@apply text-sm/5 font-semibold text-zinc-800 mb-4}
+  .doneCheckInfoTitle {@apply text-sm/5 font-medium text-zinc-400}
+  .accountNumber {@apply text-right}
+  .accountNumber p{@apply flex justify-end items-center gap-1 mb-2}
+
+  /*지도*/
+  .mapWrap {@apply relative}
+  .header.open {@apply !w-full}
+  .mapSearchBox {@apply w-[calc(100%-56px)] h-[55px]}
+  .mapSearchInput {@apply bg-[url('/assets/images/icons/search_icon_gray02.svg')] bg-no-repeat bg-[center_left_22px] bg-[length:18px_18px] h-full w-full pl-[60px]}
+  .mapSearchForm {@apply h-full relative}
+  .mapSearchList {@apply bg-white w-full h-full fixed top-[57px] left-1/2 -translate-x-1/2 z-[11] max-w-5xl}
+  .map {@apply h-[calc(100vh-56px)] relative}
+  .mapWrap header{@apply border-b-1 border-solid border-b-zinc-800/10}
+  .clusteringMarker {@apply absolute z-9 h-8 pl-3 pr-1 flex justify-center items-center gap-2 bg-primary-600 rounded-full border-1 border-solid border-zinc-800/15 text-xs/4 font-semibold text-white}
+  .clusteringMarker .count {@apply text-primary-600 font-extrabold bg-white rounded-full size-6 flex justify-center items-center}
+  .clusteringMarker:after {@apply content-[''] block absolute -bottom-1 left-1/2 -translate-x-1/2 rotate-45 w-3 h-3 bg-primary-600}
+  .clusteringMarker p {@apply relative z-9}
+  .mapMarker {@apply w-auto}
+  .mapMarker.installMarker p{@apply bg-emerald-600 text-white border-zinc-800/10 px-3}
+  .mapMarker.installMarker p span {@apply font-normal inline-block mr-2}
+  .mapMarker.installMarker.active p{@apply border-emerald-600 text-emerald-600 bg-white}
+  .mapMarker.asMarker p{@apply bg-violet-500 text-white border-zinc-800/10 px-3}
+  .mapMarker.asMarker p span {@apply font-normal inline-block mr-2}
+  .mapMarker.asMarker.active p{@apply border-violet-500 text-violet-500 bg-white}
+  .mapMarker.asMarker:after{@apply bg-violet-600}
+  .mapMarker.installMarker:after{@apply bg-[#048E60]}
+  .mapSearchListUl {@apply h-auto overflow-hidden relative z-1}
+  .mapSearchListUl li {@apply p-4 text-sm/5 font-medium text-zinc-950}
+  #mapContainer {@apply absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-5xl mx-auto}
+  #sheet {@apply absolute left-0 right-0 bottom-0 h-[calc(100vh-160px)] rounded-t-2xl shadow-[0_-12px_30px_0_rgba(0,0,0,0.08)] touch-none max-w-5xl mx-auto}
+  #sheet .sheetHeader{@apply flex items-center justify-center cursor-pointer relative h-[72px] rounded-t-2xl bg-white}
+  #sheet .sheetHeader::before{@apply content-[''] block w-9 h-[5px] rounded-full bg-[#ccc]  absolute top-[5px] left-1/2 -translate-x-1/2}
+  .sheetTab {@apply py-3 px-5 border-b-1 border-solid border-b-zinc-800/6 w-full h-full pt-7}
+  .sheetTab ul {@apply flex justify-start items-center gap-2 h-auto overflow-hidden}
+  .sheetTab li {@apply py-1-5 px-2 rounded-full border-1 border-solid border-zinc-800/10 shadow-default text-sm/5 font-semibold text-zinc-700}
+  .sheetTab li.active {@apply text-primary-600 border-primary-600 bg-primary-600/10}
+  .subSheetTab {@apply !pt-[11px] !pb-0 !h-12 !bg-zinc-50 !border-b-0}
+  .subSheetTab li {@apply bg-white}
+  .subSheetTab li.active {@apply !bg-white}
+  .sheetContent {@apply !bg-zinc-50 h-[calc(100%-72px)]}
+  .sheetInner {@apply py-6 px-5}
+  .sheetList {@apply py-5}
+  .sheetListBox {@apply bg-white rounded-2xl shadow-sm border border-solid border-zinc-800/10 p-5 !mb-4}
+  .sheetListTitle {@apply text-lg/7 font-bold text-zinc-800 mb-1}
+  .sheetListTxt {@apply text-sm/5 text-zinc-500 mb-3 pb-3 border-b-1 border-solid border-b-zinc-800/10}
+  .sheetListPrice {@apply text-base/6 font-extrabold}
+  .sheetInstall .sheetListPrice {@apply text-emerald-600}
+  .sheetAs .sheetListPrice {@apply text-violet-500}
+  .sheetBack {@apply relative flex justify-center items-center w-full h-full pt-4 border-b-1 border-solid border-b-zinc-800/6}
+  .sheetBackBtn {@apply absolute top-6 left-2 size-10 flex justify-center items-center}
+  .sheetBack p {@apply text-base/6 font-bold text-zinc-800}
+  .sheetDetail {@apply bg-zinc-50 pb-5}
+  .sheetDetailContent {@apply py-6 px-5 mb-3 bg-white}
+  .sheetDetailTitle {@apply text-base/6 font-semibold text-zinc-800 mb-4}
+  .sheetDetailContent .grayBx p {@apply text-sm/5 font-medium text-zinc-700}
+  .sheetBottom {@apply h-full px-5 pt-[60px] pb-6 bg-white}
+  .sheetContent.detailShow {@apply bg-white}
+  .installDetail .priceText {@apply text-emerald-600}
+  .asDetail .priceText {@apply text-violet-500}
+  .installDetail .sheetBottom button {@apply bg-emerald-600}
+  .asDetail .sheetBottom button {@apply bg-violet-500}
+  .mapReSearch {@apply absolute -top-[68px] right-5 size-12 flex justify-center items-center rounded-full bg-white border-1 border-solid border-zinc-800/10 z-9}
+  .sheetStep02Modal {@apply hidden fixed top-0 left-1/2 -translate-x-1/2 w-full h-full z-[101] bg-white max-w-5xl mx-auto}
+  .sheetStep02Modal.active {@apply block}
+  .sheetStep02ModalContentTop {@apply h-14 relative px-2 flex justify-center items-center}
+  .sheetStep02ModalContentTop button {@apply absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer w-10 h-10 flex justify-center items-center}
+  .sheetStep02ModalContent {@apply pb-6 px-5}
+  .sheetStep02ModalContent {@apply overflow-y-scroll h-[calc(100%-56px)]}
+  .installStep02Modal .nextBtn {@apply !bg-emerald-600} 
+  .asStep02Modal .nextBtn {@apply !bg-violet-500} 
+  .sheetListNull {@apply flex justify-center items-start w-full h-full min-h-[500px] pt-12}
+}   
+
+/*대리점향 대시보드*/
+@layer components {
+  .dashboardWrap {@apply overflow-y-scroll }  
+  .dashTopWrap {@apply px-5 pt-12 pb-[88px] bg-primary-800 relative}
+  .dashTopTitle {@apply text-xl/7 font-extrabold text-white pb-6}
+  .dashTopSubTxt {@apply text-base/6 font-bold text-white/70 pb-2}
+  .dashTopSubTxtNum {@apply text-md/6 font-medium text-white/70 flex justify-start items-end gap-1 pb-6}
+  .dashTopSubTxtNum span{@apply text-3xl/9 font-extrabold text-white}
+  .dashTopContent {@apply bg-white py-5 px-4 rounded-2xl relative z-1}
+  .dashTopContent > div:first-child {@apply pb-5 mb-5 border-b-1 border-solid border-b-zinc-800/6}
+  .dashTopValTit {@apply text-sm/5 text-zinc-500}
+  .dashTopValTit img {@apply cursor-pointer }
+  .dashTopValValBox {@apply flex justify-start items-center gap-3 pt-1 max-xs:justify-between}
+  .dashTopValValTxt {@apply text-lg/7 text-zinc-800}
+  .dashTopValValTxt span{@apply font-bold}
+  .dashTopValValPer {@apply inline-block py-0-5 px-1 rounded-sm text-xs/4 font-semibold}
+  .dashTopValValPer.down{@apply bg-blue-500/10 text-blue-500}
+  .dashTopValValPer.up{@apply bg-rose-500/10 text-rose-500}
+  .dashInfoBoxWrap {@apply relative}
+  .dashInfoBoxWrap img{@apply cursor-pointer}
+  .dashInfoBox {@apply hidden py-2 px-3 bg-zinc-800 rounded-lg absolute bottom-5 left-1/2 -translate-x-1/2}
+  .dashInfoBox p {@apply text-xs/4 text-white font-semibold whitespace-nowrap}
+  .dashInfoBox.active {@apply block}
+  .dashTopImg {@apply absolute top-0 -right-[1.25rem] size-[12.875rem] }
+  .dashTopTabBox {@apply flex justify-between items-stretch gap-2 absolute -bottom-[3.43rem] left-0 right-0 px-6}
+  .dashTopTab {@apply p-4 rounded-2xl h-[7.68rem] w-1/2 relative}
+  .dashTopTab p {@apply text-md/6 font-bold text-white}
+  .dashTopTab img {@apply size-[4.59rem] absolute bottom-0 right-0}
+  .dashTopTab:first-child{@apply bg-[linear-gradient(180deg,#4680FF_0%,#155DFC_100%)]}
+  .dashTopTab:last-child{@apply bg-cyan-500}
+  .dashContent {@apply bg-zinc-100 pt-[5.75rem] px-6 pb-6 max-md:p-0 max-md:bg-zinc-50 max-md:mb-6 max-md:mt-[5.75rem] }
+  .dashSection {@apply bg-white rounded-2xl py-6 px-5 mb-5 max-md:rounded-none}
+  .dashSectionTop {@apply flex justify-between items-center mb-6}
+  .dashSectionTitle {@apply text-lg/7 font-bold text-zinc-800}
+  .dashSectionSubTxt {@apply text-sm/5 text-zinc-500} 
+  .dashSectionValTxt {@apply text-lg/7 text-zinc-800 font-medium}
+  .dashSectionValTxt span{@apply font-bold}
+  .dashboardChart01ValPer {@apply flex justify-between items-center gap-5 text-center py-3 mb-6}
+  .dashboardChart01ValPer > div:first-child {@apply relative}
+  .dashboardChart01ValPer > div:first-child::after{@apply content-[''] block absolute top-1/2 -translate-y-1/2 -right-2-5 w-[1px] h-[50px] bg-zinc-800/6}
+  .dc01ValPerTxt, .dc01ValPerTxtDay {@apply text-sm/5 text-zinc-400 }
+  .dc01ValPerTxt span{@apply text-lg/7 text-zinc-800 font-bold}
+  .dc01ValPerTxtPer {@apply mt-0-5 mb-1 inline-block rounded-sm py-0-5 px-1-5 text-xs/4 font-semibold}
+  .dc01ValPerTxtPer.up{@apply bg-rose-500/10 text-rose-500}
+  .dc01ValPerTxtPer.down{@apply bg-blue-500/10 text-blue-500}
+  #dashboardChart01Table {@apply pointer-events-none}
+  #dashboardChart01Table th {@apply !bg-white}
+  .franchiseCard > div {@apply flex justify-between items-center}
+  .franchiseCardTit {@apply text-sm/5 text-zinc-500}
+  .franchiseCardVal {@apply text-lg/7 text-zinc-800 font-medium}
+  .franchiseCard > div:last-child .franchiseCardTit {@apply font-medium}
+  .franchiseCard > div:last-child .franchiseCardVal {@apply font-bold text-rose-600}
+  .tradeSuspensionList {@apply max-h-[362px] h-auto overflow-y-auto max-md:max-h-none}
+  .tradeSuspensionList li {@apply py-4 px-3 mb-2 rounded-xl flex justify-between items-center gap-4}
+  .tradeSuspensionListNull {@apply text-sm/5 font-medium text-zinc-400 flex justify-center items-center h-full}
+  .tradeSuspensionContent {@apply h-[calc(100%-116px)]}
+  .fixHeight {@apply h-[calc(100%-224px)]}
+  .tradeSuspensionStoreName {@apply text-md/6 font-medium text-zinc-800}
+  .tradeSuspensionStoreStatus {@apply pl-3-5 text-sm/5 font-semibold relative whitespace-nowrap}
+  .tradeSuspensionStoreStatus::after{@apply content-[''] block absolute top-1/2 -translate-y-1/2 left-0 size-2 rounded-full}
+  .noTrade48h {@apply bg-amber-50 text-amber-600}
+  .noTrade48h .tradeSuspensionStoreStatus::after{@apply bg-amber-400}
+  .noTrade1m {@apply bg-orange-50 text-orange-600}
+  .noTrade1m .tradeSuspensionStoreStatus::after{@apply bg-orange-400}
+  .noTrade2m {@apply bg-rose-50 text-rose-600}
+  .noTrade2m .tradeSuspensionStoreStatus::after{@apply bg-rose-400}
+  .noTrade3m {@apply bg-red-50 text-red-600}
+  .noTrade3m .tradeSuspensionStoreStatus::after{@apply bg-red-400}
+  #dashboardChart02Table {@apply pointer-events-none}
+  #dashboardChart02Table th {@apply !bg-white !text-xs/4 text-zinc-400}
+  #dashboardChart02Table th:nth-child(3), #dashboardChart02Table th:nth-child(4) {@apply text-zinc-700}
+  #dashboardChart02Table td:nth-child(3), #dashboardChart02Table td:nth-child(4) {@apply font-bold}
+  .dashboardChart03Legend {@apply h-auto overflow-hidden}
+  .dashboardChart03Legend li{@apply flex justify-between items-center gap-2 text-sm/5 text-zinc-500 mt-2 }
+  .dashboardChart03Legend li span {@apply font-semibold text-zinc-950}
+  .dashboardChart03LegendItemName {@apply pl-[26px] relative}
+  .dashboardChart03LegendItemName::after{@apply content-[''] block absolute top-1/2 -translate-y-1/2 left-2-5 size-2-5 rounded-full}
+  .dashboardChart03Legend li:nth-child(1) .dashboardChart03LegendItemName::after{@apply bg-blue-600}
+  .dashboardChart03Legend li:nth-child(2) .dashboardChart03LegendItemName::after{@apply bg-zinc-200}
+  .dashboardChart03Top5List li{@apply flex justify-between items-start gap-2 mb-5 pl-6 relative}
+  .dashboardChart03Top5List li:last-child{@apply mb-0}
+  .dashboardChart03Top5List li:after {@apply block absolute top-0 left-0 text-md/6 text-zinc-400 font-extrabold italic}
+  .dashboardChart03Top5List li:nth-child(1):after {content: '1';}
+  .dashboardChart03Top5List li:nth-child(2):after {content: '2';}
+  .dashboardChart03Top5List li:nth-child(3):after {content: '3';}
+  .dashboardChart03Top5List li:nth-child(4):after {content: '4';}
+  .dashboardChart03Top5List li:nth-child(5):after {content: '5';}
+  .dashboardChart03Top5ListName p:first-child {@apply text-md/6 font-bold text-zinc-700 mb-1}
+  .dashboardChart03Top5ListName p:last-child {@apply text-sm/5 text-zinc-500}
+  .dashboardChart03Top5ListVal {@apply text-md/6 text-zinc-800 font-semibold}
+  .dashboardChart03Legend li:nth-child(1) .dashboardChart03LegendItemName::after{@apply bg-blue-600}
+  .dashboardChart03Legend li:nth-child(2) .dashboardChart03LegendItemName::after{@apply bg-sky-500}
+  .dashboardChart03Legend li:nth-child(3) .dashboardChart03LegendItemName::after{@apply bg-green-500}
+  .dashboardChart03Legend li:nth-child(4) .dashboardChart03LegendItemName::after{@apply bg-violet-500}
+  .dashboardChart03Legend li:nth-child(5) .dashboardChart03LegendItemName::after{@apply bg-pink-500}
+  .dashboardChart03Legend li:nth-child(6) .dashboardChart03LegendItemName::after{@apply bg-yellow-500}
+  .dashboardChart03Legend li:nth-child(7) .dashboardChart03LegendItemName::after{@apply bg-cyan-700}
+  
+  .dashSubWrap .dashboardContent {@apply h-full overflow-hidden}
+  .dashSubTop {@apply flex justify-center items-center relative h-14 px-2}
+  .backBtn {@apply absolute top-1/2 -translate-y-1/2 left-2 size-10 flex justify-center items-center}
+  .dashSubTitle {@apply text-base/6 font-bold text-zinc-800}
+  .dashSubContent {@apply h-[calc(100%-56px)]}
+  .dashSubTopTab {@apply flex justify-between items-center gap-4 px-5 border-b-1 border-solid border-b-zinc-800/10 h-10}
+  .dashSubTopTab li {@apply w-1/2 h-10 text-center py-2 text-md/6 font-medium text-zinc-600 border-b-2 border-transparent}
+  .dashSubTopTab li.active {@apply text-primary-600 border-b-2 border-primary-500}
+  .dashSubContentInner {@apply hidden py-2 h-[calc(100%-40px)] overflow-y-auto}
+  .dashSubContentInner.active {@apply block}
+  .salesSurgeList {@apply h-auto overflow-hidden}
+  .salesSurgeList li{@apply py-4 px-5}
+  .salesSurgeCategory {@apply inline-block py-0-5 px-1-5 rounded-sm text-xs/4 font-semibold text-zinc-800 bg-zinc-800/10 mb-1-5}
+  .salesSurgeList li div {@apply flex justify-between items-center gap-2-5}
+  .salesSurgeName {@apply text-md/6 font-bold text-zinc-700}
+  .salesSurgeVal {@apply text-lg/7 font-bold}
+  .salesSurgeArea {@apply text-sm/5 text-zinc-500}
+  .salesSurgeUp .salesSurgeVal {@apply text-rose-500}
+  .salesSurgeDown .salesSurgeVal {@apply text-blue-500}
+  .salesSurgeListNull {@apply h-full flex justify-center items-center text-center}
+  .salesSurgeListNull p {@apply text-sm/5 text-zinc-400 font-medium}
+  .dashSubWrap .tradeSuspensionList {@apply h-[calc(100%-44px)] overflow-y-auto max-h-none}
+  .dashSubWrap .tradeSuspensionList li {@apply !bg-white border-b-1 border-solid border-b-zinc-800/6 !rounded-none}
+  .dashSubWrap .tradeSuspensionList li:last-child {@apply border-b-0}
+  .tradeSuspensionListTit {@apply flex justify-between items-center gap-4 px-5 shadow-sm border-b-1 border-solid border-b-zinc-800/8 h-11 relative}
+  .tradeSuspensionListTit p {@apply text-sm/5 font-medium text-zinc-400}
+  .tradeSuspensionListTit p:last-child {@apply text-zinc-700}
+  .dashSubWrap .tradeSuspensionContent{@apply h-full}
+  .dashSubWrap .tradeSuspensionStoreName {@apply text-sm/5 font-bold text-zinc-800}
+  .dashSubTop .searchBtn{@apply absolute top-1/2 -translate-y-1/2 right-2 size-10 flex justify-center items-center}
+  .dashStep02 {@apply w-full border-b-1 border-solid border-b-zinc-800/10 px-2 flex justify-start items-center}
+  .dashStep02 input {@apply w-[calc(100%-48px)] ml-12 pr-8}
+  .clearBtn {@apply absolute top-1/2 -translate-y-1/2 right-4 size-4 flex justify-center items-center}
+  .franchiseListTit {@apply flex justify-between items-center gap-4 py-3 px-5 shadow-sm border-b-1 border-solid border-b-zinc-800/8 h-[64px] text-sm/5 font-medium text-zinc-700}
+  .franchiseListTit span{@apply block text-xs/4 text-zinc-500 pt-1 font-normal}
+  .franchiseList {@apply h-[calc(100%-64px)] overflow-y-auto}
+  .franchiseList li {@apply py-3 px-5 flex justify-between items-center gap-4 border-b-1 border-solid border-b-zinc-800/6}
+  .franchiseListName {@apply text-sm/5 font-bold text-zinc-800}
+  .franchiseListLocation {@apply text-xs/4 text-zinc-500 pt-1}
+  .franchiseListSales {@apply text-sm/5 font-medium text-zinc-700 text-right}
+  .franchiseListSalesRate {@apply text-xs/4 font-bold pt-1 text-right}
+  .franchiseListSalesRate.up {@apply text-rose-500}
+  .franchiseListSalesRate.down {@apply text-blue-500}
+  .franchiseListNull {@apply h-full flex justify-center items-center text-center text-sm/5 text-zinc-400}
+  .franchiseListFilter {@apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full flex items-end justify-center px-5 py-3 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.5)_10%,#FFF_100%)] h-[128px]}
+  .franchiseListFilterBtn {@apply flex justify-center items-center gap-2 h-9 px-3 rounded-full text-md/6 font-semibold text-zinc-700 mb-6}
+  .dashFilterBoxWrap {@apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full h-full max-w-5xl}
+  .dashFilterBox {@apply hidden absolute bottom-0 left-1/2 -translate-x-1/2 w-full bg-white rounded-t-2xl z-10}
+  .filterBoxTit{@apply flex justify-center items-center h-14 relative}
+  .filterClose {@apply absolute top-2 right-2 size-10 flex justify-center items-center}
+  .filterBg{@apply fixed top-0 left-1/2 -translate-x-1/2 w-full h-full bg-black/10 z-9}
+  .filterBoxTitTxt {@apply text-base/6 font-bold text-zinc-800}
+  .filterBoxContent li{@apply py-3 px-5 text-base/6 font-semibold text-zinc-800 h-[52px]}
+  .filterBoxContent li.active{@apply text-primary-600 relative}
+  .filterBoxContent li.active::after{@apply content-[''] block absolute top-1/2 -translate-y-1/2 right-6 size-5 bg-[url('/assets/images/icons/blue_check.svg')] bg-no-repeat bg-[center_center]}
+  .dashFilterBox.filterUp{@apply block animate-[slideUp_300ms_forwards]}
+  .dashFilterBox.filterDown{@apply block animate-[filterDown_300ms_forwards]}
+}
+
+/*매출 캘린더*/
+@layer components {
+  #calendar, .flatpickr-next-month, .flatpickr-prev-month, .flatpickr-month {@apply hidden}
+  .calendarHeader {@apply px-5 h-[52px] flex justify-start items-center text-lg/7 font-extrabold text-zinc-900}
+  .flatpickr-calendar.inline {@apply !top-0 w-full h-auto rounded-none shadow-none border-t-1 border-b-1 border-solid border-zinc-800/8 py-4 px-2}  
+  .flatpickr-current-month{@apply !flex !justify-start !items-center gap-1 !w-full !left-0 !h-[52px] !p-0 !px-5}
+  .monthTrigger {@apply flex justify-start items-center gap-2}
+  .monthTrigger img{@apply size-4}
+  .flatpickr-innerContainer, .flatpickr-rContainer, .flatpickr-days, .dayContainer {@apply !w-full !min-w-full !max-w-full}
+  .flatpickr-day {@apply !w-[calc(100%/7)] !max-w-[unset] min-h-[72px] pb-2 !text-sm/5 !font-semibold relative}
+  span.flatpickr-weekday {@apply !text-xs/4 !font-medium !text-zinc-500 py-1}
+  .flatpickr-day.selected, .flatpickr-day:hover, .flatpickr-day.today:hover, .flatpickr-day.today:focus, .flatpickr-day.today {@apply !bg-transparent !border-transparent relative}
+  .flatpickr-day.today.selected, .flatpickr-day.today.selected:hover {@apply !text-white}
+  .flatpickr-day.selected:after {@apply content-[''] block absolute -top-[3px] left-1/2 -translate-x-1/2 size-[26px] !bg-blue-600 rounded-full -z-1}
+  .flatpickr-day.today:hover:after, .flatpickr-day.today:focus:after, .flatpickr-day.today:after  {@apply content-[''] block absolute -top-[3px] left-1/2 -translate-x-1/2 size-[26px] bg-zinc-800/8 rounded-full -z-1}
+  .flatpickr-day.today:hover, .flatpickr-day.today:focus, .flatpickr-day.today {@apply !text-zinc-800}
+  .flatpickr-calendar.open, .flatpickr-calendar.inline {@apply !max-h-none}
+  .flatpickr-calendar.arrowTop:before, .flatpickr-calendar.arrowTop:after {@apply hidden}
+  .flatpickr-weekdays {@apply pb-2}
+  .monthList {@apply h-auto overflow-y-auto max-h-[calc(100vh-12rem)]}
+  .monthList li {@apply py-3 px-5 text-base/6 font-semibold text-zinc-800 h-[52px]}
+  .monthList li button {@apply w-full h-full !block text-left}
+  .monthList li.is-active {@apply relative}
+  .monthList li.is-active:after {@apply content-[''] block absolute top-1/2 -translate-y-1/2 right-5 size-5 bg-[url('/assets/images/icons/blue_check.svg')] bg-no-repeat bg-[center_center]}
+  .monthList li.is-active button {@apply text-primary-600 }
+  .calendarContent {@apply border-t-[12px] border-solid border-t-zinc-50 px-5 pt-6 pb-8}
+  .calendarSelectText {@apply text-base/6 font-bold text-zinc-800 mb-6}
+  .calendarContentList li:first-child {@apply pb-4 mb-4 border-b-1 border-solid border-b-zinc-800/6}
+  .calendarContentListTit {@apply text-sm/5 text-zinc-500 mb-1}
+  .calendarContentListVal {@apply flex justify-start items-center gap-3}
+  .calendarContentListVal p{@apply text-lg/7 font-bold text-zinc-800}
+  .calendarContentListVal p span {@apply font-medium}
+  .calendarContentListVal > span {@apply mt-0-5 mb-1 inline-block rounded-sm py-0-5 px-1-5 text-xs/4 font-semibold}
+  .calendarContentListVal span.up{@apply bg-rose-500/10 text-rose-500}
+  .calendarContentListVal span.down{@apply bg-blue-500/10 text-blue-500}
+  .calendarContentNote {@apply mt-6 py-2 w-full text-center text-xs/4 text-zinc-600 bg-zinc-100 rounded-lg}
+  .day-extra {@apply absolute top-8 left-1/2 -translate-x-1/2 text-xs/3-5 font-semibold text-zinc-500}
+  .logoutBox {@apply flex justify-center items-center}
+  .changeServiceWrap {@apply bg-zinc-100}
+  .changeServiceBtn {@apply fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-5xl z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.5)_10%,#FFF_100%)] h-[85px] flex justify-center items-end pb-6}
+  .homeChangeServiceBtn.changeServiceBtn {@apply bg-[linear-gradient(180deg,rgba(244,244,245,0)_0%,rgba(244,244,245,0.5)_10%,#F4F4F5_100%)]}
+  .changeServiceTop {@apply flex justify-end items-center relative h-14 px-2}
+  .changeServiceWrap .dashSubContent {@apply px-5}
+  .changeServiceTitle {@apply text-sm/5 font-semibold text-zinc-500 mb-1}
+  .changeServiceSubTitle {@apply text-xl/7 font-extrabold text-zinc-900 mb-4}
+  .changeServiceList {@apply h-auto overflow-hidden}
+  .changeServiceList li {@apply h-[158px] px-5 flex justify-start items-center bg-white rounded-2xl shadow-md mb-4 relative overflow-hidden border-1 border-solid border-zinc-800/10}
+  .changeServiceListTitle {@apply text-lg/7 font-bold text-zinc-900 mb-0-5}
+  .changeServiceListText {@apply text-xs/4 text-zinc-500 font-medium}
+  .changeServiceList img {@apply absolute }
+  .changeServiceList li:first-child img {@apply bottom-0 -right-[0.69rem] w-[9.125rem] h-[9.43rem]}
+  .changeServiceList li:last-child img {@apply bottom-[1.06rem] -right-[0.44rem] size-[8.31rem]}
+  .dashboardWrap table th:first-child, .dashboardWrap table th:last-child, .dashboardWrap table td:first-child, .dashboardWrap table td:last-child {@apply !px-0} 
+}

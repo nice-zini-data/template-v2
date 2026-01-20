@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.home.mapper.HomeMapper">
+
+    <!-- 홈 통계 정보 조회 -->
+    <select id="selectHomeStats" resultType="com.zinidata.domain.home.vo.HomeStatsVO">
+        --selectHomeStats 홈 통계 정보 조회
+        WITH tmp_radius AS (
+            SELECT ST_Buffer(ST_SetSRID(ST_MakePoint(#{centerX}, #{centerY}), 4326)::geography, #{radius}, 256)::geometry AS geom
+        )
+        SELECT 
+            COALESCE(a.radius_cnt, 0) AS radius_cnt,
+            COALESCE(b.today_cnt, 0) AS today_cnt,
+            COALESCE(c.request_cnt, 0) AS request_cnt,
+            COALESCE(c.exec_cnt, 0) AS exec_cnt
+        FROM (
+            SELECT COUNT(*) AS radius_cnt
+            FROM tmp_radius z
+            LEFT JOIN tbnvps_service_request a ON a.status = 0
+            WHERE ST_Contains(z.geom, ST_SetSRID(ST_MakePoint(a.center_x, a.center_y), 4326))
+        ) a
+        LEFT JOIN (
+            SELECT COUNT(*) AS today_cnt
+            FROM tbnvps_service_request a
+            WHERE a.status = 0
+            AND TO_CHAR(crt_dt, 'yyyymmdd') = TO_CHAR(NOW(), 'yyyymmdd')
+        ) b ON 1 = 1
+        LEFT JOIN (
+            SELECT SUM(CASE WHEN status = '0' THEN 1 ELSE 0 END) AS request_cnt
+                , SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS exec_cnt
+            FROM tbnvps_service_request
+            WHERE crt_id = #{memNo}
+            AND status IN ('0', '1')
+        ) c ON 1 = 1
+    </select>
+
+</mapper>

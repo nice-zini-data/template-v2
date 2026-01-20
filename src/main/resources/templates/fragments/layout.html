@@ -1,0 +1,24 @@
+<!--########################################################-->
+<!--## 레이아웃 컴포넌트 ##-->
+<!--########################################################-->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+</head>
+
+<body>
+    <div class="wrap">
+       <!-- ============================== 헤더 설정 ============================== -->
+       <th:block th:replace="~{fragments/header :: header}" />
+       <main layout:fragment="content"></main>
+    </div>
+
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    <script src="/assets/js/components/layout.js"></script>
+    
+</body>
+</html> 

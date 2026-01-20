@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.admin.mapper.NewsMapper">
+
+    <!-- 
+        ========================================
+        뉴스 기사 관리 매퍼 (MyBatis)
+        ========================================
+        
+        테이블: tb_news
+        
+        주요 기능:
+        - 뉴스 등록/수정/삭제
+        - 뉴스 목록 조회 (페이징, 검색, 필터링)
+        - 뉴스 상세 조회
+        - 조회수/좋아요 수 관리
+        - 상단 고정 기능
+        
+        @author ZiniData 개발팀
+        @since 1.0
+    -->
+
+    <!-- ========================================
+         등록/수정/삭제
+         ======================================== -->
+
+    <!-- 🟢 뉴스 기사 등록 -->
+    <insert id="insertNews" parameterType="com.zinidata.domain.admin.vo.NewsVO" useGeneratedKeys="true" keyProperty="newsId">
+        INSERT INTO tb_news (
+            title,
+            summary,
+            status,
+            content_html,
+            content_markdown,
+            publish_date,
+            published_at,
+            view_count,
+            like_count,
+            author_id,
+            author_name,
+            is_pinned,
+            is_active,
+            created_at,
+            created_by
+        ) VALUES (
+            #{title},
+            #{summary},
+            #{status},
+            #{contentHtml},
+            #{contentMarkdown},
+            #{publishDate},
+            <choose>
+                <when test="status == 'published'">
+                    CURRENT_TIMESTAMP
+                </when>
+                <otherwise>
+                    NULL
+                </otherwise>
+            </choose>,
+            0,
+            0,
+            #{authorId},
+            #{authorName},
+            COALESCE(#{isPinned}, false),
+            true,
+            CURRENT_TIMESTAMP,
+            #{createdBy}
+        )
+    </insert>
+
+    <!-- 🟢 뉴스 기사 수정 -->
+    <update id="updateNews" parameterType="com.zinidata.domain.admin.vo.NewsVO">
+        UPDATE tb_news
+        SET
+            title = #{title},
+            summary = #{summary},
+            status = #{status},
+            content_html = #{contentHtml},
+            content_markdown = #{contentMarkdown},
+            publish_date = #{publishDate},
+            <if test="status == 'published' and publishedAt == null">
+            published_at = CURRENT_TIMESTAMP,
+            </if>
+            author_id = #{authorId},
+            author_name = #{authorName},
+            is_pinned = COALESCE(#{isPinned}, false),
+            updated_at = CURRENT_TIMESTAMP,
+            updated_by = #{updatedBy}
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </update>
+
+    <!-- 🟢 뉴스 발행 상태 변경 -->
+    <update id="updateNewsStatus">
+        UPDATE tb_news
+        SET
+            status = #{status},
+            <if test="status == 'published'">
+            published_at = CURRENT_TIMESTAMP,
+            </if>
+            updated_at = CURRENT_TIMESTAMP,
+            updated_by = #{updatedBy}
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </update>
+
+    <!-- 🟢 뉴스 기사 삭제 (논리적 삭제) -->
+    <update id="deleteNews">
+        UPDATE tb_news
+        SET
+            is_active = false,
+            updated_at = CURRENT_TIMESTAMP,
+            updated_by = #{updatedBy}
+        WHERE news_id = #{newsId}
+    </update>
+
+    <!-- ========================================
+         조회
+         ======================================== -->
+
+    <!-- 🟢 뉴스 기사 목록 조회 (페이징) -->
+    <select id="selectNewsList" resultType="com.zinidata.domain.admin.vo.NewsVO">
+        SELECT 
+            a.*,
+            (a.total_row_count - a.rn + 1) as rowNum
+        FROM (
+            SELECT 
+                news_id as newsId,
+                title,
+                summary,
+                status,
+                content_html as contentHtml,
+                content_markdown as contentMarkdown,
+                publish_date as publishDate,
+                published_at as publishedAt,
+                view_count as viewCount,
+                like_count as likeCount,
+                author_id as authorId,
+                author_name as authorName,
+                is_pinned as isPinned,
+                is_active as isActive,
+                created_at as createdAt,
+                created_by as createdBy,
+                updated_at as updatedAt,
+                updated_by as updatedBy,
+                -- 페이징용 윈도우 함수
+                ROW_NUMBER() OVER(
+                    ORDER BY 
+                        is_pinned DESC,      -- 상단 고정 우선
+                        publish_date DESC,   -- 발행일 최신순
+                        news_id DESC         -- 동일 발행일은 ID 최신순
+                ) as rn,
+                COUNT(*) OVER() as total_row_count
+            FROM tb_news
+            WHERE is_active = true
+            
+            <!-- 상태 필터 -->
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            
+            <!-- 검색어 (제목 + 요약) -->
+            <if test="searchText != null and searchText != ''">
+                AND (
+                    title LIKE CONCAT('%', #{searchText}, '%')
+                    OR summary LIKE CONCAT('%', #{searchText}, '%')
+                )
+            </if>
+        ) a
+        
+        <!-- 페이징 -->
+        <if test="pageCnt > 0">
+            LIMIT #{pageCnt} OFFSET #{pageNo}
+        </if>
+    </select>
+
+    <!-- 🟢 뉴스 기사 전체 개수 조회 -->
+    <select id="selectNewsCount" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_news
+        WHERE is_active = true
+        
+        <!-- 상태 필터 -->
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        
+        <!-- 검색어 (제목 + 요약) -->
+        <if test="searchText != null and searchText != ''">
+            AND (
+                title LIKE CONCAT('%', #{searchText}, '%')
+                OR summary LIKE CONCAT('%', #{searchText}, '%')
+            )
+        </if>
+    </select>
+
+    <!-- 🟢 뉴스 기사 상세 조회 -->
+    <select id="selectNewsDetail" resultType="com.zinidata.domain.admin.vo.NewsVO">
+        SELECT 
+            news_id as newsId,
+            title,
+            summary,
+            status,
+            content_html as contentHtml,
+            content_markdown as contentMarkdown,
+            publish_date as publishDate,
+            published_at as publishedAt,
+            view_count as viewCount,
+            like_count as likeCount,
+            author_id as authorId,
+            author_name as authorName,
+            is_pinned as isPinned,
+            is_active as isActive,
+            created_at as createdAt,
+            created_by as createdBy,
+            updated_at as updatedAt,
+            updated_by as updatedBy
+        FROM tb_news
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </select>
+
+    <!-- ========================================
+         통계/부가 기능
+         ======================================== -->
+
+    <!-- 🟢 뉴스 조회수 증가 -->
+    <update id="updateViewCount">
+        UPDATE tb_news
+        SET view_count = view_count + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </update>
+
+    <!-- 🟢 뉴스 좋아요 수 증가 -->
+    <update id="updateLikeCount">
+        UPDATE tb_news
+        SET like_count = like_count + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </update>
+
+    <!-- 🟢 상단 고정 토글 -->
+    <update id="updatePinned">
+        UPDATE tb_news
+        SET is_pinned = #{isPinned},
+            updated_at = CURRENT_TIMESTAMP,
+            updated_by = #{updatedBy}
+        WHERE news_id = #{newsId}
+          AND is_active = true
+    </update>
+
+</mapper>
+

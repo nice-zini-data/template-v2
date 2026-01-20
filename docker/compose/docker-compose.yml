@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Spring Boot 애플리케이션
+  nicevanas-app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: nicevanas-app
+    ports:
+      - "8032:8080"
+    volumes:
+      - /home/nice/nice_van_as/target/:/app
+      - /home/nice/nice_van_as/logs/:/logs
+      - /home/nice/nice_van_as/files/:/home
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-develop}
+      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST:-localhost}
+      - SPRING_REDIS_PORT=6379
+      - TZ=Asia/Seoul
+    restart: unless-stopped
+    networks:
+      - nicevanas-network
+      - shared-network
+
+networks:
+  nicevanas-network:
+    driver: bridge
+  shared-network:
+    driver: bridge

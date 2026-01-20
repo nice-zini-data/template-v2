@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # Redis (공용 세션 저장소)
+  redis:
+    image: redis:latest
+    container_name: shared-redis
+    ports:
+      - "6379:6379"
+    # Redis가 외부 접속을 허용하도록 설정
+    command: redis-server --bind 0.0.0.0 --protected-mode no
+    restart: unless-stopped
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    driver: bridge

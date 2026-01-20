@@ -1,0 +1,4 @@
+# 모든 크롤링 차단
+User-agent: *
+Disallow: /
+

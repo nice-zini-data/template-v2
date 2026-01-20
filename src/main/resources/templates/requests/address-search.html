@@ -1,0 +1,55 @@
+<!-- ============================== 내활동 페이지 ============================== -->
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+</head>
+
+<body>
+    <div class="wrap bg-zinc-50">
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+         <div class="addressSearchContent">
+            <div class="addressSearchTop flexBetween bg-white">
+                <div></div>
+                <p class="changeTitle">주소 검색</p>
+                <button type="button" class="hideBtn size-10" onclick="window.close()"><img src="/assets/images/icons/remove_dark_icon.svg" class="size-6" alt=""></button>
+            </div>
+            <div class="addressSearchForm">
+                <input type="text" class="addressSearchInput" placeholder="주소를 검색해주세요.">
+                <div class="addressInputRemove hidden"><img src="/assets/images/icons/remove_icon.svg" class="size-4" alt=""></div>
+            </div>
+            <div class="addressSearchList hidden">
+                <ul class="addressSearchListUl">
+                </ul>
+            </div>
+            <div class="addressNull">
+                <div>
+                    <img src="/assets/images/icons/map_img.svg" class="size-12 mb-2 m-auto" alt="">
+                    <p class="addressNullText">검색하실 주소를 입력해 주세요.</p>
+                </div>
+            </div>
+            <div class="addressViewInput">
+                <div class="inputBox border-b-[12px] border-solid border-b-zinc-100 py-6 px-5 !mb-0">
+                    <p class="inputLabel">선택 주소</p>
+                    <input type="text" class="addressText"/>
+                    <input type="text" class="subAddressView"/>
+                </div>
+                <div class="inputBox py-6 px-5">
+                    <p class="inputLabel">상세 주소 입력</p>
+                    <input type="text" class="inputCustom addressDetailText" placeholder="상세 주소를 입력해 주세요.">
+                </div>
+            </div>
+            <div class="addressBottom p-5">
+                <button type="button" class="btn primaryBtn w-full rounded-full py-3 px-4 text-md/6 font-medium disabled">주소 선택</button>
+            </div>
+         </div>
+    </div>
+
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+</body>
+</html> 

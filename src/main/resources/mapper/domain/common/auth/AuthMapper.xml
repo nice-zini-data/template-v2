@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zinidata.domain.common.auth.mapper.AuthMapper">
+
+    <select id="getMember" parameterType="map" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.getMember - 로그인 검증 */
+        SELECT
+            a.*
+        FROM
+            tb_members a
+        WHERE
+            a.login_id = #{loginId}
+            AND a.approval_yn = 'Y'
+            AND a.prj_cd = #{appCode}
+    </select>
+    
+    <update id="updateMemberSession" parameterType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.updateMemberSession - 로그인 세션 정보 업데이트 */
+        UPDATE tb_members a
+        SET
+            a.login_session = #{loginSession},
+            a.token = #{token},
+            a.last_login_dt = #{loginTimestamp}
+        WHERE
+            AND a.mem_no = #{memNo}
+        ;
+    </update>
+
+    <select id="existsByMobileNo" parameterType="string" resultType="int">
+        /** 🟢 AuthMapper.existsByMobileNo - 휴대폰 번호 중복 체크 */
+        SELECT COUNT(1)
+        FROM tb_members a
+        WHERE
+            a.mobile_no = #{mobileNo}
+            AND prj_cd = #{appCode}
+    </select>
+    
+    <select id="existsByLoginId" parameterType="string" resultType="int">
+        /** 🟢 AuthMapper.existsByLoginId - 로그인 ID 중복 체크 */
+        SELECT COUNT(1)
+        FROM tb_members a
+        WHERE
+            a.login_id = #{loginId}
+            AND prj_cd = #{appCode}
+    </select>
+
+    <select id="getMemberSeq" resultType="java.lang.Long">
+        --getMemberSeq 회원번호 가져오기
+        select nextval('tb_member_seq') as memNo
+    </select>
+
+    <insert id="insertMember" parameterType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.insertMember - 회원가입 */
+        INSERT INTO  tb_members(mem_no, login_id, pwd, email, mem_nm, mobile_no
+                , prj_cd, department, auth_cd, use_yn, account_lock
+                , created_dt, approval_yn, privacy_yn, marketing_yn, social_login_type
+        ) VALUES (#{memNo}, #{loginId},#{password}, '', #{memNm}, #{mobileNo}
+                , #{appCode}, #{department}, coalesce(#{authCd}, 'AUTH100'),'Y', 'N'
+                , now(), 'Y', '', '', coalesce(#{socialLoginType}, 'nice'))
+    </insert>
+
+    <insert id="insertMemberInfo" parameterType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.insertMemberInfo - 프로젝트별 권한정보 또는 프로젝트별 아이디 정보 */
+        <!-- INSERT INTO tb_members_nvps
+        VALUES (#{memNo}, #{team}, #{deptCd}, 'N', #{ip}) -->
+    </insert>
+
+    <update id="updateMember" parameterType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.updateMember - 회원 정보 수정 (로그인 시 API 호출 정보로 업데이트) */
+        UPDATE tb_members
+        SET
+            mem_nm = #{memNm},
+            mobile_no = #{mobileNo},
+            email = #{emailAddr},
+            auth_cd = coalesce(#{authCd}, 'AUTH100'),
+            updt_dt = NOW()
+        WHERE
+            mem_no = #{memNo}
+            AND prj_cd = #{appCode}
+    </update>
+
+    <insert id="insertMemberNvps">
+        /** 🟢 AuthMapper.insertMemberNvps - tb_members_nvps 테이블에 회원 정보 insert */
+        INSERT INTO tb_members_nvps (
+            mem_no,
+            user_code,
+            agent_name,
+            agent_code,
+            p_agent_code,
+            pg_agent_code,
+            p_pg_agent_code,
+            agent_business_no
+        ) VALUES (
+            #{memNo},
+            #{nvpsInfo.userCode},
+            #{nvpsInfo.agentName},
+            #{nvpsInfo.agentCode},
+            #{nvpsInfo.pAgentCode},
+            #{nvpsInfo.pgAgentCode},
+            #{nvpsInfo.pPgAgentCode},
+            #{nvpsInfo.agentBusinessNo}
+        )
+    </insert>
+
+    <update id="updateMemberNvps">
+        /** 🟢 AuthMapper.updateMemberNvps - tb_members_nvps 테이블에 회원 정보 update */
+        UPDATE tb_members_nvps
+        SET
+            user_code = #{nvpsInfo.userCode},
+            agent_name = #{nvpsInfo.agentName},
+            agent_code = #{nvpsInfo.agentCode},
+            p_agent_code = #{nvpsInfo.pAgentCode},
+            pg_agent_code = #{nvpsInfo.pgAgentCode},
+            p_pg_agent_code = #{nvpsInfo.pPgAgentCode},
+            agent_business_no = #{nvpsInfo.agentBusinessNo}
+        WHERE
+            mem_no = #{memNo}
+    </update>
+
+    <update id="updatePassword" parameterType="map">
+        /** 🟢 AuthMapper.updatePassword - 비밀번호 변경 */
+        UPDATE tb_members
+        SET
+            pwd = #{password},
+            updt_dt = NOW(),
+        WHERE
+            mem_no = #{memNo}
+            AND prj_cd = #{appCode}
+    </update>
+
+    <delete id="deleteMember" parameterType="long">
+        /** 🟢 AuthMapper.deleteMember - 회원 탈퇴 */
+        DELETE FROM tb_members
+        WHERE
+            mem_no = #{memNo}
+            AND prj_cd = #{appCode}
+    </delete>
+
+    <insert id="backupMember" parameterType="long">
+        /** 🟢 AuthMapper.backupMember - 회원 정보 백업 */
+        insert into tb_members_resign 
+        select * , now() 
+        from tb_members 
+        where mem_no=#{memNo};
+    </insert>
+
+
+    <select id="findByLoginId" parameterType="com.zinidata.domain.common.auth.vo.MemberVO" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByLoginId - 로그인 ID로 회원 조회 */
+        SELECT *
+        FROM tb_members
+        WHERE login_id = #{loginId}
+        AND prj_cd = #{appCode}
+    </select>
+
+    <select id="findByEmailAddr" parameterType="string" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByEmailAddr - 이메일로 회원 조회 */
+        SELECT *
+        FROM tb_members
+        WHERE
+            email = #{emailAddr}
+    </select>
+
+    <select id="findByMobileNo" parameterType="string" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByMobileNo - 휴대폰 번호로 회원 조회 */
+        SELECT *
+        FROM tb_members
+        WHERE
+            mobile_no = #{mobileNo}
+            AND prj_cd = #{appCode}
+    </select>
+
+    <select id="findByMemNmAndMobileNo" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByMemNmAndMobileNo - 이름과 휴대폰 번호로 회원 조회 (아이디 찾기용) */
+        SELECT *
+        FROM tb_members
+        WHERE
+            mem_nm = #{memNm}
+            AND mobile_no = #{mobileNo}
+            AND prj_cd = #{appCode}
+    </select>
+
+    <select id="findByLoginIdAndMobileNo" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByLoginIdAndMobileNo - 로그인 ID와 휴대폰 번호로 회원 조회 (비밀번호 찾기용) */
+        SELECT *
+        FROM tb_members
+        WHERE
+            login_id = #{loginId}
+            AND mobile_no = #{mobileNo}
+            AND prj_cd = #{appCode}
+    </select>
+
+    <select id="findByMemNo" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findByMemNo - 회원 번호로 회원 조회 */
+        SELECT *
+        FROM tb_members
+        WHERE
+            mem_no = #{memNo}
+            AND prj_cd = #{appCode}
+    </select>
+
+    <select id="findMembers" parameterType="map" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.findMembers - 회원 목록 조회 (관리자용) */
+        SELECT *
+        FROM tb_members
+        WHERE
+            prj_cd = #{appCode}
+        ORDER BY coalesce(updt_dt, created_dt) DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="countMembers" resultType="int">
+        /** 🟢 AuthMapper.countMembers - 회원 수 조회 (관리자용) */
+        SELECT COUNT(*)
+        FROM tb_members
+        WHERE 
+        prj_cd = #{appCode}
+    </select>
+    
+    <select id="searchMembers" parameterType="map" resultType="com.zinidata.domain.common.auth.vo.MemberVO">
+        /** 🟢 AuthMapper.searchMembers - 회원 검색 (관리자용) */
+        SELECT *
+        FROM tb_members
+        WHERE
+            prj_cd = #{appCode}
+        AND (
+            login_id LIKE CONCAT('%', #{keyword}, '%')
+            OR mem_nm LIKE CONCAT('%', #{keyword}, '%')
+            OR email LIKE CONCAT('%', #{keyword}, '%')
+            OR mobile_no LIKE CONCAT('%', #{keyword}, '%')
+            )
+        ORDER BY coalesce(updt_dt, created_dt) DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countSearchMembers" parameterType="string" resultType="int">
+        /** 🟢 AuthMapper.countSearchMembers - 회원 검색 수 조회 (관리자용) */
+        SELECT COUNT(*)
+        FROM tb_members
+        WHERE
+            prj_cd = #{appCode}
+            AND (
+                login_id LIKE CONCAT('%', #{keyword}, '%')
+                OR mem_nm LIKE CONCAT('%', #{keyword}, '%')
+                OR email LIKE CONCAT('%', #{keyword}, '%')
+                OR mobile_no LIKE CONCAT('%', #{keyword}, '%')
+            )
+    </select>
+
+    <select id="countActiveMembers" resultType="int">
+        /** 🟢 AuthMapper.countActiveMembers - 활성 회원 수 조회 */
+        SELECT COUNT(*)
+        FROM tb_members
+        WHERE
+            prj_cd = #{appCode}
+            AND approval_yn = 'Y'
+    </select>
+
+    <insert id="insertLogAuth">
+        /** 🟢 AuthMapper.insertLogAuth - 로그인 인증 이력 저장 */
+        INSERT INTO tb_log_auth (
+            log_auth_no,
+            mem_no,
+            session_id,
+            login_dt,
+            logout_dt,
+            stay_second,
+            force_logout_yn,
+            ip_addr
+        ) VALUES (
+            nextval('tb_log_auth_seq'),
+            #{memNo},
+            #{sessionId},
+            now(),
+            NULL,
+            NULL,
+            'N',
+            #{ipAddr}
+        )
+    </insert>
+
+</mapper>

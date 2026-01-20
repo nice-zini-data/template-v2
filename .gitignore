@@ -1,0 +1,49 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+node_modules/
+*.log
+logs/
+logs/**/*.log
+# src/main/resources/static/assets/css/output.css
+
+### Webapp Delete Files ###
+src/main/xxx.delete.webapp
+docs.bak.20250804/
+docs.bak.20250901/
+
+### Log 설정 파일 ###
+#src/main/resources/logback-spring.xml
+#src/main/resources/application-develop.yml
+
+zinidataLog

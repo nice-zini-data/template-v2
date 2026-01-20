@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!-- 
+    관리자 헤더 컴포넌트
+    - 고정 상단 헤더
+    - 토스 스타일 디자인
+    - 작성일: 2025-10-17
+-->
+<header th:fragment="admin-header" class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
+    <div class="h-full px-6 flex items-center justify-between">
+        <!-- 좌측: 로고 -->
+        <div class="flex items-center gap-4">
+            <a href="/admin/dashboard" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">ZD</span>
+                </div>
+                <span class="text-lg font-bold text-gray-900">ZINIDATA</span>
+                <span class="px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded">관리자</span>
+            </a>
+        </div>
+
+        <!-- 우측: 유틸리티 -->
+        <div class="flex items-center gap-3">
+            <!-- 검색 (향후 구현) -->
+            <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="검색">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </button>
+
+            <!-- 알림 (향후 구현) -->
+            <button class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors" title="알림">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <!-- 알림 뱃지 -->
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+
+            <!-- 구분선 -->
+            <div class="w-px h-6 bg-gray-200"></div>
+
+            <!-- 사용자 프로필 -->
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-gray-900">관리자</div>
+                    <div class="text-xs text-gray-500">Admin</div>
+                </div>
+                <button class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold text-xs">관</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 홈으로 이동 -->
+            <a href="/" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                사용자 페이지로
+            </a>
+        </div>
+    </div>
+</header>
+</body>
+</html>
+

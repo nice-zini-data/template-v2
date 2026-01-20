@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.common.region.mapper.RegionMapper">
+
+    <!-- ==================== 블록 쿼리 ==================== -->
+    
+    <!-- 블록 코드로 블록 정보 조회 -->
+    <select id="selectBlockByCode" parameterType="string" resultType="map">
+        SELECT 
+            blk_cd AS "blkCd",
+            blk_nm AS "blkNm", 
+            admi_cd AS "admiCd",
+            minx AS "minX",
+            miny AS "minY", 
+            maxx AS "maxX",
+            maxy AS "maxY",
+            centerx AS "centerX",
+            centery AS "centerY",
+            feature AS "feature",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_block_v3_features
+        WHERE blk_cd = #{blkCd}
+    </select>
+    
+    <!-- 좌표로 블록 조회 -->
+    <select id="selectBlockByPoint" resultType="map">
+        SELECT 
+            blk_cd AS "blkCd",
+            blk_nm AS "blkNm",
+            admi_cd AS "admiCd",
+            centerx AS "centerX",
+            centery AS "centerY",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_block_v3_features
+        WHERE ST_Contains(geom, ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326))
+        LIMIT 1
+    </select>
+    
+    <!-- 폴리곤 영역 내 블록 조회 -->
+    <select id="selectBlocksByPolygon" parameterType="string" resultType="map">
+        SELECT 
+            blk_cd AS "blkCd",
+            blk_nm AS "blkNm",
+            admi_cd AS "admiCd",
+            centerx AS "centerX", 
+            centery AS "centerY"
+        FROM cmapap.tbshp_block_v3_features
+        WHERE ST_Intersects(geom, ST_SetSRID(ST_GeomFromText(#{polygon}), 4326))
+        ORDER BY blk_cd
+    </select>
+    
+    <!-- 반경 내 블록 조회 -->
+    <select id="selectBlocksByRadius" resultType="map">
+        SELECT 
+            blk_cd AS "blkCd",
+            blk_nm AS "blkNm",
+            admi_cd AS "admiCd", 
+            centerx AS "centerX",
+            centery AS "centerY",
+            ROUND(ST_Distance(
+                geom, 
+                ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326)::geography
+            )::numeric, 1) AS "distance"
+        FROM cmapap.tbshp_block_v3_features
+        WHERE ST_DWithin(
+            geom::geography,
+            ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326)::geography,
+            #{radius}
+        )
+        ORDER BY ST_Distance(geom, ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326))
+    </select>
+
+    <!-- ==================== 행정동 쿼리 ==================== -->
+    
+    <!-- 행정동 코드로 행정동 정보 조회 -->
+    <select id="selectAdmiByCode" parameterType="string" resultType="map">
+        SELECT 
+            admi_cd AS "admiCd",
+            admi_nm AS "admiNm",
+            cty_cd AS "ctyCd",
+            minx AS "minX",
+            miny AS "minY",
+            maxx AS "maxX", 
+            maxy AS "maxY",
+            centerx AS "centerX",
+            centery AS "centerY",
+            feature AS "feature",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_admi_features
+        WHERE admi_cd = #{admiCd}
+    </select>
+    
+    <!-- 좌표로 행정동 조회 -->
+    <select id="selectAdmiByPoint" resultType="map">
+        /** 🟢 RegionMapper.selectAdmiByPoint - 좌표로 행정동 조회
+         *  API: GET /api/common/region/admi/by-point
+         *  목적: 지도 클릭 좌표로 해당 위치의 행정동 정보 조회
+         */
+        SELECT 
+            B.MEGA_CD AS "megaCd",
+            B.MEGA_NM AS "megaNm",
+            B.CTY_CD  AS "ctyCd",
+            B.CTY_NM  AS "ctyNm",
+            B.ADMI_CD AS "admiCd",
+            B.ADMI_NM AS "admiNm",
+            A.CENTERX AS "centerX",
+            A.CENTERY AS "centerY",
+            A.FEATURE AS "feature"
+        FROM 
+            TBSHP_ADMI_FEATURES A
+        INNER JOIN 
+            VWADM_ADMI B ON A.ADMI_CD = B.ADMI_CD
+        WHERE 
+            ST_Contains(A.GEOM, ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326))
+        LIMIT 1
+    </select>
+    
+    <!-- 폴리곤 영역 내 행정동 조회 -->
+    <select id="selectAdmisByPolygon" parameterType="string" resultType="map">
+        SELECT 
+            admi_cd AS "admiCd",
+            admi_nm AS "admiNm",
+            cty_cd AS "ctyCd", 
+            centerx AS "centerX",
+            centery AS "centerY"
+        FROM cmapap.tbshp_admi_features
+        WHERE ST_Intersects(geom, ST_SetSRID(ST_GeomFromText(#{polygon}), 4326))
+        ORDER BY admi_cd
+    </select>
+    
+    <!-- 인접 행정동 조회 -->
+    <select id="selectAdjacentAdmis" parameterType="string" resultType="map">
+        WITH base_admi AS (
+            SELECT geom, admi_cd, admi_nm, cty_cd
+            FROM cmapap.tbshp_admi_features 
+            WHERE admi_cd = #{admiCd}
+        )
+        SELECT 
+            a.admi_cd AS "admiCd",
+            a.admi_nm AS "admiNm", 
+            a.cty_cd AS "ctyCd",
+            a.centerx AS "centerX",
+            a.centery AS "centerY",
+            CASE WHEN a.admi_cd = #{admiCd} THEN true ELSE false END AS "isBase"
+        FROM cmapap.tbshp_admi_features a, base_admi b
+        WHERE a.admi_cd = #{admiCd}
+           OR ST_Touches(a.geom, b.geom)
+        ORDER BY "isBase" DESC, a.admi_cd
+    </select>
+
+    <!-- ==================== 시군구 쿼리 ==================== -->
+    
+    <!-- 시군구 코드로 시군구 정보 조회 -->
+    <select id="selectCtyByCode" parameterType="string" resultType="map">
+        SELECT 
+            cty_cd AS "ctyCd",
+            cty_nm AS "ctyNm",
+            mega_cd AS "megaCd",
+            minx AS "minX",
+            miny AS "minY",
+            maxx AS "maxX",
+            maxy AS "maxY", 
+            centerx AS "centerX",
+            centery AS "centerY",
+            feature AS "feature",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_cty_features
+        WHERE cty_cd = #{ctyCd}
+    </select>
+    
+    <!-- 좌표로 시군구 조회 -->
+    <select id="selectCtyByPoint" resultType="map">
+        SELECT 
+            cty_cd AS "ctyCd",
+            cty_nm AS "ctyNm",
+            mega_cd AS "megaCd",
+            centerx AS "centerX", 
+            centery AS "centerY",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_cty_features
+        WHERE ST_Contains(geom, ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326))
+        LIMIT 1
+    </select>
+    
+    <!-- 폴리곤 영역 내 시군구 조회 -->
+    <select id="selectCtysByPolygon" parameterType="string" resultType="map">
+        SELECT 
+            cty_cd AS "ctyCd",
+            cty_nm AS "ctyNm", 
+            mega_cd AS "megaCd",
+            centerx AS "centerX",
+            centery AS "centerY"
+        FROM cmapap.tbshp_cty_features
+        WHERE ST_Intersects(geom, ST_SetSRID(ST_GeomFromText(#{polygon}), 4326))
+        ORDER BY cty_cd
+    </select>
+
+    <!-- ==================== 광역시도 쿼리 ==================== -->
+    
+    <!-- 광역시도 코드로 광역시도 정보 조회 -->
+    <select id="selectMegaByCode" parameterType="string" resultType="map">
+        SELECT 
+            mega_cd AS "megaCd",
+            mega_nm AS "megaNm",
+            minx AS "minX",
+            miny AS "minY",
+            maxx AS "maxX",
+            maxy AS "maxY",
+            centerx AS "centerX",
+            centery AS "centerY", 
+            feature AS "feature",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_mega_features
+        WHERE mega_cd = #{megaCd}
+    </select>
+    
+    <!-- 좌표로 광역시도 조회 -->
+    <select id="selectMegaByPoint" resultType="map">
+        SELECT 
+            mega_cd AS "megaCd",
+            mega_nm AS "megaNm",
+            centerx AS "centerX",
+            centery AS "centerY",
+            ST_AsGeoJSON(geom) AS "geoJson"
+        FROM cmapap.tbshp_mega_features
+        WHERE ST_Contains(geom, ST_SetSRID(ST_Point(#{lng}, #{lat}), 4326))
+        LIMIT 1
+    </select>
+    
+    <!-- 폴리곤 영역 내 광역시도 조회 -->
+    <select id="selectMegasByPolygon" parameterType="string" resultType="map">
+        SELECT 
+            mega_cd AS "megaCd",
+            mega_nm AS "megaNm",
+            centerx AS "centerX",
+            centery AS "centerY"
+        FROM cmapap.tbshp_mega_features
+        WHERE ST_Intersects(geom, ST_SetSRID(ST_GeomFromText(#{polygon}), 4326))
+        ORDER BY mega_cd
+    </select>
+
+    <!-- 확장 분석 행정동 geometry 정보 조회 -->
+    <select id="getExpandedAdmiRegions" resultType="map">
+        /** 🟢 RegionMapper.getExpandedAdmiRegions - 확장 분석 행정동 geometry 정보 조회
+            *  API: GET /api/explorer/summary/check-analyzability (간접 호출)
+            *  목적: 확장 분석에 포함되는 행정동들의 geometry 정보 조회 (지도 표시용)
+            */
+        SELECT 
+            B.ADMI_CD AS "admiCd",
+            B.ADMI_NM AS "admiNm",
+            B.CENTERX AS "centerX",
+            B.CENTERY AS "centerY",
+            B.FEATURE AS "feature"
+        FROM 
+            TB_ADMI_TOUCH A
+        INNER JOIN 
+            TBSHP_ADMI_FEATURES B ON A.TCH_ADMI_CD = B.ADMI_CD
+        WHERE 
+            A.STD_ADMI_CD = #{admiCd}
+    </select>
+
+    <!-- 시도 목록 조회 -->
+    <select id="getMegaList" resultType="map">
+        /** 🟢 RegionMapper.getMegaList - 시도 목록 조회
+            *  API: POST /api/common/region/mega/list
+            *  목적: 전국 시도 코드와 이름 목록을 조회합니다.
+            */
+        SELECT DISTINCT mega_cd, mega_nm
+          FROM vwadm_admi
+         ORDER BY 1
+    </select>
+
+</mapper> 

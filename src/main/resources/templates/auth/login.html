@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+    <!-- <link rel="stylesheet" href="/assets/css/login.css"> -->
+    <style>
+        html{height:auto !important;overflow:auto !important;}
+    </style>
+</head>
+<body>
+    <div class="wrap loginPage min-h-screen flex flex-col">
+
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+        <main class="flexCenter flex-1">
+            <div class="max-w-md w-full mx-auto mt-8 sm:mt-12 md:mt-20 md:-mt-8 px-6 py-8 pb-10 sm:pb-12">
+                <p class="titleText pb-10">로그인</p>
+                <form id="loginForm">
+                    <!-- returnUrl 파라미터 전달용 hidden input -->
+                    <input type="hidden" name="returnUrl" th:value="${param.returnUrl}" />
+                    
+                    <!-- 이름 입력 -->
+                    <div>
+                        <label class="inputLabel" for="userName">이름</label>
+                        <input class="inputCustom mt-2" id="userName" name="userName" type="text"/>
+                    </div>
+                    
+                    <!-- 아이디 입력 -->
+                    <div class="mt-6">
+                        <label class="inputLabel" for="loginId">아이디</label>
+                        <input class="inputCustom mt-2" id="loginId" name="loginId" type="text" placeholder="아이디를 입력하세요" />
+                    </div>
+                    
+                    <!-- 아이디 입력 -->
+                    <div class="mt-6">
+                        <label class="inputLabel" for="password">비밀번호</label>
+                        <input class="inputCustom mt-2" id="password" name="password" type="text" placeholder="비밀번호를 입력하세요" />
+                    </div>
+                    
+                    <!-- 전화번호 입력 -->
+                    <div class="mt-6 formCheck">
+                        <label class="inputLabel" for="phone">휴대폰 번호</label>
+                        <div class="flexBetween mt-2">
+                            <input type="tel" class="inputCustom mr-2 numberValue" maxlength="11" id="phone" placeholder="'-'를 제외한 숫자만 입력해주세요"/>
+                            <button type="button" class="softBtn btn min-w-[140px] h-10" id="cert">인증번호 받기</button>
+                        </div>
+                    </div>
+                    <div class="pt-3 formCheck verifyCode hidden">
+                        <label class="inputLabel" for="verifyCode">인증번호 입력</label>
+                        <div class="flexBetween mt-2">
+                            <div class="relative mr-2 w-full">
+                                <input type="tel" class="inputCustom numberValue" id="verifyCode" placeholder="인증번호 6자리 입력"/>
+                                <span class="certTime time"></span>
+                            </div>
+                            <button type="button" class="primaryLineBtn btn min-w-[140px] h-10" id="getCert">인증 확인</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 정보 저장 체크박스 -->
+                    <div class="mt-6 flex items-center">
+                        <input type="checkbox" id="saveInfo" name="saveInfo" class="checkboxCustom" />
+                        <label for="saveInfo" class="checkboxLabel ml-2">입력 정보 저장하기</label>
+                    </div>
+                    
+                    <button type="submit" class="softBtn btn w-full mt-10 mb-6 h-10" id="loginBtn">로그인</button>
+                </form>
+            </div>
+        </main>
+
+        <!-- ============================== 스크립트 파일 로드 ============================== -->
+        <th:block th:replace="~{fragments/script :: script}" />
+        
+        <!-- ============================== 로그인 페이지 전용 스크립트 ============================== -->
+    </div>
+</body>
+</html>

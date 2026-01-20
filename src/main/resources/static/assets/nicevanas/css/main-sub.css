@@ -1,0 +1,67 @@
+
+#divContentsList {
+    min-width: 1354px;
+    overflow: auto;
+}
+
+#divContentsList .row iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 60px;
+}
+
+.swiper_box {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+
+    /* Center slide text vertically */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal1{
+    top:0px;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9;
+}
+
+/* 하단의 회사소개, 서비스약관, 개인정보처리방침, 고객지원 마우스 오버/아웃 제어 */
+.bottom-link-style {
+    text-decoration: none; /* 기본 상태에서는 밑줄 제거 */
+}
+
+.bottom-link-style:hover {
+    text-decoration: underline; /* 마우스 오버 시 밑줄 표시 */
+}

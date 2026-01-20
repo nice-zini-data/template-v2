@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zinidata.domain.common.admin.mapper.IpBlockMapper">
+
+    <!-- 활성 차단 조회 -->
+    <select id="findActiveBlock" parameterType="map" resultType="com.zinidata.domain.common.admin.vo.IpBlockVO">
+        /** 🔴 IpBlockMapper.findActiveBlock - 활성 차단 조회 */
+        SELECT
+            id,
+            ip_address AS ipAddress,
+            block_reason AS blockReason,
+            is_permanent AS isPermanent,
+            blocked_at AS blockedAt,
+            unblocked_at AS unblockedAt,
+            expires_at AS expiresAt,
+            project_code AS appCode,
+            blocked_by AS blockedBy,
+            unblocked_by AS unblockedBy,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            status
+        FROM
+            ip_block
+        WHERE
+            ip_address = #{ipAddress}
+            AND project_code = #{appCode}
+            AND status = 'ACTIVE'
+            AND (is_permanent = true OR expires_at IS NULL OR expires_at &gt; NOW())
+        ;
+    </select>
+
+    <!-- 활성 차단 존재 여부 확인 -->
+    <select id="existsActiveBlock" parameterType="map" resultType="int">
+        /** 🔴 IpBlockMapper.existsActiveBlock - 활성 차단 존재 확인 */
+        SELECT
+            COUNT(*)
+        FROM
+            ip_block
+        WHERE
+            ip_address = #{ipAddress}
+            AND project_code = #{appCode}
+            AND status = 'ACTIVE'
+            AND (is_permanent = true OR expires_at IS NULL OR expires_at &gt; NOW())
+        ;
+    </select>
+
+    <!-- 프로젝트별 모든 활성 차단 목록 조회 -->
+    <select id="findAllActiveBlocks" parameterType="string" resultType="com.zinidata.domain.common.admin.vo.IpBlockVO">
+        /** 🔴 IpBlockMapper.findAllActiveBlocks - 프로젝트별 활성 차단 목록 */
+        SELECT
+            id,
+            ip_address AS ipAddress,
+            block_reason AS blockReason,
+            is_permanent AS isPermanent,
+            blocked_at AS blockedAt,
+            unblocked_at AS unblockedAt,
+            expires_at AS expiresAt,
+            project_code AS appCode,
+            blocked_by AS blockedBy,
+            unblocked_by AS unblockedBy,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            status
+        FROM
+            ip_block
+        WHERE
+            project_code = #{appCode}
+            AND status = 'ACTIVE'
+        ORDER BY
+            created_at DESC
+        ;
+    </select>
+
+    <!-- 프로젝트별 모든 차단 목록 조회 -->
+    <select id="findAllByProjectCode" parameterType="string" resultType="com.zinidata.domain.common.admin.vo.IpBlockVO">
+        /** 🔴 IpBlockMapper.findAllByProjectCode - 프로젝트별 모든 차단 목록 */
+        SELECT
+            id,
+            ip_address AS ipAddress,
+            block_reason AS blockReason,
+            is_permanent AS isPermanent,
+            blocked_at AS blockedAt,
+            unblocked_at AS unblockedAt,
+            expires_at AS expiresAt,
+            project_code AS appCode,
+            blocked_by AS blockedBy,
+            unblocked_by AS unblockedBy,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            status
+        FROM
+            ip_block
+        WHERE
+            project_code = #{appCode}
+        ORDER BY
+            created_at DESC
+        ;
+    </select>
+
+    <!-- 만료된 차단 목록 조회 -->
+    <select id="findExpiredBlocks" parameterType="java.sql.Timestamp" resultType="com.zinidata.domain.common.admin.vo.IpBlockVO">
+        /** 🔴 IpBlockMapper.findExpiredBlocks - 만료된 차단 목록 */
+        SELECT
+            id,
+            ip_address AS ipAddress,
+            block_reason AS blockReason,
+            is_permanent AS isPermanent,
+            blocked_at AS blockedAt,
+            unblocked_at AS unblockedAt,
+            expires_at AS expiresAt,
+            project_code AS appCode,
+            blocked_by AS blockedBy,
+            unblocked_by AS unblockedBy,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            status
+        FROM
+            ip_block
+        WHERE
+            status = 'ACTIVE'
+            AND is_permanent = false
+            AND expires_at IS NOT NULL
+            AND expires_at &lt;= #{currentTime}
+        ;
+    </select>
+
+    <!-- IP 차단 등록 -->
+    <insert id="insertIpBlock" parameterType="com.zinidata.domain.common.admin.vo.IpBlockVO" useGeneratedKeys="true" keyProperty="id">
+        /** 🔴 IpBlockMapper.insertIpBlock - IP 차단 등록 */
+        INSERT INTO ip_block (
+            ip_address,
+            block_reason,
+            is_permanent,
+            blocked_at,
+            expires_at,
+            project_code,
+            blocked_by,
+            created_at,
+            updated_at,
+            status
+        ) VALUES (
+            #{ipAddress},
+            #{blockReason},
+            #{isPermanent},
+            COALESCE(#{blockedAt}, NOW()),
+            #{expiresAt},
+            #{appCode},
+            #{blockedBy},
+            NOW(),
+            NOW(),
+            'ACTIVE'
+        )
+        ;
+    </insert>
+
+    <!-- IP 차단 해제 -->
+    <update id="unblockIp" parameterType="map">
+        /** 🔴 IpBlockMapper.unblockIp - IP 차단 해제 */
+        UPDATE ip_block
+        SET
+            status = 'UNBLOCKED',
+            unblocked_at = #{currentTime},
+            unblocked_by = #{unblockedBy},
+            updated_at = #{currentTime}
+        WHERE
+            ip_address = #{ipAddress}
+            AND project_code = #{appCode}
+            AND status = 'ACTIVE'
+        ;
+    </update>
+
+    <!-- IP 목록 일괄 차단 해제 -->
+    <update id="unblockIpsBulk" parameterType="map">
+        /** 🔴 IpBlockMapper.unblockIpsBulk - IP 목록 일괄 해제 */
+        UPDATE ip_block
+        SET
+            status = 'UNBLOCKED',
+            unblocked_at = #{currentTime},
+            unblocked_by = #{unblockedBy},
+            updated_at = #{currentTime}
+        WHERE
+            ip_address IN
+            <foreach collection="ipAddresses" item="ip" open="(" separator="," close=")">
+                #{ip}
+            </foreach>
+            AND project_code = #{appCode}
+            AND status = 'ACTIVE'
+        ;
+    </update>
+
+    <!-- 만료된 차단 상태 업데이트 -->
+    <update id="updateExpiredBlocks" parameterType="java.sql.Timestamp">
+        /** 🔴 IpBlockMapper.updateExpiredBlocks - 만료된 차단 상태 업데이트 */
+        UPDATE ip_block
+        SET
+            status = 'EXPIRED',
+            updated_at = #{currentTime}
+        WHERE
+            status = 'ACTIVE'
+            AND is_permanent = false
+            AND expires_at IS NOT NULL
+            AND expires_at &lt;= #{currentTime}
+        ;
+    </update>
+
+    <!-- 이전 차단 기록 삭제 -->
+    <delete id="deleteOldUnblockedRecords" parameterType="java.sql.Timestamp">
+        /** 🔴 IpBlockMapper.deleteOldUnblockedRecords - 이전 차단 기록 삭제 */
+        DELETE FROM ip_block
+        WHERE
+            status IN ('UNBLOCKED', 'EXPIRED')
+            AND updated_at &lt; #{beforeDate}
+        ;
+    </delete>
+
+    <!-- 차단 통계 조회 -->
+    <select id="getBlockStatistics" parameterType="string" resultType="map">
+        /** 🔴 IpBlockMapper.getBlockStatistics - 차단 통계 조회 */
+        SELECT
+            COUNT(*) AS totalBlocks,
+            SUM(CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END) AS activeBlocks,
+            SUM(CASE WHEN status = 'EXPIRED' THEN 1 ELSE 0 END) AS expiredBlocks,
+            SUM(CASE WHEN status = 'UNBLOCKED' THEN 1 ELSE 0 END) AS unblockedBlocks
+        FROM
+            ip_block
+        WHERE
+            project_code = #{appCode}
+        ;
+    </select>
+
+    <!-- IP 패턴으로 검색 -->
+    <select id="findByIpPattern" parameterType="map" resultType="com.zinidata.domain.common.admin.vo.IpBlockVO">
+        /** 🔴 IpBlockMapper.findByIpPattern - IP 패턴 검색 */
+        SELECT
+            id,
+            ip_address AS ipAddress,
+            block_reason AS blockReason,
+            is_permanent AS isPermanent,
+            blocked_at AS blockedAt,
+            unblocked_at AS unblockedAt,
+            expires_at AS expiresAt,
+            project_code AS appCode,
+            blocked_by AS blockedBy,
+            unblocked_by AS unblockedBy,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            status
+        FROM
+            ip_block
+        WHERE
+            ip_address LIKE #{ipPattern}
+            AND project_code = #{appCode}
+        ORDER BY
+            created_at DESC
+        ;
+    </select>
+
+</mapper> 

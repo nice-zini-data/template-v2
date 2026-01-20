@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.admin.mapper.AdminStatisticsMapper">
+
+    <!-- ============================== 종합보고서 (zone_nm = 'SUMMARY_REPORT') ============================== -->
+    
+    <select id="selectSummaryReportList" parameterType="map" resultType="com.zinidata.domain.mypage.vo.UsageZoneVO">
+        /** 🟢 AdminStatisticsMapper.selectSummaryReportList - 종합보고서 목록 조회 (JOIN 포함) */
+        SELECT 
+            a.anal_no AS analNo,
+            a.zone_nm AS zoneNm,
+            a.admi_cd AS admiCd,
+            a.block_cd AS blockCd,
+            a.address,
+            a.upjong3_cd AS upjong3Cd,
+            a.crt_dt AS crtDt,
+            a.crt_id AS crtId,
+            a.upd_dt AS updDt,
+            a.upd_id AS updId,
+            a.rpt_ver AS rptVer,
+            a.is_active AS isActive,
+            CASE 
+                WHEN a.zone_nm = '기본보고서m' THEN 'betterboss'
+                ELSE 'nicebizmap'
+            END AS serviceType,
+            b.mega_nm AS megaNm,
+            b.cty_nm AS ctyNm,
+            b.admi_nm AS admiNm,
+            c.upjong3_nm AS upjong3Nm,
+            d.upjong2_nm AS upjong2Nm,
+            e.upjong1_nm AS upjong1Nm,
+            f.mem_nm AS memNm
+        FROM 
+            tb_usage_zone a
+        LEFT JOIN vwadm_admi b ON a.admi_cd = b.admi_cd
+        LEFT JOIN tb_upjong3 c ON a.upjong3_cd = c.upjong3_cd
+        LEFT JOIN tb_upjong2 d ON c.upjong2_cd = d.upjong2_cd
+        LEFT JOIN tb_upjong1 e ON d.upjong1_cd = e.upjong1_cd
+        LEFT JOIN (select distinct login_id, mem_nm from tb_member) f ON a.crt_id = f.login_id
+        WHERE 
+            a.zone_nm in ( 'SUMMARY_REPORT', '기본보고서m' )
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="crtId != null and crtId != ''">
+                AND a.crt_id LIKE '%' || #{crtId} || '%'
+            </if>
+            <if test="address != null and address != ''">
+                AND a.address LIKE '%' || #{address} || '%'
+            </if>
+            <if test="isActive != null and isActive != ''">
+                AND a.is_active = #{isActive}
+            </if>
+        ORDER BY 
+            a.crt_dt DESC
+        <if test="offset != null and limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countSummaryReports" parameterType="map" resultType="int">
+        /** 🟢 AdminStatisticsMapper.countSummaryReports - 종합보고서 총 개수 조회 */
+        SELECT 
+            COUNT(a.anal_no)
+        FROM 
+            tb_usage_zone a
+        LEFT JOIN vwadm_admi b ON a.admi_cd = b.admi_cd
+        LEFT JOIN tb_upjong3 c ON a.upjong3_cd = c.upjong3_cd
+        LEFT JOIN tb_upjong2 d ON c.upjong2_cd = d.upjong2_cd
+        LEFT JOIN tb_upjong1 e ON d.upjong1_cd = e.upjong1_cd
+        LEFT JOIN (select distinct login_id, mem_nm from tb_member) f ON a.crt_id = f.login_id
+        WHERE 
+            a.zone_nm in ( 'SUMMARY_REPORT', '기본보고서m' )
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="crtId != null and crtId != ''">
+                AND a.crt_id LIKE '%' || #{crtId} || '%'
+            </if>
+            <if test="address != null and address != ''">
+                AND a.address LIKE '%' || #{address} || '%'
+            </if>
+            <if test="isActive != null and isActive != ''">
+                AND is_active = #{isActive}
+            </if>
+    </select>
+
+    <select id="selectSummaryReportDetail" parameterType="long" resultType="com.zinidata.domain.mypage.vo.UsageZoneVO">
+        /** 🟢 AdminStatisticsMapper.selectSummaryReportDetail - 종합보고서 상세 조회 (JOIN 포함) */
+        SELECT 
+            a.anal_no AS analNo,
+            a.zone_nm AS zoneNm,
+            a.admi_cd AS admiCd,
+            a.block_cd AS blockCd,
+            a.address,
+            a.proc_clss AS procClss,
+            a.x_axis AS xAxis,
+            a.y_axis AS yAxis,
+            a.upjong3_cd AS upjong3Cd,
+            a.area,
+            a.franchise_yn AS franchiseYn,
+            a.crt_dt AS crtDt,
+            a.crt_id AS crtId,
+            a.upd_dt AS updDt,
+            a.upd_id AS updId,
+            a.takeout_yn AS takeoutYn,
+            a.rpt_ver AS rptVer,
+            a.compare_yn AS compareYn,
+            a.extend_yn AS extendYn,
+            a.block_type AS blockType,
+            a.is_active AS isActive,
+            CASE 
+                WHEN a.zone_nm = '기본보고서m' THEN 'betterboss'
+                ELSE 'nicebizmap'
+            END AS serviceType,
+            b.mega_nm AS megaNm,
+            b.cty_nm AS ctyNm,
+            b.admi_nm AS admiNm,
+            c.upjong3_nm AS upjong3Nm,
+            d.upjong2_nm AS upjong2Nm,
+            e.upjong1_nm AS upjong1Nm
+        FROM 
+            tb_usage_zone a
+        LEFT JOIN vwadm_admi b ON a.admi_cd = b.admi_cd
+        LEFT JOIN tb_upjong3 c ON a.upjong3_cd = c.upjong3_cd
+        LEFT JOIN tb_upjong2 d ON c.upjong2_cd = d.upjong2_cd
+        LEFT JOIN tb_upjong1 e ON d.upjong1_cd = e.upjong1_cd
+        WHERE 
+            a.anal_no = #{analNo}
+            AND a.zone_nm in ( 'SUMMARY_REPORT', '기본보고서m' )
+    </select>
+
+    <!-- ============================== 프리미엄보고서 (zone_nm = '상세보고서') ============================== -->
+    
+    <select id="selectPremiumReportList" parameterType="map" resultType="com.zinidata.domain.mypage.vo.UsageZoneVO">
+        /** 🟢 AdminStatisticsMapper.selectPremiumReportList - 프리미엄보고서 목록 조회 (JOIN 포함) */
+        SELECT 
+            a.anal_no AS analNo,
+            a.zone_nm AS zoneNm,
+            a.admi_cd AS admiCd,
+            a.block_cd AS blockCd,
+            a.address,
+            a.upjong3_cd AS upjong3Cd,
+            a.crt_dt AS crtDt,
+            a.crt_id AS crtId,
+            a.upd_dt AS updDt,
+            a.upd_id AS updId,
+            a.rpt_ver AS rptVer,
+            a.is_active AS isActive,
+            b.mega_nm AS megaNm,
+            b.cty_nm AS ctyNm,
+            b.admi_nm AS admiNm,
+            c.upjong3_nm AS upjong3Nm,
+            d.upjong2_nm AS upjong2Nm,
+            e.upjong1_nm AS upjong1Nm,
+            f.mem_nm AS memNm
+        FROM 
+            tb_usage_zone a
+        LEFT JOIN vwadm_admi b ON a.admi_cd = b.admi_cd
+        LEFT JOIN tb_upjong3 c ON a.upjong3_cd = c.upjong3_cd
+        LEFT JOIN tb_upjong2 d ON c.upjong2_cd = d.upjong2_cd
+        LEFT JOIN tb_upjong1 e ON d.upjong1_cd = e.upjong1_cd
+        LEFT JOIN tb_member f ON a.crt_id = f.login_id
+        WHERE 
+            a.zone_nm = '상세보고서'
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="crtId != null and crtId != ''">
+                AND a.crt_id LIKE '%' || #{crtId} || '%'
+            </if>
+            <if test="address != null and address != ''">
+                AND a.address LIKE '%' || #{address} || '%'
+            </if>
+            <if test="isActive != null and isActive != ''">
+                AND a.is_active = #{isActive}
+            </if>
+        ORDER BY 
+            a.crt_dt DESC
+        <if test="offset != null and limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countPremiumReports" parameterType="map" resultType="int">
+        /** 🟢 AdminStatisticsMapper.countPremiumReports - 프리미엄보고서 총 개수 조회 */
+        SELECT 
+            COUNT(a.anal_no)
+        FROM 
+            tb_usage_zone a
+        WHERE 
+            a.zone_nm = '상세보고서'
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="crtId != null and crtId != ''">
+                AND a.crt_id LIKE '%' || #{crtId} || '%'
+            </if>
+            <if test="address != null and address != ''">
+                AND a.address LIKE '%' || #{address} || '%'
+            </if>
+            <if test="isActive != null and isActive != ''">
+                AND is_active = #{isActive}
+            </if>
+    </select>
+
+    <select id="selectPremiumReportDetail" parameterType="long" resultType="com.zinidata.domain.mypage.vo.UsageZoneVO">
+        /** 🟢 AdminStatisticsMapper.selectPremiumReportDetail - 프리미엄보고서 상세 조회 (JOIN 포함) */
+        SELECT 
+            a.anal_no AS analNo,
+            a.zone_nm AS zoneNm,
+            a.admi_cd AS admiCd,
+            a.block_cd AS blockCd,
+            a.address,
+            a.proc_clss AS procClss,
+            a.x_axis AS xAxis,
+            a.y_axis AS yAxis,
+            a.upjong3_cd AS upjong3Cd,
+            a.area,
+            a.franchise_yn AS franchiseYn,
+            a.crt_dt AS crtDt,
+            a.crt_id AS crtId,
+            a.upd_dt AS updDt,
+            a.upd_id AS updId,
+            a.takeout_yn AS takeoutYn,
+            a.rpt_ver AS rptVer,
+            a.compare_yn AS compareYn,
+            a.extend_yn AS extendYn,
+            a.block_type AS blockType,
+            a.is_active AS isActive,
+            b.mega_nm AS megaNm,
+            b.cty_nm AS ctyNm,
+            b.admi_nm AS admiNm,
+            c.upjong3_nm AS upjong3Nm,
+            d.upjong2_nm AS upjong2Nm,
+            e.upjong1_nm AS upjong1Nm
+        FROM 
+            tb_usage_zone a
+        LEFT JOIN vwadm_admi b ON a.admi_cd = b.admi_cd
+        LEFT JOIN tb_upjong3 c ON a.upjong3_cd = c.upjong3_cd
+        LEFT JOIN tb_upjong2 d ON c.upjong2_cd = d.upjong2_cd
+        LEFT JOIN tb_upjong1 e ON d.upjong1_cd = e.upjong1_cd
+        WHERE 
+            a.anal_no = #{analNo}
+            AND a.zone_nm = '상세보고서'
+    </select>
+
+    <!-- ============================== 프리미엄보고서 이벤트 쿠폰 ============================== -->
+    
+    <select id="selectEventCouponList" parameterType="map" resultType="com.zinidata.domain.admin.vo.EventCouponListVO">
+        /** 🟢 AdminStatisticsMapper.selectEventCouponList - 이벤트 쿠폰 생성 내역 목록 조회 */
+        SELECT 
+            b.mem_no AS memNo,
+            b.login_id AS loginId,
+            b.mem_nm AS memNm,
+            a.event_code AS eventCode,
+            a.start_dt AS startDt,
+            a.end_dt AS endDt,
+            a.crt_dt AS crtDt,
+            a.crt_id AS crtId,
+            a.upd_dt AS updDt,
+            a.upd_id AS updId
+        FROM 
+            tb_member_event a
+        JOIN tb_member b ON a.mem_no = b.mem_no
+        WHERE 1=1
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="loginId != null and loginId != ''">
+                AND b.login_id LIKE '%' || #{loginId} || '%'
+            </if>
+            <if test="memNm != null and memNm != ''">
+                AND b.mem_nm LIKE '%' || #{memNm} || '%'
+            </if>
+            <if test="eventCode != null and eventCode != ''">
+                AND a.event_code LIKE '%' || #{eventCode} || '%'
+            </if>
+        ORDER BY 
+            b.mem_no DESC
+        <if test="offset != null and limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countEventCoupons" parameterType="map" resultType="int">
+        /** 🟢 AdminStatisticsMapper.countEventCoupons - 이벤트 쿠폰 생성 총 개수 조회 */
+        SELECT 
+            COUNT(*)
+        FROM 
+            tb_member_event a
+        JOIN tb_member b ON a.mem_no = b.mem_no
+        WHERE 1=1
+            <if test="startDate != null and startDate != ''">
+                AND a.crt_dt >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.crt_dt &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="loginId != null and loginId != ''">
+                AND b.login_id LIKE '%' || #{loginId} || '%'
+            </if>
+            <if test="memNm != null and memNm != ''">
+                AND b.mem_nm LIKE '%' || #{memNm} || '%'
+            </if>
+            <if test="eventCode != null and eventCode != ''">
+                AND a.event_code LIKE '%' || #{eventCode} || '%'
+            </if>
+    </select>
+
+    <select id="selectEventCouponUsageList" parameterType="map" resultType="com.zinidata.domain.admin.vo.EventCouponUsageVO">
+        /** 🟢 AdminStatisticsMapper.selectEventCouponUsageList - 이벤트 쿠폰 참여 내역 목록 조회 */
+        SELECT 
+            b.mem_no AS buyerNo,
+            b.login_id AS buyerId,
+            b.mem_nm AS buyerNm,
+            c.event_code AS eventCode,
+            d.mem_no AS ownerMemNo,
+            d.login_id AS ownerLoginId,
+            d.mem_nm AS ownerMemNm,
+            a.valid_dt_from AS validDtFrom,
+            a.valid_dt_to AS validDtTo,
+            a.sale_no AS salesNo
+        FROM 
+            tb_sales a
+        JOIN tb_member b ON a.mem_no = b.mem_no
+        JOIN tb_member_event c ON a.sales_corp_cd = c.event_code
+        JOIN tb_member d ON c.mem_no = d.mem_no
+        WHERE 1=1
+            <if test="startDate != null and startDate != ''">
+                AND a.valid_dt_from >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.valid_dt_from &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="buyerId != null and buyerId != ''">
+                AND b.login_id LIKE '%' || #{buyerId} || '%'
+            </if>
+            <if test="buyerNm != null and buyerNm != ''">
+                AND b.mem_nm LIKE '%' || #{buyerNm} || '%'
+            </if>
+            <if test="ownerLoginId != null and ownerLoginId != ''">
+                AND d.login_id LIKE '%' || #{ownerLoginId} || '%'
+            </if>
+            <if test="ownerMemNm != null and ownerMemNm != ''">
+                AND d.mem_nm LIKE '%' || #{ownerMemNm} || '%'
+            </if>
+            <if test="eventCode != null and eventCode != ''">
+                AND c.event_code LIKE '%' || #{eventCode} || '%'
+            </if>
+        ORDER BY 
+            a.valid_dt_from DESC
+        <if test="offset != null and limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countEventCouponUsages" parameterType="map" resultType="int">
+        /** 🟢 AdminStatisticsMapper.countEventCouponUsages - 이벤트 쿠폰 참여 총 개수 조회 */
+        SELECT 
+            COUNT(*)
+        FROM 
+            tb_sales a
+        JOIN tb_member b ON a.mem_no = b.mem_no
+        JOIN tb_member_event c ON a.sales_corp_cd = c.event_code
+        JOIN tb_member d ON c.mem_no = d.mem_no
+        WHERE 1=1
+            <if test="startDate != null and startDate != ''">
+                AND a.valid_dt_from >= TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND a.valid_dt_from &lt;= TO_TIMESTAMP(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="buyerId != null and buyerId != ''">
+                AND b.login_id LIKE '%' || #{buyerId} || '%'
+            </if>
+            <if test="buyerNm != null and buyerNm != ''">
+                AND b.mem_nm LIKE '%' || #{buyerNm} || '%'
+            </if>
+            <if test="ownerLoginId != null and ownerLoginId != ''">
+                AND d.login_id LIKE '%' || #{ownerLoginId} || '%'
+            </if>
+            <if test="ownerMemNm != null and ownerMemNm != ''">
+                AND d.mem_nm LIKE '%' || #{ownerMemNm} || '%'
+            </if>
+            <if test="eventCode != null and eventCode != ''">
+                AND c.event_code LIKE '%' || #{eventCode} || '%'
+            </if>
+    </select>
+
+</mapper>

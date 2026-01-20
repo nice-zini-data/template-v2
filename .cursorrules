@@ -1,0 +1,62 @@
+# ZiniData 프로젝트 코딩 규칙
+
+## API 요청 파라미터 처리 규칙
+
+- **항상 VO 객체로 캡슐화**: API 요청 파라미터는 개별 파라미터로 전달하지 말고, 반드시 VO 객체로 캡슐화하여 전달해야 합니다.
+- ❌ 잘못된 예시: `@RequestParam String name, @RequestParam String email`
+- ✅ 올바른 예시: `@RequestBody UserVO userVO`
+
+## Service 클래스 구현 규칙
+
+- **인터페이스 없이 직접 구현**: Service 클래스는 인터페이스를 정의하거나 구현하지 않고, 직접 구현해야 합니다.
+- **모든 로직은 Service.java 파일 내부**: 모든 서비스 로직은 Service.java 파일 내부에 구현해야 합니다.
+- ❌ 잘못된 예시: `UserService` 인터페이스와 `UserServiceImpl` 구현 클래스 분리
+- ✅ 올바른 예시: `UserService` 클래스에 `@Service` 어노테이션만 사용
+
+## Controller 구현 규칙
+
+- **Model 속성 필수 추가**: 모든 Controller 메서드는 Model에 다음 속성을 추가해야 합니다.
+  - `model.addAttribute("pageTitle", "페이지 제목")` - 페이지 제목
+  - `model.addAttribute("currentPage", "도메인명")` - 현재 페이지 구분 (예: "auth", "requests", "home")
+- ❌ 잘못된 예시: Model 속성 없이 뷰만 반환
+- ✅ 올바른 예시: `model.addAttribute("pageTitle", "로그인"); model.addAttribute("currentPage", "auth");`
+
+## ApiController 구현 규칙
+
+- **세션 체크 필수**: 모든 ApiController 메서드는 HttpServletRequest를 받아 세션 체크를 수행해야 합니다.
+- 세션 체크 패턴:
+  1. `HttpSession session = request.getSession(false);` - 세션 조회
+  2. 세션이 null이면 UNAUTHORIZED 응답
+  3. `session.getAttribute("memNo")`로 memNo 확인
+  4. memNo가 null이면 UNAUTHORIZED 응답
+- ❌ 잘못된 예시: 세션 체크 없이 API 호출
+- ✅ 올바른 예시: HttpServletRequest 파라미터 추가 + 세션 체크 로직
+
+## Mapper 호출 규칙
+
+- **VO 객체 직접 전달**: Service에서 Mapper를 호출할 때 개별 변수를 펼쳐서 전달하지 말고, VO 객체를 직접 전달해야 합니다.
+- ❌ 잘못된 예시: `mapMapper.requestMap(mapVO.getGubun(), mapVO.getMinx(), mapVO.getMiny(), mapVO.getMaxx(), mapVO.getMaxy())`
+- ✅ 올바른 예시: `mapMapper.requestMap(mapVO)`
+
+## 추가 규칙
+
+### Java 구현 룰
+- Service 클래스는 인터페이스 없이 직접 구현
+- API 요청 파라미터는 VO 객체로 캡슐화
+- Mapper 호출 시 VO 객체 직접 전달 (개별 변수 펼치기 금지)
+- 모든 REST API는 `ApiResponse<T>`로 응답
+- Service 계층에서 `BusinessException` 또는 `ValidationException` 사용
+- 모든 VO는 `BaseVO` 상속
+- Controller는 Model에 pageTitle, currentPage 추가
+- ApiController는 HttpServletRequest로 세션 체크
+
+### SQL 작성 룰
+- DDL 키워드: 대문자 (CREATE, INSERT, SELECT 등)
+- 테이블명, 컬럼명, 별명: 소문자
+- 함수: 소문자 (count, sum 등)
+
+### JavaScript/TypeScript 룰
+- 화살표 함수 우선 사용
+- 함수 변수는 `const` 사용
+- `function` 키워드는 필요한 경우에만 사용
+

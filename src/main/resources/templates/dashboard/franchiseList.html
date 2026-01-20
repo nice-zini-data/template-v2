@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+</head>
+
+<body>
+    <div class="wrap dashboardWrap dashSubWrap">
+        <div class="dashboardContent">
+            <div class="dashSubTop dashStep01 ">
+                <div class="backBtn" onclick="history.back()">
+                    <img src="/assets/images/icons/back_arrow.svg" alt="">
+                </div>
+                <p class="dashSubTitle">전체 가맹점 확인</p>
+                <div class="searchBtn">
+                    <img src="/assets/images/icons/search_icon_dark.svg" alt="">
+                </div>
+            </div>
+            <div class="dashSubTop dashStep02 hidden">
+                <div class="backBtn backBtn02">
+                    <img src="/assets/images/icons/back_arrow.svg" alt="">
+                </div>
+                <input type="text" placeholder="검색어를 입력해 주세요">
+                <button type="button" class="clearBtn hidden">
+                    <img src="/assets/images/icons/clear_icon.svg" alt="">
+                </button>
+            </div>
+            <div class="dashSubContent">
+                <div class="franchiseListTit">
+                    <p class="">가맹점명
+                        <span>위치·업종</span>
+                    </p>
+                    <p class="text-right">전월 매출액
+                        <span>전전월 대비</span>
+                    </p>
+                </div>
+                <ul class="franchiseList pb-[120px]">
+                    <li>
+                        <div>
+                            <p class="franchiseListName">가맹점명</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate up">+160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate up">+160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate up">+160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate up">+160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <p class="franchiseListName">프레쉬엔지니어드 여의도2호점 last</p>
+                            <p class="franchiseListLocation">서울 동작구 노량진동 · 일반음식점</p>
+                        </div>
+                        <div>
+                            <p class="franchiseListSales">4,200,000원</p>
+                            <p class="franchiseListSalesRate down">-160,000원</p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="franchiseListNull hidden">
+                    <p>검색 결과가 없습니다.</p>
+                </div>
+
+                <div class="franchiseListFilter">
+                    <button type="button" class="franchiseListFilterBtn grayLineBtn">
+                        <img src="/assets/images/icons/filter_icon.svg" alt="">
+                        <span>가맹점 이름순</span>
+                    </button>
+                </div>                    
+            </div>
+        </div>
+        <div class="dashFilterBoxWrap hidden">
+            <div class="dashFilterBox">
+                <div class="filterBoxTit">
+                    <p class="filterBoxTitTxt">정렬</p>
+                    <button type="button" class="filterClose">
+                        <img src="/assets/images/icons/filter_close_icon.svg" alt="">
+                    </button>
+                </div>
+                <div class="filterBoxContent">
+                    <ul>
+                        <li class="active">가맹점 이름 순</li>
+                        <li>매출 높은 순</li>
+                        <li>매출 낮은 순</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="filterBg"></div>
+        </div>
+    </div>
+                <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    <script type="text/javascript" th:src="@{/assets/js/dashboard/franchiseList.js}"></script>
+</body>
+</html> 

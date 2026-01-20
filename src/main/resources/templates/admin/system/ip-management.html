@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+</head>
+<body>
+    <div class="wrap">
+        <!-- ============================== 헤더 설정 ============================== -->
+        <th:block th:replace="~{fragments/header :: mainHeader}" />
+
+        <!-- ============================== 메인 컨텐츠 설정 ============================== -->
+        <main class="fixContainer">
+            <div class="max-w-6xl mx-auto py-10 px-5">
+                <!-- 페이지 헤더 -->
+                <div class="bg-gradient-to-r from-red-600 via-red-500 to-red-400 text-white p-6 rounded-xl mb-6 shadow-lg">
+                    <!-- 네비게이션 -->
+                    <nav class="flex items-center space-x-2 text-sm mb-4">
+                        <a href="/" class="hover:text-red-200 transition-colors">🏠 홈</a>
+                        <span class="text-red-200">/</span>
+                        <a href="/admin" class="hover:text-red-200 transition-colors">⚙️ 관리자</a>
+                        <span class="text-red-200">/</span>
+                        <span class="text-red-100">🛡️ IP 차단 관리</span>
+                    </nav>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold mb-2">🛡️ IP 차단 관리</h1>
+                            <p class="opacity-90">시스템 보안을 위한 IP 주소 차단 관리</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-red-100" th:text="${totalCount}">0</div>
+                            <div class="text-sm text-red-200">총 차단된 IP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP 차단 등록 폼 -->
+                <section class="section-card bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        🔒 새 IP 차단 등록
+                    </h2>
+                    
+                    <form id="blockIpForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">IP 주소 *</label>
+                            <input type="text" id="ipAddress" name="ip" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                   placeholder="192.168.1.100" required pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">차단 사유 *</label>
+                            <input type="text" id="blockReason" name="reason" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                   placeholder="악성 접근 시도" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">차단 타입</label>
+                            <select id="blockType" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2">
+                                <option value="permanent">영구 차단</option>
+                                <option value="temporary">임시 차단</option>
+                            </select>
+                        </div>
+                        
+                        <div id="ttlContainer" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">차단 시간 (시간)</label>
+                            <input type="number" id="ttlHours" name="ttlHours" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                   placeholder="24" min="1" max="8760">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">프로젝트 코드</label>
+                            <input type="text" id="appCode" name="appCode" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                   value="NBZM" readonly>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button type="submit" class="btn-primary bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-full transition-colors">
+                                🔒 차단 등록
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- 검색 및 필터 -->
+                <section class="section-card bg-white rounded-lg shadow-md p-6 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <input type="text" id="searchIp" class="form-input border border-gray-300 rounded-lg px-3 py-2" placeholder="IP 주소 검색...">
+                            </div>
+                            <div>
+                                <select id="filterType" class="form-input border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="">전체</option>
+                                    <option value="permanent">영구 차단</option>
+                                    <option value="temporary">임시 차단</option>
+                                </select>
+                            </div>
+                            <button id="searchBtn" class="btn-secondary bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                🔍 검색
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <button id="refreshBtn" class="btn-secondary bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                🔄 새로고침
+                            </button>
+                            <button id="bulkUnblockBtn" class="btn-danger bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors" disabled>
+                                🔓 선택 해제
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- IP 차단 목록 테이블 -->
+                <section class="section-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 bg-gray-50 border-b">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
+                            📋 차단된 IP 목록
+                        </h3>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <input type="checkbox" id="selectAll" class="rounded">
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        IP 주소
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        차단 사유
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        차단 타입
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        차단 시간
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        남은 시간
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        작업
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="ipTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- 데이터가 없는 경우 -->
+                                <tr th:if="${#lists.isEmpty(blockedIps)}">
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                        <div class="text-4xl mb-4">ℹ️</div>
+                                        <div class="text-lg">차단된 IP가 없습니다.</div>
+                                        <div class="text-sm mt-2">새로운 IP를 차단하여 시스템을 보호하세요.</div>
+                                    </td>
+                                </tr>
+                                
+                                <!-- IP 차단 목록 -->
+                                <tr th:each="ip : ${blockedIps}" class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" th:value="${ip.ip}" class="ip-checkbox rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" th:text="${ip.ip}">192.168.1.100</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900" th:text="${ip.reason}">악성 접근 시도</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span th:class="${ip.permanent} ? 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium' : 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium'"
+                                              th:text="${ip.permanent} ? '영구차단' : '임시차단'">영구차단</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900" th:text="${ip.blockedTime}">2025-01-21 14:30:00</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900" 
+                                             th:text="${ip.permanent} ? '영구' : ${ip.ttlSeconds != null and ip.ttlSeconds > 0} ? ${ip.ttlSeconds / 3600} + '시간 ' + ${(ip.ttlSeconds % 3600) / 60} + '분' : '만료'">
+                                            영구
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button th:onclick="'unblockIp(\'' + ${ip.ip} + '\')'" 
+                                                class="text-red-600 hover:text-red-900 flex items-center gap-1">
+                                            🔓 해제
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Alert 모달 -->
+            <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 max-w-md w-mx">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div id="alertIcon" class="text-2xl">ℹ️</div>
+                        <h3 id="alertTitle" class="text-lg font-medium">알림</h3>
+                    </div>
+                    <p id="alertMessage" class="text-gray-700 mb-6">메시지가 여기에 표시됩니다.</p>
+                    <div class="flex justify-end">
+                        <button id="alertCloseBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">확인</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ============================== 푸터 설정 ============================== -->
+        <th:block th:replace="~{fragments/footer :: footer}" />
+    </div>
+
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    
+    <script>
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            loadIpList();
+        });
+
+        // 이벤트 리스너 초기화
+        function initializeEventListeners() {
+            // IP 차단 등록 폼
+            document.getElementById('blockIpForm').addEventListener('submit', handleBlockIp);
+            
+            // 차단 타입 변경 시 TTL 입력란 표시/숨김
+            document.getElementById('blockType').addEventListener('change', function() {
+                const ttlContainer = document.getElementById('ttlContainer');
+                if (this.value === 'temporary') {
+                    ttlContainer.classList.remove('hidden');
+                    document.getElementById('ttlHours').required = true;
+                } else {
+                    ttlContainer.classList.add('hidden');
+                    document.getElementById('ttlHours').required = false;
+                }
+            });
+
+            // 전체 선택 체크박스
+            document.getElementById('selectAll').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.ip-checkbox');
+                checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+                updateBulkUnblockButton();
+            });
+
+            // 개별 체크박스 변경 시
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('ip-checkbox')) {
+                    updateBulkUnblockButton();
+                }
+            });
+
+            // 버튼 이벤트
+            document.getElementById('refreshBtn').addEventListener('click', loadIpList);
+            document.getElementById('bulkUnblockBtn').addEventListener('click', handleBulkUnblock);
+            document.getElementById('searchBtn').addEventListener('click', searchIps);
+            document.getElementById('alertCloseBtn').addEventListener('click', hideAlert);
+        }
+
+        // IP 차단 등록 처리
+        async function handleBlockIp(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const blockType = document.getElementById('blockType').value;
+            
+            if (blockType === 'permanent') {
+                formData.delete('ttlHours');
+            }
+
+            try {
+                const response = await fetch('/admin/ip-management/block', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', '성공', 'IP 차단이 등록되었습니다.');
+                    e.target.reset();
+                    document.getElementById('ttlContainer').classList.add('hidden');
+                    loadIpList();
+                } else {
+                    showAlert('error', '오류', result.message || 'IP 차단 등록에 실패했습니다.');
+                }
+            } catch (error) {
+                showAlert('error', '오류', '네트워크 오류가 발생했습니다.');
+            }
+        }
+
+        // IP 차단 해제
+        async function unblockIp(ip) {
+            if (!confirm(`IP ${ip}의 차단을 해제하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/admin/ip-management/unblock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `ip=${encodeURIComponent(ip)}`
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', '성공', 'IP 차단이 해제되었습니다.');
+                    loadIpList();
+                } else {
+                    showAlert('error', '오류', result.message || 'IP 차단 해제에 실패했습니다.');
+                }
+            } catch (error) {
+                showAlert('error', '오류', '네트워크 오류가 발생했습니다.');
+            }
+        }
+
+        // 일괄 차단 해제
+        async function handleBulkUnblock() {
+            const selectedIps = Array.from(document.querySelectorAll('.ip-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            if (selectedIps.length === 0) {
+                showAlert('warning', '알림', '해제할 IP를 선택해주세요.');
+                return;
+            }
+
+            if (!confirm(`선택된 ${selectedIps.length}개 IP의 차단을 해제하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                selectedIps.forEach(ip => formData.append('ips', ip));
+
+                const response = await fetch('/admin/ip-management/unblock-bulk', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', '성공', `${selectedIps.length}개 IP 차단이 해제되었습니다.`);
+                    loadIpList();
+                } else {
+                    showAlert('error', '오류', result.message || '일괄 해제에 실패했습니다.');
+                }
+            } catch (error) {
+                showAlert('error', '오류', '네트워크 오류가 발생했습니다.');
+            }
+        }
+
+        // IP 목록 새로고침
+        async function loadIpList() {
+            try {
+                const response = await fetch('/admin/ip-management/list');
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateIpTable(result.data);
+                } else {
+                    showAlert('error', '오류', 'IP 목록 조회에 실패했습니다.');
+                }
+            } catch (error) {
+                showAlert('error', '오류', '네트워크 오류가 발생했습니다.');
+            }
+        }
+
+        // IP 테이블 업데이트
+        function updateIpTable(ipList) {
+            const tbody = document.getElementById('ipTableBody');
+            
+            if (ipList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <div class="text-4xl mb-4">ℹ️</div>
+                            <div class="text-lg">차단된 IP가 없습니다.</div>
+                            <div class="text-sm mt-2">새로운 IP를 차단하여 시스템을 보호하세요.</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = ipList.map(ip => `
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" value="${ip.ip}" class="ip-checkbox rounded">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${ip.ip}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${ip.reason}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="${ip.isPermanent ? 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium' : 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium'}">
+                            ${ip.type}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${ip.blockedTime}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${ip.remainingTime}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="unblockIp('${ip.ip}')" 
+                                class="text-red-600 hover:text-red-900 flex items-center gap-1">
+                            🔓 해제
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // 체크박스 이벤트 재등록
+            document.querySelectorAll('.ip-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateBulkUnblockButton);
+            });
+        }
+
+        // 일괄 해제 버튼 상태 업데이트
+        function updateBulkUnblockButton() {
+            const selectedCount = document.querySelectorAll('.ip-checkbox:checked').length;
+            const bulkBtn = document.getElementById('bulkUnblockBtn');
+            
+            bulkBtn.disabled = selectedCount === 0;
+            bulkBtn.textContent = selectedCount > 0 ? `🔓 선택 해제 (${selectedCount})` : '🔓 선택 해제';
+        }
+
+        // IP 검색
+        function searchIps() {
+            const searchTerm = document.getElementById('searchIp').value.toLowerCase();
+            const filterType = document.getElementById('filterType').value;
+            const rows = document.querySelectorAll('#ipTableBody tr');
+
+            rows.forEach(row => {
+                const ip = row.cells[1]?.textContent?.toLowerCase() || '';
+                const type = row.cells[3]?.textContent?.toLowerCase() || '';
+                
+                const matchesSearch = ip.includes(searchTerm);
+                const matchesFilter = !filterType || 
+                    (filterType === 'permanent' && type.includes('영구')) ||
+                    (filterType === 'temporary' && type.includes('임시'));
+
+                row.style.display = matchesSearch && matchesFilter ? '' : 'none';
+            });
+        }
+
+        // 알림 표시
+        function showAlert(type, title, message) {
+            const modal = document.getElementById('alertModal');
+            const icon = document.getElementById('alertIcon');
+            const titleEl = document.getElementById('alertTitle');
+            const messageEl = document.getElementById('alertMessage');
+
+            // 아이콘 설정
+            switch(type) {
+                case 'success':
+                    icon.textContent = '✅';
+                    break;
+                case 'error':
+                    icon.textContent = '❌';
+                    break;
+                case 'warning':
+                    icon.textContent = '⚠️';
+                    break;
+                default:
+                    icon.textContent = 'ℹ️';
+            }
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // 알림 숨김
+        function hideAlert() {
+            const modal = document.getElementById('alertModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+</body>
+</html> 

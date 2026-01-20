@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+</head>
+
+<body>
+    <div class="wrap mapWrap">
+       <!-- ============================== 헤더 설정 ============================== -->
+       <th:block th:replace="~{fragments/header :: mapHeader}" />       
+
+       <div class="map" id="mapContainer">
+       </div>
+
+       <div id="sheet">
+        <div class="mapReSearch"><img src="/assets/images/icons/map_research_icon.svg" alt=""></div>
+            <div class="sheetHeader">
+                <!--리스트 # 탭-->
+                <div class="sheetTab ">
+                    <ul>
+                        <li class="active">전체</li>
+                        <li>신규 설치</li>
+                        <li>A/S</li>
+                    </ul>
+                </div>
+
+                <!--상세 # 뒤로가기-->
+                <div class="sheetBack hidden">
+                    <div class="sheetBackBtn"><img src="/assets/images/icons/back_arrow_gray.svg" class="size-10" alt=""></div>
+                    <p class="">요청 상세 보기</p>
+                </div>
+            </div>
+            <div class="sheetContent detailShow">
+                
+                <!--리스트-->
+                <div class="sheetInner ">
+                    <div class="flexBetween">
+                        <p class="text-xl/7 font-bold text-zinc-800">요청 둘러보기</p>
+                        <select name="" id="requestListBoxOdr" class="selectBox">
+                            <option value="최신 순" data-order="crtDt">최신 순</option>
+                            <option value="거리 순" data-order="distance">거리 순</option>
+                            <option value="금액 높은 순" data-order="payAmt">금액 높은 순</option>
+                        </select>
+                    </div>
+                    <div class="sheetListNull">
+                        <div class="">
+                            <img src="/assets/images/icons/request_null.svg" class="size-6 mb-2-5 m-auto" alt="">
+                            <p class="text-sm/5 text-zinc-400">이 주변에 등록된 요청이 없습니다.<br/>
+                                지도를 이동해 다른 지역을 둘러보세요.</p>
+                        </div>
+                    </div>
+                    <div class="sheetList" id="requestListBox">
+                    </div>
+                </div>
+
+                <!--상세-->
+                <div class="sheetDetail asDetail hidden">
+                    <div class="sheetDetailContent">
+                        <p class="checkBadge installBadge mb-1 serviceGb0 hidden">신규 설치</p>
+                        <p class="checkBadge asBadge mb-1 serviceGb1 hidden">A/S</p>
+                        <p class="text-lg/7 font-bold text-zinc-800 installNm"></p>
+                        <div class="flexBetween !items-start">
+                            <p class="areaCopyTxt installAddr"></p>
+                            <button type="button" class="btn areaCopyBtn flex justify-content items-center gap-0-5 text-sm/5 font-medium text-zinc-500 w-[80px]"><img src="/assets/images/icons/file_icon_gray.svg" class="size-4" alt="">주소복사</button>
+                        </div>
+                        <div class="flexBetween pt-4 mt-4 border-t-1 border-solid border-t-zinc-100">
+                            <p class="text-sm/5 font-medium text-zinc-400">제안금액</p>
+                            <p class="text-lg/7 font-bold priceText payAmt"></p>
+                        </div>
+                    </div>
+                    <!--설치만 해당 ST-->
+                    <div class="sheetDetailContent serviceGb0 hidden">
+                        <p class="sheetDetailTitle">요청 내용</p>
+                        <div class="grayBox">
+                            <p class="serviceContent"></p>
+                        </div>
+                    </div>
+                    <!--설치만 해당 ED-->
+                    <!--A/S만 해당 ST-->
+                    <div class="sheetDetailContent serviceGb1 hidden">
+                        <p class="sheetDetailTitle">문제 증상</p>
+                        <div>
+                            <ul class="subInfoList">
+                                <li>
+                                    <p class="subInfoListTitle">사용 단말기</p>
+                                    <p class="subInfoListTxt vanId"></p>
+                                </li>
+                            </ul>
+                            <div class="grayBox mt-4">
+                                <p class="serviceContent"></p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm/5 font-medium text-zinc-400 mt-4">문제 증상 사진</p>
+                            <div class="fileList symptom mt-2"></div>
+                        </div>  
+                    </div>
+                    <!--A/S만 해당 ED-->
+                    <div class="sheetDetailContent relative">
+                        <a href="tel:" class="callBtn" id="callRequesterBtn">
+                            <img src="/assets/images/icons/call_icon.svg" class="size-4-5" alt="">
+                            <p>요청자에게 문의</p>
+                        </a>
+                        <p class="sheetDetailTitle">요청자 정보</p>
+                        <ul class="subInfoList">
+                            <li>
+                                <p class="subInfoListTitle">요청자 이름</p>
+                                <p class="subInfoListTxt crtName"></p>
+                            </li>
+                            <li>
+                                <p class="subInfoListTitle">대리점 연락처</p>
+                                <p class="subInfoListTxt storeCallNumber"></p>
+                            </li>
+                            <li>
+                                <p class="subInfoListTitle">휴대폰 번호</p>
+                                <p class="subInfoListTxt crtPhoneNumber"></p>
+                            </li>
+                            <li>
+                                <p class="subInfoListTitle">요청일</p>
+                                <p class="subInfoListTxt strCrtDt"></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="sheetBottom">
+                        <button type="button" class="btn text-white w-full h-12 rounded-full text-md/6 font-medium" id="requestExecuteBtn">수락하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+        <!-- 작업 확인 모달창 ST-->
+        <div class="sheetAcceptModal modalLayout">
+            <div class="alertModalContent">
+                <div class="p-2-5 mb-4 text-center">
+                    <div class="size-14 mb-3 mx-auto"><img src="/assets/images/icons/done_icon_blue.svg" class="size-full" alt=""></div>
+                    <p class="alertModalContentText01">요청 수락</p>
+                    <p class="alertModalContentText02">이 요청을 수락하시겠습니까?<br/>
+                        수락 즉시 의뢰자에게 문자로 알림이 전송되며, <br/>
+                        회원님이 담당자로 표시됩니다.</p>
+                </div>
+                <div class="flexBetween gap-2">
+                    <button type="button" class="btn grayLineBtn h-10 w-full rounded-full px-4 text-md/6 font-medium close">취소</button>
+                    <button type="button" class="btn primaryBtn h-10 w-full rounded-full px-4 text-md/6 font-medium">확인</button>
+                </div>
+            </div>
+            <div class="modalBg"></div>
+        </div>
+        <!-- 작업 확인 모달창 ED-->
+
+
+        <!--작업 정보 입력 모달창 ST  ##  신규일때 installStep02Modal, A/S일때 asStep02Modal-->
+        <div class="sheetStep02Modal asStep02Modal"><!--active-->
+            <div class="sheetStep02ModalContentTop">
+                <p class="text-base/6 font-bold text-zinc-800">작업 정보 입력</p>
+                <button type="button" class="modalClose"><img src="/assets/images/icons/close_bk.svg" class="size-4" alt=""></button>
+            </div>
+            <div class="sheetStep02ModalContent">
+                <div class="grayBox py-2 px-3-5 mb-3-5">
+                    <p class="text-sm/5 font-medium text-zinc-700">요청자에게 전달할 작업 정보를 입력해주세요.<br/>정보를 모두 입력하시면 요청이 수락됩니다.</p>
+                </div>
+
+                <div class="py-6 border-b-[12px] border-solid border-b-zinc-100">
+                    <p class="sectionTitle">작업자 정보</p>
+                    <div class="inputBox">
+                        <p class="inputLabel">작업자 이름</p>
+                        <input type="text" class="inputCustom" placeholder="작업자 이름을 적어주세요." id="crtName">
+                    </div>
+                    <div class="inputBox">
+                        <p class="inputLabel">휴대폰 번호</p>
+                        <div class="formCheck">
+                            <div class="flexBetween gap-2">
+                                <input type="tel" class="inputCustom h-12 disabled" maxlength="11" id="phone" placeholder="휴대폰 번호를 입력해주세요"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                <div class="py-6 ">
+                    <p class="sectionTitle">작업 예정 일자</p>
+                    <div class="datepickerBtn">
+                        <input type="text" id="date" class="inputCustom pr-[42px] executeDate" placeholder="작업 예정 일자를 선택해주세요.">
+                    </div>
+                </div>
+                <button type="button" class="btn nextBtn text-white w-full h-12 rounded-full text-md/6 font-medium border-0" id="requestExecuteDone">정보 입력 완료</button>
+            </div>
+        </div>
+        <!--작업 정보 입력 모달창 ED-->
+    </div>
+    <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=33poukh5ab&submodules=geocoder"></script>
+    <script type="text/javascript" th:src="@{/assets/js/common/map-common.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/requests/map.js(v=${@environment.getProperty('app.version')})}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/requests/map-marker.js(v=${@environment.getProperty('app.version')})}"></script>
+</body>
+</html> 

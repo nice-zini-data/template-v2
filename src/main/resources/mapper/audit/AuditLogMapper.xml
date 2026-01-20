@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.audit.mapper.AuditLogMapper">
+
+    <!-- ==================== 기본 CRUD ==================== -->
+    
+    <!-- 감사 로그 삽입 -->
+    <insert id="insertAuditLog" parameterType="com.zinidata.audit.vo.AuditLogVO">
+        /** 🟢 AuditLogMapper.insertAuditLog - 감사 로그 삽입
+         *  API: 모든 @AuditLog 어노테이션 적용 API 호출 시 자동 실행
+         *  목적: 사용자 행동, API 호출, 보안 이벤트 등 모든 감사 로그 기록
+         */
+        INSERT INTO TB_AUDIT_LOG (
+            MEM_NO,
+            PRJ_TYPE,
+            CLIENT_IP,
+            REQUEST_URI,
+            HTTP_METHOD,
+            PARAMETERS,
+            USER_AGENT,
+            ACTION_TYPE,
+            TARGET_RESOURCE,
+            RESULT_STATUS,
+            ERROR_MESSAGE,
+            ACCESS_TIME,
+            PROCESSING_TIME,
+            REFERRER,
+            SESSION_ID
+        ) VALUES (
+            #{memNo},
+            #{prjType},
+            #{clientIp},
+            #{requestUri},
+            #{httpMethod},
+            #{parameters},
+            #{userAgent},
+            #{actionType},
+            #{targetResource},
+            #{resultStatus},
+            #{errorMessage},
+            #{accessTime},
+            #{processingTime},
+            #{referrer},
+            #{sessionId}
+        )
+    </insert>
+
+    <!-- ==================== 기본 조회 ==================== -->
+    
+    <!-- 특정 회원의 감사 로그 조회 -->
+    <select id="selectAuditLogsByMemNo" resultType="com.zinidata.audit.vo.AuditLogVO">
+        /** 🟢 AuditLogMapper.selectAuditLogsByMemNo - 회원별 감사 로그 조회
+         *  API: 관리자 페이지에서 특정 회원의 활동 로그 조회 시 사용
+         *  목적: 회원별 행동 패턴 분석 및 보안 모니터링
+         */
+        SELECT 
+            MEM_NO AS memNo,
+            PRJ_TYPE AS prjType,
+            CLIENT_IP AS clientIp,
+            REQUEST_URI AS requestUri,
+            HTTP_METHOD AS httpMethod,
+            PARAMETERS,
+            USER_AGENT AS userAgent,
+            ACTION_TYPE AS actionType,
+            TARGET_RESOURCE AS targetResource,
+            RESULT_STATUS AS resultStatus,
+            ERROR_MESSAGE AS errorMessage,
+            ACCESS_TIME AS accessTime,
+            PROCESSING_TIME AS processingTime,
+            REFERRER,
+            SESSION_ID AS sessionId
+        FROM 
+            TB_AUDIT_LOG
+        WHERE 
+            MEM_NO = #{memNo}
+        <if test="startDate != null">
+            AND ACCESS_TIME >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND ACCESS_TIME &lt;= #{endDate}
+        </if>
+        ORDER BY 
+            ACCESS_TIME DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+    
+    <!-- 특정 액션 타입의 감사 로그 조회 -->
+    <select id="selectAuditLogsByActionType" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            mem_no AS memNo,
+            prj_type AS prjType,
+            client_ip AS clientIp,
+            request_uri AS requestUri,
+            http_method AS httpMethod,
+            parameters,
+            user_agent AS userAgent,
+            action_type AS actionType,
+            target_resource AS targetResource,
+            result_status AS resultStatus,
+            error_message AS errorMessage,
+            access_time AS accessTime,
+            processing_time AS processingTime,
+            referrer,
+            session_id AS sessionId
+        FROM tb_audit_log
+        WHERE action_type = #{actionType}
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        ORDER BY access_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+    
+    <!-- 특정 기간의 감사 로그 조회 -->
+    <select id="selectAuditLogsByDateRange" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            mem_no AS memNo,
+            prj_type AS prjType,
+            client_ip AS clientIp,
+            request_uri AS requestUri,
+            http_method AS httpMethod,
+            parameters,
+            user_agent AS userAgent,
+            action_type AS actionType,
+            target_resource AS targetResource,
+            result_status AS resultStatus,
+            error_message AS errorMessage,
+            access_time AS accessTime,
+            processing_time AS processingTime,
+            referrer,
+            session_id AS sessionId
+        FROM tb_audit_log
+        WHERE 1=1
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        ORDER BY access_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- ==================== 보안 모니터링 ==================== -->
+    
+    <!-- 실패한 로그인 시도 횟수 조회 -->
+    <select id="countFailedLoginAttempts" resultType="int">
+        /** 🟢 AuditLogMapper.countFailedLoginAttempts - IP별 로그인 실패 횟수 조회
+         *  API: 보안 필터에서 브루트포스 공격 감지 시 사용
+         *  목적: 특정 IP의 최근 로그인 실패 횟수 체크로 계정 잠금 및 차단 결정
+         */
+        SELECT COUNT(*)
+        FROM TB_AUDIT_LOG
+        WHERE CLIENT_IP = #{clientIp}
+          AND ACTION_TYPE = '로그인'
+          AND RESULT_STATUS IN ('FAILURE', 'UNAUTHORIZED')
+          AND ACCESS_TIME >= NOW() - INTERVAL '#{minutes} minutes'
+    </select>
+    
+    <!-- 특정 회원의 실패한 로그인 시도 횟수 조회 -->
+    <select id="countFailedLoginAttemptsByMemNo" resultType="int">
+        /** 🟢 AuditLogMapper.countFailedLoginAttemptsByMemNo - 회원별 로그인 실패 횟수 조회
+         *  API: 보안 필터에서 특정 회원의 계정 보안 상태 체크 시 사용
+         *  목적: 회원별 최근 로그인 실패 횟수로 계정 잠금 여부 결정
+         */
+        SELECT COUNT(*)
+        FROM TB_AUDIT_LOG
+        WHERE MEM_NO = #{memNo}
+          AND ACTION_TYPE = '로그인'
+          AND RESULT_STATUS IN ('FAILURE', 'UNAUTHORIZED')
+          AND ACCESS_TIME >= NOW() - INTERVAL '#{minutes} minutes'
+    </select>
+    
+    <!-- 무단 액세스 시도 조회 -->
+    <select id="selectUnauthorizedAttempts" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            mem_no AS memNo,
+            prj_type AS prjType,
+            client_ip AS clientIp,
+            request_uri AS requestUri,
+            http_method AS httpMethod,
+            parameters,
+            user_agent AS userAgent,
+            action_type AS actionType,
+            target_resource AS targetResource,
+            result_status AS resultStatus,
+            error_message AS errorMessage,
+            access_time AS accessTime,
+            processing_time AS processingTime,
+            referrer,
+            session_id AS sessionId
+        FROM tb_audit_log
+        WHERE result_status IN ('UNAUTHORIZED', 'FORBIDDEN')
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        ORDER BY access_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- ==================== 성능 모니터링 ==================== -->
+    
+    <!-- 처리 시간이 오래 걸린 요청 조회 -->
+    <select id="selectSlowRequests" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            mem_no AS memNo,
+            prj_type AS prjType,
+            client_ip AS clientIp,
+            request_uri AS requestUri,
+            http_method AS httpMethod,
+            parameters,
+            user_agent AS userAgent,
+            action_type AS actionType,
+            target_resource AS targetResource,
+            result_status AS resultStatus,
+            error_message AS errorMessage,
+            access_time AS accessTime,
+            processing_time AS processingTime,
+            referrer,
+            session_id AS sessionId
+        FROM tb_audit_log
+        WHERE processing_time >= #{thresholdMs}
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        ORDER BY processing_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+    
+    <!-- 액션 타입별 평균 처리 시간 조회 -->
+    <select id="selectAverageProcessingTimeByActionType" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            action_type AS actionType,
+            COUNT(*) AS processingTime,
+            AVG(processing_time) AS averageProcessingTime,
+            MIN(processing_time) AS minProcessingTime,
+            MAX(processing_time) AS maxProcessingTime
+        FROM tb_audit_log
+        WHERE processing_time IS NOT NULL
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        GROUP BY action_type
+        ORDER BY AVG(processing_time) DESC
+    </select>
+
+    <!-- ==================== 장애 모니터링 ==================== -->
+    
+    <!-- 에러 로그 조회 -->
+    <select id="selectErrorLogs" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            mem_no AS memNo,
+            prj_type AS prjType,
+            client_ip AS clientIp,
+            request_uri AS requestUri,
+            http_method AS httpMethod,
+            parameters,
+            user_agent AS userAgent,
+            action_type AS actionType,
+            target_resource AS targetResource,
+            result_status AS resultStatus,
+            error_message AS errorMessage,
+            access_time AS accessTime,
+            processing_time AS processingTime,
+            referrer,
+            session_id AS sessionId
+        FROM tb_audit_log
+        WHERE result_status = 'ERROR'
+           OR error_message IS NOT NULL
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        ORDER BY access_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+    
+    <!-- 특정 URI의 에러 발생 횟수 조회 -->
+    <select id="countErrorsByRequestUri" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_audit_log
+        WHERE request_uri = #{requestUri}
+          AND (result_status = 'ERROR' OR error_message IS NOT NULL)
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+    </select>
+
+    <!-- ==================== 통계 및 분석 ==================== -->
+    
+    <!-- 일별 액션 타입별 통계 조회 -->
+    <select id="selectDailyStatsByActionType" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            access_time::date AS accessDate,
+            action_type AS actionType,
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN result_status = 'SUCCESS' THEN 1 ELSE 0 END) AS successCount,
+            SUM(CASE WHEN result_status != 'SUCCESS' THEN 1 ELSE 0 END) AS failureCount
+        FROM tb_audit_log
+        WHERE 1=1
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        GROUP BY access_time::date, action_type
+        ORDER BY access_time::date DESC, action_type
+    </select>
+    
+    <!-- 시간대별 접속 통계 조회 -->
+    <select id="selectHourlyAccessStats" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            EXTRACT(HOUR FROM access_time) AS accessHour,
+            COUNT(*) AS totalCount,
+            COUNT(DISTINCT client_ip) AS uniqueIpCount,
+            COUNT(DISTINCT mem_no) AS uniqueUserCount
+        FROM tb_audit_log
+        WHERE 1=1
+        <if test="startDate != null">
+            AND access_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND access_time &lt;= #{endDate}
+        </if>
+        GROUP BY EXTRACT(HOUR FROM access_time)
+        ORDER BY EXTRACT(HOUR FROM access_time)
+    </select>
+
+    <!-- ==================== 데이터 관리 ==================== -->
+    
+    <!-- 오래된 로그 삭제 -->
+    <delete id="deleteOldLogs">
+        DELETE FROM tb_audit_log
+        WHERE access_time &lt; NOW() - INTERVAL '#{retentionMonths} months'
+    </delete>
+    
+    <!-- 로그 테이블 통계 조회 -->
+    <select id="selectTableStatistics" resultType="com.zinidata.audit.vo.AuditLogVO">
+        SELECT 
+            COUNT(*) AS totalCount,
+            COUNT(DISTINCT mem_no) AS uniqueUserCount,
+            COUNT(DISTINCT client_ip) AS uniqueIpCount,
+            MIN(access_time) AS oldestRecord,
+            MAX(access_time) AS newestRecord,
+            SUM(CASE WHEN result_status = 'SUCCESS' THEN 1 ELSE 0 END) AS successCount,
+            SUM(CASE WHEN result_status != 'SUCCESS' THEN 1 ELSE 0 END) AS failureCount
+        FROM tb_audit_log
+    </select>
+
+</mapper> 

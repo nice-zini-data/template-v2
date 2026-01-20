@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 점검 중</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SUIT', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e293b;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            padding: 0 20px;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            color: #e2e8f0;
+            line-height: 1;
+            margin-bottom: 24px;
+            letter-spacing: -0.05em;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        
+        .status-info {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 32px;
+            color: #0c4a6e;
+        }
+        
+        .status-info .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .status-info .message {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .maintenance-time {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 32px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .maintenance-time .time {
+            font-weight: 600;
+            color: #0ea5e9;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 4px;
+            height: 8px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+            height: 100%;
+            width: 65%;
+            border-radius: 4px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .status-info {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">503</div>
+        <h1>서비스 점검 중입니다</h1>
+        <p>더 나은 서비스 제공을 위해<br>시스템 점검을 진행하고 있습니다.</p>
+        
+        <div class="status-info">
+            <div class="icon">🔧</div>
+            <div class="message">시스템 업데이트 및 성능 개선 작업 중입니다.</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="maintenance-time">
+            점검 시간: <span class="time">02:00 ~ 06:00 (약 4시간)</span><br>
+            예상 완료: <span class="time">오전 6시 경</span>
+        </div>
+        
+        <div class="actions">
+            <a href="javascript:location.reload()" class="btn-primary">새로고침</a>
+            <a href="/support/notice" class="btn-secondary">공지사항 확인</a>
+        </div>
+    </div>
+</body>
+</html>

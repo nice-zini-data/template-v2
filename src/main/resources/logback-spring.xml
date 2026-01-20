@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!-- ================================
+        Logback Spring Configuration
+        Spring Boot Enterprise Template 로깅 설정
+        ================================ -->
+    <configuration>
+        <!-- Spring Boot 기본 설정 포함 -->
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        
+        <!-- 운영 환경(main)이 아닌 경우에만 파일 어펜더 포함 -->
+        <springProfile name="!main">
+            <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+        </springProfile>
+        
+        <!-- ============================== 
+            로깅 환경 변수 정의
+            ============================== -->
+        <property name="LOG_PATH" value="${LOG_PATH:-logs}"/>           <!-- 로그 파일 저장 경로 -->
+        <property name="LOG_FILE" value="${LOG_FILE:-application}"/>    <!-- 로그 파일명 (확장자 제외) -->
+        <property name="APP_NAME" value="${spring.application.name:-nicebizmap}"/>  <!-- 애플리케이션명 -->
+        
+        <!-- ============================== 
+            로그 출력 패턴 정의
+            ============================== -->
+        <!-- 로그 레벨별 색상 정의 -->
+        <property name="LOG_LEVEL_PATTERN" value="%clr(%5p){red=ERROR, yellow=WARN, green=INFO, blue=DEBUG, magenta=TRACE}"/>
+        
+        <!-- 콘솔 출력용 패턴 (컬러 지원) - 개선된 색상 구분 -->
+        <property name="CONSOLE_LOG_PATTERN" 
+                value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){highlight} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+        
+        <!-- 애플리케이션별 색상 구분을 위한 커스텀 패턴 -->
+        <property name="CUSTOM_CONSOLE_PATTERN" 
+                value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){highlight} %clr([%15.15t]){faint} %clr(%-30.30logger{30}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+        
+        <!-- 파일 출력용 패턴 (컬러 코드 제거) -->
+        <property name="FILE_LOG_PATTERN" 
+                value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+        
+        <!-- ============================== 
+            기본 어펜더 설정
+            ============================== -->
+        <!-- 콘솔 출력 어펜더 (개발 환경용) -->
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>  <!-- 터미널 출력도 UTF-8로 변경 -->
+            </encoder>
+        </appender>
+        
+        <!-- 보안 관련 로그용 콘솔 어펜더 (빨간색 강조) -->
+        <appender name="SECURITY_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){highlight} %clr([%15.15t]){faint} %clr(%-30.30logger{30}){red} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+        
+        <!-- 인증 관련 로그용 콘솔 어펜더 (초록색 강조) -->
+        <appender name="AUTH_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){highlight} %clr([%15.15t]){faint} %clr(%-30.30logger{30}){green} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+        
+        <!-- 감사 로그용 콘솔 어펜더 (파란색 강조) -->
+        <appender name="AUDIT_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){highlight} %clr([%15.15t]){faint} %clr(%-30.30logger{30}){blue} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+        
+        <!-- 일반 로그 파일 어펜더 (모든 로그 통합) -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${LOG_FILE}.log</file>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+            <!-- 로그 파일 롤링 정책: 일별 + 크기별 분할 -->
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>        <!-- 파일당 최대 크기 -->
+                <maxHistory>30</maxHistory>             <!-- 보관 기간 (일) -->
+                <totalSizeCap>1GB</totalSizeCap>        <!-- 전체 로그 최대 크기 -->
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>  <!-- 시작 시 오래된 로그 정리 -->
+            </rollingPolicy>
+        </appender>
+        
+        <!-- ============================== 
+            특화 어펜더 설정 (목적별 로그 분리)
+            ============================== -->
+        <!-- 에러 로그 전용 어펜더 (ERROR 레벨만 수집) -->
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${LOG_FILE}-error.log</file>
+            <!-- ERROR 레벨만 필터링 -->
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE}-error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>60</maxHistory>             <!-- 에러 로그는 더 오래 보관 -->
+                <totalSizeCap>2GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+        </appender>
+        
+        <!-- 감사 로그 어펜더 (사용자 활동 추적용) -->
+        <appender name="AUDIT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${LOG_FILE}-audit.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <charset>utf8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE}-audit.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>90</maxHistory>             <!-- 감사 로그는 법적 요구사항으로 오래 보관 -->
+                <totalSizeCap>5GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+        </appender>
+        
+        <!-- 성능 로그 어펜더 (API 응답 시간 등) -->
+        <appender name="PERFORMANCE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${LOG_FILE}-performance.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <charset>utf8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE}-performance.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>30</maxHistory>             <!-- 성능 로그는 30일 보관 -->
+                <totalSizeCap>2GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+        </appender>
+        
+        <!-- ============================== 
+            비동기 어펜더 설정 (성능 최적화)
+            ============================== -->
+        <!-- 일반 로그 비동기 어펜더 (파일 I/O 성능 향상) -->
+        <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="FILE"/>
+            <queueSize>512</queueSize>                   <!-- 큐 크기 -->
+            <discardingThreshold>0</discardingThreshold>  <!-- 0: 큐가 가득 찰 때까지 로그 유지 -->
+            <includeCallerData>true</includeCallerData>   <!-- 호출자 정보 포함 -->
+        </appender>
+        
+        <!-- 에러 로그 비동기 어펜더 -->
+        <appender name="ASYNC_ERROR_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="ERROR_FILE"/>
+            <queueSize>512</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <includeCallerData>true</includeCallerData>
+        </appender>
+        
+        <!-- ============================== 
+            특정 로거 설정 (목적별 로그 분리)
+            ============================== -->
+        <!-- 감사 로그 전용 로거 (사용자 활동 추적) -->
+        <logger name="com.zinidata.audit.aspect.AuditLogAspect" level="INFO" additivity="false">
+            <appender-ref ref="AUDIT_FILE"/>
+        </logger>
+        
+        <!-- 성능 로그 전용 로거 (API 응답 시간 등) -->
+        <logger name="com.zinidata.audit.aspect.PerformanceAspect" level="INFO" additivity="false">
+            <appender-ref ref="PERFORMANCE_FILE"/>
+        </logger>
+        
+        <!-- JDBC SQL 타이밍 전용 어펜더 (인코딩 설정 가능) -->
+        <appender name="JDBC_SQL_TIMING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${LOG_FILE}-sqltiming.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <charset>UTF-8</charset>  <!-- JDBC SQL 타이밍 로그는 UTF-8 인코딩 사용 -->
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${LOG_FILE}-sqltiming.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+        </appender>
+
+        <!-- JDBC SQL 실행 시간 로깅 (log4jdbc) -->
+        <logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+            <springProfile name="develop">
+                <appender-ref ref="CONSOLE"/>            <!-- 개발 환경: 콘솔 출력 -->
+            </springProfile>
+            <springProfile name="!develop">
+                <appender-ref ref="JDBC_SQL_TIMING_FILE"/>  <!-- 운영 환경: 전용 파일 출력 -->
+            </springProfile>
+        </logger>
+        
+        <!-- JDBC 결과셋 테이블 로깅 (개발 환경에서만) -->
+        <logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+            <springProfile name="develop">
+                <appender-ref ref="CONSOLE"/>
+            </springProfile>
+        </logger>
+        
+        <!-- ============================== 
+            환경별 로거 설정 (develop/staging/main)
+            ============================== -->
+        <!-- 개발 환경 (develop) - 상세 로깅 -->
+        <springProfile name="develop">
+            <logger name="org.springframework.web" level="DEBUG"/>           <!-- Spring Web 상세 로그 -->
+            <logger name="org.springframework.security" level="DEBUG"/>      <!-- Spring Security 상세 로그 -->
+            <logger name="org.mybatis" level="DEBUG"/>                       <!-- MyBatis SQL 로그 -->
+            <logger name="com.zaxxer.hikari" level="DEBUG"/>                 <!-- HikariCP 커넥션 풀 로그 -->
+            <logger name="org.springframework.session" level="DEBUG"/>       <!-- Spring Session 로그 -->
+            <logger name="org.springframework.cache" level="DEBUG"/>         <!-- Spring Cache 로그 -->
+            <logger name="com.zinidata" level="DEBUG"/>                      <!-- 애플리케이션 로그 -->
+            
+            <!-- 애플리케이션별 색상 구분 로거 -->
+            <logger name="com.zinidata.security" level="DEBUG" additivity="false">
+                <appender-ref ref="SECURITY_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            <logger name="com.zinidata.domain.common.auth" level="DEBUG" additivity="false">
+                <appender-ref ref="AUTH_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            <logger name="com.zinidata.audit" level="DEBUG" additivity="false">
+                <appender-ref ref="AUDIT_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            
+            <root level="INFO">
+                <appender-ref ref="CONSOLE"/>                                <!-- 콘솔 출력 -->
+                <appender-ref ref="ASYNC_FILE"/>                             <!-- 파일 출력 -->
+            </root>
+        </springProfile>
+        
+        <!-- 스테이징 환경 (staging) - 개발과 동일한 상세 로깅 -->
+        <springProfile name="staging">
+            <logger name="org.springframework.web" level="DEBUG"/>           <!-- Spring Web 상세 로그 -->
+            <logger name="org.springframework.security" level="DEBUG"/>      <!-- Spring Security 상세 로그 -->
+            <logger name="org.mybatis" level="DEBUG"/>                       <!-- MyBatis SQL 로그 -->
+            <logger name="com.zaxxer.hikari" level="DEBUG"/>                 <!-- HikariCP 커넥션 풀 로그 -->
+            <logger name="org.springframework.session" level="DEBUG"/>       <!-- Spring Session 로그 -->
+            <logger name="org.springframework.cache" level="DEBUG"/>         <!-- Spring Cache 로그 -->
+            <logger name="com.zinidata" level="DEBUG"/>                      <!-- 애플리케이션 로그 -->
+            
+            <!-- 애플리케이션별 색상 구분 로거 -->
+            <logger name="com.zinidata.security" level="DEBUG" additivity="false">
+                <appender-ref ref="SECURITY_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            <logger name="com.zinidata.domain.common.auth" level="DEBUG" additivity="false">
+                <appender-ref ref="AUTH_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            <logger name="com.zinidata.audit" level="DEBUG" additivity="false">
+                <appender-ref ref="AUDIT_CONSOLE"/>
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
+            
+            <root level="INFO">
+                <appender-ref ref="CONSOLE"/>                                <!-- 콘솔 출력 -->
+                <appender-ref ref="ASYNC_FILE"/>                             <!-- 파일 출력 -->
+            </root>
+        </springProfile>
+        
+        <!-- 운영 환경 (main) - 최소 로깅 -->
+        <springProfile name="main">
+            <logger name="com.zinidata" level="INFO"/>                       <!-- 애플리케이션 로그만 INFO -->
+            <logger name="org.springframework.security" level="WARN"/>       <!-- 보안 로그는 WARN 레벨 -->
+            <logger name="org.springframework.web" level="WARN"/>            <!-- Web 로그는 WARN 레벨 -->
+            <logger name="org.mybatis" level="WARN"/>                        <!-- SQL 로그는 WARN 레벨 -->
+            <logger name="com.zaxxer.hikari" level="WARN"/>                  <!-- 커넥션 풀 로그는 WARN 레벨 -->
+            <logger name="org.springframework.session" level="WARN"/>        <!-- 세션 로그는 WARN 레벨 -->
+            
+            <root level="WARN">
+                <appender-ref ref="ASYNC_FILE"/>                             <!-- 파일 출력만 -->
+                <appender-ref ref="ASYNC_ERROR_FILE"/>                       <!-- 에러 로그 분리 -->
+            </root>
+        </springProfile>
+        
+        <!-- 트러블슈팅을 위한 추가 로거 -->
+        <logger name="org.springframework.boot.actuate.health" level="INFO"/>
+        <logger name="org.springframework.boot.actuate.metrics" level="INFO"/>
+        <logger name="io.micrometer.core.instrument" level="INFO"/>
+        
+        <!-- 보안 관련 로거 -->
+        <logger name="org.springframework.security.web.FilterChainProxy" level="INFO"/>
+        <logger name="org.springframework.security.web.authentication" level="INFO"/>
+        <logger name="org.springframework.security.web.session" level="INFO"/>
+        
+        <!-- 외부 라이브러리 로거 제한 -->
+        <logger name="org.apache.catalina" level="WARN"/>
+        <logger name="org.apache.coyote" level="WARN"/>
+        <logger name="org.apache.tomcat" level="WARN"/>
+        <logger name="org.springframework.boot.autoconfigure" level="WARN"/>
+        <logger name="org.springframework.boot.context.properties" level="WARN"/>
+        <logger name="org.springframework.context.annotation" level="WARN"/>
+        <logger name="org.springframework.beans.factory" level="WARN"/>
+        <logger name="org.springframework.core.env" level="WARN"/>
+        <logger name="org.springframework.data.redis" level="WARN"/>
+        <logger name="io.lettuce.core" level="WARN"/>
+        <logger name="reactor.util.Loggers" level="WARN"/>
+        
+        <!-- 시스템 상태 확인을 위한 로거 -->
+        <logger name="org.springframework.boot.availability" level="INFO"/>
+        <logger name="org.springframework.boot.web.servlet.DispatcherServletAutoConfiguration" level="INFO"/>
+        
+        <!-- JDBC 로깅 설정 - sqltiming만 활성화 -->
+        <logger name="jdbc.sqlonly" level="OFF"/>
+        <logger name="jdbc.sqltiming" level="INFO"/>
+        <logger name="jdbc.audit" level="OFF"/>
+        <logger name="jdbc.resultset" level="OFF"/>
+        <logger name="jdbc.resultsettable" level="OFF"/>
+        
+    </configuration>

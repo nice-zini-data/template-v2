@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- ============================== 헤드 설정 ============================== -->
+    <th:block th:replace="~{fragments/head :: head}" />
+
+    <!-- ============================== 페이지 전용 CSS 추가 ============================== -->
+    <link rel="stylesheet" href="/assets/lib/jquery/flatpickr.min.css">
+</head>
+
+<body>
+    <div class="wrap dashboardWrap dashSubWrap">
+        <div class="dashboardContent">
+            <div class="dashSubTop">
+                <div class="backBtn" onclick="history.back()">
+                    <img src="/assets/images/icons/back_arrow.svg" alt="">
+                </div>
+                <p class="dashSubTitle">매출 캘린더</p>
+            </div>
+            <div class="dashSubContent overflow-y-auto">
+                <div class="calendarHeader">
+                    <button type="button" class="monthTrigger">
+                    <span class="calendarTitle">2025년 10월</span>
+                    <img src="/assets/images/icons/calendar_arrow_icon.svg" alt="">
+                    </button>
+                </div>
+                <div id="calendar"></div>
+                <div class="calendarContent">
+                    <div class="calendarContentTop">
+                        <p class="calendarSelectText"></p>
+                    </div>
+                    <ul class="calendarContentList">
+                        <li>
+                            <p class="calendarContentListTit">매출액</p>
+                            <div class="calendarContentListVal">
+                                <p class=""><span class="salesAmount"></span>원</p>
+                                <span class="up">+7.7%</span>
+                            </div>
+                        </li>
+                        <li>
+                            <p class="calendarContentListTit">매출 건수</p>
+                            <div class="calendarContentListVal">
+                                <p class=""><span class="salesCount">43,985</span>건</p>
+                                <span class="down">-5.3%</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="calendarContentNote">
+                        <p class="">※ 표시된 증감률은 지난주 같은 요일과 비교한 수치입니다.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 월 선택 바텀시트 -->
+            <div class="monthSheet dashFilterBoxWrap hidden" aria-hidden="true">
+                <div class="filterBg sheetDim"></div>
+                <div class="sheetPanel dashFilterBox" role="dialog" aria-modal="true">
+                    <div class="sheetTop filterBoxTit">
+                        <div class="sheetTitle filterBoxTitTxt">월 선택</div>
+                        <button type="button" class="filterClose sheetClose">
+                            <img src="/assets/images/icons/filter_close_icon.svg" alt="">
+                        </button>
+                    </div>
+                    <ul class="monthList"></ul>
+                </div>
+            </div>
+
+           
+        </div>
+    </div>
+                <!-- ============================== 스크립트 설정 ============================== -->
+    <th:block th:replace="~{fragments/script :: script}" />
+    <script type="text/javascript" th:src="@{/assets/lib/jquery/flatpickr.js}"></script>
+    <script type="text/javascript" th:src="@{/assets/lib/jquery/flatpickr_ko.js}"></script>
+    <script type="text/javascript" th:src="@{/assets/js/dashboard/salesCalendar.js}"></script>
+
+</body>
+</html> 

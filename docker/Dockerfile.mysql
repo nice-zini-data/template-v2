@@ -1,0 +1,21 @@
+FROM mysql:8.0
+
+# 프록시 설정 (필요함)
+ENV http_proxy http://yum.cloud.nice:3128
+ENV https_proxy http://yum.cloud.nice:3128
+
+# 환경 변수 설정
+ENV MYSQL_ROOT_PASSWORD=admin123
+ENV MYSQL_DATABASE=cmapt
+ENV MYSQL_USER=cmapap
+ENV MYSQL_PASSWORD=nice1234
+ENV TZ=Asia/Seoul
+
+# 타임존 설정
+RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+# 포트 노출
+EXPOSE 3306
+
+# MySQL 설정
+CMD ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]

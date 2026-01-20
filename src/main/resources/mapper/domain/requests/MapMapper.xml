@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zinidata.domain.requests.mapper.MapMapper">
+    <sql id="tmp_map">
+        WITH tmp_geom AS (
+            SELECT ST_SetSRID(
+                ST_MakePolygon(
+                    'LINESTRING(
+                        ${minx} ${miny}, 
+                        ${maxx} ${miny}, 
+                        ${maxx} ${maxy}, 
+                        ${minx} ${maxy}, 
+                        ${minx} ${miny}
+                    )'
+                ), 
+                4326
+            ) AS geom
+        )
+    </sql>
+
+    <select id="requestMap" resultType="com.zinidata.domain.requests.vo.MapVO">
+        --requestMap 요청 맵 조회
+        <include refid="tmp_map"></include>
+        <if test="gubun == 'block'">
+            SELECT *
+            FROM (
+                SELECT *
+                    , install_nm AS nm, center_x AS lng, center_y AS lat
+                    , round(ST_DistanceSphere(b.geom, ST_SetSRID(ST_Centroid(a.geom), 4326))) AS distance
+                FROM tmp_geom a
+                JOIN (
+                    SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                    FROM tbnvps_service_request
+                    WHERE status='0'
+                ) b ON ST_Contains(a.geom, b.geom)
+            )
+        </if>
+        <if test="gubun == 'admi'">
+            SELECT b.centerx, b.centery, b.admi_cd AS cd, b.admi_nm AS nm, count(*) AS cnt, b.centerx AS lng, b.centery AS lat
+            FROM tmp_geom A
+            JOIN tbshp_admi_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+            JOIN vwadm_admi d ON b.admi_cd = d.admi_cd 
+            GROUP BY b.centerx , b.centery, b.admi_cd, b.admi_nm
+        </if>
+        <if test="gubun == 'cty'">
+            SELECT b.centerx , b.centery, b.cty_cd AS cd, b.cty_nm AS nm, count(*) AS cnt, b.centerx AS lng, b.centery AS lat
+            FROM tmp_geom a
+            JOIN tbshp_cty_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+            GROUP BY b.centerx , b.centery, b.cty_cd, b.cty_nm
+        </if>
+        <if test="gubun == 'mega'">
+            SELECT b.centerx , b.centery, b.mega_cd AS cd, b.mega_nm AS nm, count(*) AS cnt, b.centerx AS lng, b.centery AS lat
+            FROM tmp_geom a
+            JOIN tbshp_mega_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+            GROUP BY b.centerx , b.centery, b.mega_cd, b.mega_nm
+        </if>
+    </select>
+    
+    <select id="requestMapAdmi" resultType="com.zinidata.domain.requests.vo.MapVO">
+        --requestMap 요청 맵 조회
+        <include refid="tmp_map"></include>
+        <if test="gubun == 'admi'">
+            SELECT c.*, install_nm AS nm, center_x AS lng, center_y AS lat
+                    , round(ST_DistanceSphere(b.geom, ST_SetSRID(ST_Centroid(a.geom), 4326))) AS distance
+            FROM tmp_geom a
+            JOIN tbshp_admi_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+            JOIN vwadm_admi d ON b.admi_cd = d.admi_cd 
+        </if>
+        <if test="gubun == 'cty'">
+            SELECT c.*,install_nm AS nm, center_x AS lng, center_y AS lat
+                    , round(ST_DistanceSphere(b.geom, ST_SetSRID(ST_Centroid(a.geom), 4326))) AS distance
+            FROM tmp_geom a
+            JOIN tbshp_cty_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+        </if>
+        <if test="gubun == 'mega'">
+            SELECT c.*,install_nm AS nm, center_x AS lng, center_y AS lat
+                    , round(ST_DistanceSphere(b.geom, ST_SetSRID(ST_Centroid(a.geom), 4326))) AS distance
+            FROM tmp_geom a
+            JOIN tbshp_mega_features b ON ST_Intersects(a.geom, b.geom)
+            JOIN (
+                SELECT *, ST_SetSRID(ST_MakePoint(center_x, center_y ), 4326) AS geom
+                FROM tbnvps_service_request
+                WHERE status='0'
+            ) c ON ST_Contains(b.geom, c.geom)
+        </if>
+    </select>
+
+</mapper>

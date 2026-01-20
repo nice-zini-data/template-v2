@@ -1,0 +1,92 @@
+<head th:fragment="head">
+    <!-- ============================== 메타 태그 공통 설정 ============================== -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <!-- 운영환경이 아닌 경우에는 로봇(크롤러) 접근 차단 -->
+    <meta th:if="${env.isProduction}" name="robots" content="index, follow">
+    <meta th:unless="${env.isProduction}" name="robots" content="noindex, nofollow">
+
+    <!-- ============================== 파비콘 설정 ============================== -->
+    <link th:href="@{/favicon.ico}" rel="icon" type="image/x-icon">
+    <link th:href="@{/favicon.ico}" rel="shortcut icon" type="image/x-icon">
+
+    <!-- ============================== 운영 환경에서만 적용되는 태그 ============================== -->
+    <!-- ========== Google Tag Manager ========== -->
+    <script th:if="${env.isProduction}">
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-NQBKT6D');
+    </script>
+    <!-- ========== End Google Tag Manager ========== -->
+    
+    <!-- ========== Open Graph Meta (운영 환경에서만) ========== -->
+    <meta name="title" th:content="${pageTitle ?: '페이지 타이틀'}" />
+    <meta name="description" th:content="${pageDescription ?: '페이지 설명'}" />
+    <meta name="keywords" content="대리점향" />
+    
+    <meta property="og:title" th:content="${pageTitle ?: '대리점향'}" />
+    <meta property="og:description" th:content="${pageDescription ?: ''}" />
+    <meta property="og:url" th:content="${env.appBaseUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" th:content="${env.appBaseUrl + '/assets/images/seo/og_image.png'}" />
+    <meta property="og:image:alt" th:content="대리점향" />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="대리점향" />
+
+    <!-- ========== 네이버 검색 사이트 검증 (운영 환경에서만) ========== -->
+    <meta th:if="${env.isProduction}" name="naver-site-verification" content="534bb1d6c18e5f0f01404121fc5387772a95e6f6" />
+
+    <!-- ========== 로그인 타입 정보 (JavaScript에서 사용) ========== -->
+    <meta sec:authorize="isAuthenticated()" name="login-type" th:content="${session.loginType ?: 'NORMAL'}" />
+
+    <!-- ============================== 타이틀 설정 ============================== -->
+    <title th:text="${env.isProduction} ? 
+                    (${pageTitle ?: '페이지 타이틀'}):
+                    (${pageTitle ?: '페이지 타이틀'})">
+    </title>
+    <!-- <title th:text="${env.isProduction} ? 
+                    (${pageTitle ?: '페이지 타이틀'}) + ' | ' + ${env.appName} : 
+                    '(' + ${env.activeProfile} + ') ' + 
+                    (${pageTitle ?: '페이지 타이틀'}) + ' | ' + ${env.appName}">
+    </title> -->
+    <!-- ============================== 공통 CSS 리소스 로드 ============================== -->
+    <link rel="stylesheet" th:href="@{/assets/css/output.css(v=${env.appVersion})}">
+
+    <!-- ============================== 페이지별 CSS 동적 로드 ============================== -->
+    <!-- 인증 관련 페이지 CSS -->
+    <!-- <link th:if="${currentPage == 'auth'}" rel="stylesheet" th:href="@{/assets/css/auth.css(v=${env.appVersion})}"> -->
+    
+    <!-- 메인 페이지 CSS -->
+    <!-- <link th:if="${currentPage == 'index'}" rel="stylesheet" th:href="@{/assets/css/index.css(v=${env.appVersion})}"> -->
+    
+    <!-- 문서 센터 CSS -->
+    <link th:if="${currentPage == 'docs'}" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link th:if="${currentPage == 'docs'}" rel="stylesheet" th:href="@{/assets/css/docs/docs-common.css(v=${env.appVersion})}">
+    <link th:if="${currentPage == 'docs'}" rel="stylesheet" th:href="@{/assets/css/docs/dev-guide.css(v=${env.appVersion})}">
+    
+    <!-- 개발 가이드 CSS -->
+    <!-- <link th:if="${currentPage == 'dev-guide'}" rel="stylesheet" th:href="@{/assets/css/dev-guide.css(v=${env.appVersion})}"> -->
+
+    <!-- ============================== 페이지 전용 CSS는 각 페이지에서 추가 ============================== -->
+    
+    <!-- ============================== 콘솔 로그 제어 (개발환경에서만 출력) ============================== -->
+    <script th:inline="javascript">
+        // 개발환경에서만 콘솔 로그 출력 활성화 (GlobalControllerAdvice에서 전역 설정)
+        window.DEBUG_ENABLED = /*[[${env.debugEnabled}]]*/ false;
+        
+        // 운영환경: 콘솔 로그 비활성화
+        if (!window.DEBUG_ENABLED) {
+            console.log = function() {};
+            console.debug = function() {};
+            console.info = function() {};
+            console.warn = function() {};
+            // console.error는 유지 (운영에서도 에러는 봐야 함)
+        }
+    </script>
+</head> 

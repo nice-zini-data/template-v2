@@ -1,0 +1,188 @@
+# 스테이징 환경 설정
+spring:
+  datasource:
+    # Primary 데이터소스 (PostgreSQL)
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: ENC(svapkix/Iqqkx0CsvWl8ZxXrUQBjCo2YUuh+YYkBPdtZ5x9kVY5vqcow6Ru/zel1GyEHYI3RxMnAy506/92S2rAhIT7R2fsxkQKD+8AewAdOuseFhOHwEv5vQ+k8SXAXS5sNYV9V4jsk4z8HGStYdaiqlvq4l/qd4Ijtns7kqNZTJAjtr3EIanDIQ+jZJF9UkDEajT8sqxw64elxZ5v1vA==)
+    username: ENC(gt7FBRIAYKajclxlRN+fTSi5o/2XspBuv37hnbYLwJs=)
+    password: ENC(JX0h5EaH46jRq7PB3vB+2fBrGpFiEimDkIVkfLVHR1g=)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+    
+    # SMS 전용 MySQL 데이터소스 (다중 데이터소스 설정 시 활성화)
+    # sms:
+    #   driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    #   jdbc-url: jdbc:log4jdbc:mysql://localhost:3307/cmapt?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true
+    #   username: cmapap
+    #   password: nice1234
+    #   hikari:
+    #     maximum-pool-size: 3
+    #     minimum-idle: 1
+    #     connection-timeout: 20000
+    #     idle-timeout: 300000
+    #     max-lifetime: 1200000
+    #     leak-detection-threshold: 60000
+  
+  data:
+    redis:
+      host: shared-redis
+      port: 6379
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 5
+          min-idle: 2
+          max-wait: 3000ms
+  
+
+  
+  session:
+    cookie:
+      secure: true
+      same-site: lax
+    timeout: 30m
+  
+  # 파일 업로드 설정 (스테이징 환경)
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB  # 최소 30MB 이상의 이미지 파일도 받을 수 있도록 설정 (이미지는 서버에서 1MB로 자동 리사이징)
+      max-request-size: 50MB
+      location: /tmp
+      file-size-threshold: 1MB
+
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    com.zinidata: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.mybatis: DEBUG
+    com.zaxxer.hikari: DEBUG
+    org.springframework.session: DEBUG
+    org.springframework.cache: DEBUG
+    sql: DEBUG
+    jdbc: OFF
+    jdbc.sqltiming: INFO
+    jdbc.sqlonly: OFF
+    jdbc.audit: OFF
+    jdbc.resultset: OFF
+    jdbc.resultsettable: OFF
+    log4jdbc.sqltiming: OFF
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+  file:
+    name: zinidataLog
+
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 60s
+
+# OpenAPI 설정
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# 애플리케이션 설정
+app:
+  baseUrl: https://devncs.nicebizmap.co.kr
+
+# 커스텀 설정
+custom:
+  security:
+    rate-limit:
+      enabled: false
+      requests-per-minute: 30000000
+      burst-capacity: 5000000
+    cors:
+      allowed-origins: "https://devncs.nicebizmap.co.kr,https://*.nicebizmap.co.kr"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+    csrf:
+      enabled: false
+      cookie-secure: true
+
+# 보안 설정 (스테이징 환경)
+security:
+  browser-check:
+    enabled: false   # 스테이징 환경을 위해 활성화
+  
+  upload:
+    base-path: /app/upload
+    create-date-folder: true
+    virus-scan-enabled: true
+  
+  cache:
+    default-ttl: 600
+    
+  debug:
+    enabled: true
+    show-sql: false
+    show-request-params: false
+    show-response-body: false
+    performance-logging: false
+    
+  audit:
+    enabled: true
+    include-request-body: false
+    include-response-body: false
+    max-body-size: 512
+
+# Jasypt 설정
+jasypt:
+  encryptor:
+    bean: jasyptEncryptor
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:wlslepdlxk0904!@#}
+    algorithm: PBEWithSHA256And128BitAES-CBC-BC
+    key-obtention-iterations: 1000
+    pool-size: 1
+    provider-name: BC
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    iv-generator-classname: org.jasypt.iv.RandomIvGenerator
+    string-output-type: base64
+
+# 카카오 OAuth 설정 (스테이징 환경)
+kakao:
+  oauth:
+    redirect-uri: https://devncs.nicebizmap.co.kr/api/oauth/callback/kakao
+
+# 토스페이먼츠 설정 (스테이징 환경)
+toss:
+  clientKey: ENC(7TjVinhPlZDsP3B5UjnINclymA0/0+GP58lw8AT/eXxbeYfA5P2Qp9b4eB6tZzosHevgyvhhmW/JLCqM1tYUng==)
+  secretKey: ENC(R8bSXC9yaiyX1bjvqODrB3N12qP62HKAtiC+mF9JFZK2JtWtsQ/q7wa6s6hFLwanp3GVf3z0qmdYIiKvkRJvxw==)
+
+# BetterBoss AI 설정 (스테이징 환경)
+betterboss:
+  url: http://devai.nicebizmap.co.kr
+  chatUrl: http://devai.nicebizmap.co.kr/chat
+# SMS 발송 설정 (스테이징 환경)
+sms:
+  url: devapi2.nicebizmap.co.kr
+  api:
+    loginId: smsSend
+    password: nice1234!!
+  db:
+    url: jdbc:mysql://10.81.190.121:3306/cmapt?useUnicode=true&characterEncoding=euc-kr 
