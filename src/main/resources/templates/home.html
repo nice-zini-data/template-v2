@@ -1,27 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{components/layout}">
-<section layout:fragment="content">
-    <div class="w-1/2 mx-auto"> 
-        <div th:replace="~{components/search :: typingSearch}"></div>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<body>
+  <!-- ✅ layout의 content에 꽂힘 -->
+  <section layout:fragment="content">
+    <div class="w-1/2 mx-auto">
+      <div th:replace="~{components/search :: typingSearch}"></div>
     </div>
-    
+
     <div th:replace="~{components/table :: table}"></div>
     <div th:replace="~{components/pagination :: pagination}"></div>
-</section>
+  </section>
 
-<script>
-    $(document).on('pagination:change', '[data-pagination]', function (e, data) {
-        if (data.page) {
-            goToPage(data.page);
-        } else if (data.action === 'prev') {
-            goToPage(currentPage - 1);
-        } else if (data.action === 'next') {
-            goToPage(currentPage + 1);
-        } else if (data.action === 'first') {
-            goToPage(1);
-        } else if (data.action === 'last') {
-            goToPage(totalPages);
-        }
-    });
-</script>
+  <!-- ✅ (선택) home 전용 JS를 layout의 pageScripts 슬롯에 꽂음 -->
+  <!-- <th:block layout:fragment="pageScripts">
+    <script src="/assets/js/pages/home.js"></script>
+  </th:block> -->
+</body>
 </html>
