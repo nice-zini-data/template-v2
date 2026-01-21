@@ -111,23 +111,17 @@
   .searchList ul li p span.keyword {@apply text-primary-600}
 
   /*calendar*/
-  #calendar, .flatpickr-next-month, .flatpickr-prev-month, .flatpickr-month {@apply hidden}
-  .calendarHeader {@apply px-5 h-[52px] flex justify-start items-center text-lg/7 font-extrabold text-zinc-900}
-  .flatpickr-calendar.inline {@apply !top-0 w-full h-auto rounded-none shadow-none border-t-1 border-b-1 border-solid border-zinc-800/8 py-4 px-2}  
-  .flatpickr-current-month{@apply !flex !justify-start !items-center gap-1 !w-full !left-0 !h-[52px] !p-0 !px-5}
-  .monthTrigger {@apply flex justify-start items-center gap-2}
-  .monthTrigger img{@apply size-4}
-  .flatpickr-innerContainer, .flatpickr-rContainer, .flatpickr-days, .dayContainer {@apply !w-full !min-w-full !max-w-full}
-  .flatpickr-day {@apply !w-[calc(100%/7)] !max-w-[unset] min-h-[72px] pb-2 !text-sm/5 !font-semibold relative}
-  span.flatpickr-weekday {@apply !text-xs/4 !font-medium !text-zinc-500 py-1}
-  .flatpickr-day.selected, .flatpickr-day:hover, .flatpickr-day.today:hover, .flatpickr-day.today:focus, .flatpickr-day.today {@apply !bg-transparent !border-transparent relative}
-  .flatpickr-day.today.selected, .flatpickr-day.today.selected:hover {@apply !text-white}
-  .flatpickr-day.selected:after {@apply content-[''] block absolute -top-[3px] left-1/2 -translate-x-1/2 size-[26px] !bg-blue-600 rounded-full -z-1}
-  .flatpickr-day.today:hover:after, .flatpickr-day.today:focus:after, .flatpickr-day.today:after  {@apply content-[''] block absolute -top-[3px] left-1/2 -translate-x-1/2 size-[26px] bg-zinc-800/8 rounded-full -z-1}
-  .flatpickr-day.today:hover, .flatpickr-day.today:focus, .flatpickr-day.today {@apply !text-zinc-800}
-  .flatpickr-calendar.open, .flatpickr-calendar.inline {@apply !max-h-none}
-  .flatpickr-calendar.arrowTop:before, .flatpickr-calendar.arrowTop:after {@apply hidden}
-  .flatpickr-weekdays {@apply pb-2}
+  #calendarDay {@apply w-full h-10 rounded-md shadow-2xs border-1 border-solid border-zinc-800/15}
+  .flatpickr-calendar {@apply !py-4 !px-3 !rounded-md !border-zinc-800/15 !w-fit}
+  .flatpickr-weekday {@apply !text-xs/4 !font-medium !text-zinc-500 py-1}
+  .flatpickr-day {@apply !text-sm/5 !font-medium !text-zinc-950 !size-8 !rounded-sm !items-center !inline-flex !border-none !px-0 !mb-2 hover:!bg-primary-500 hover:!text-white focus:!bg-primary-600 focus:!text-white}
+  .flatpickr-day.today {@apply !bg-zinc-800/8 !border-none hover:!bg-primary-600 hover:!text-white focus:!bg-primary-600 focus:!text-white}
+  .flatpickr-day.selected {@apply !bg-primary-600 !text-white !border-none}
+  .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {@apply !opacity-30 pointer-events-none}
+  .flatpickr-day:nth-child(7n) {@apply !text-blue-500 hover:!text-white}
+  .flatpickr-day:nth-child(7n).selected {@apply !text-white}
+  .flatpickr-day:nth-child(7n+1) {@apply !text-red-500 hover:!text-white}
+  .flatpickr-day:nth-child(7n+1).selected {@apply !text-white}
 }
 
 /*table*/

@@ -11,6 +11,9 @@ const dayMap = {
   '2026-01-15': 2838,
 };
 
+// layout.js에서 사용할 수 있도록 전역으로 노출
+window.dayMap = dayMap;
+
 const fp = flatpickr('#calendar', {
   inline: true,
   locale: 'ko',
@@ -51,6 +54,9 @@ function syncTitle(inst) {
   const m = inst.currentMonth + 1;
   $title.text(`${y}년 ${m}월`);
 }
+
+// layout.js에서 사용할 수 있도록 전역으로 노출
+window.syncTitle = syncTitle;
 
 // 바텀시트 열기
 $('.monthTrigger').on('click', () => {
@@ -143,6 +149,9 @@ const updateCalendarSelectText = (inst) => {
   $('.calendarSelectText').text(`${month}월 ${day}일 ${weekday}요일`);
 };
 
+// layout.js에서 사용할 수 있도록 전역으로 노출
+window.updateCalendarSelectText = updateCalendarSelectText;
+
 // 매출액 업데이트 함수
 const updateSalesAmount = (dateStr, inst) => {
   if (!dateStr) {
@@ -191,6 +200,9 @@ const updateSalesAmount = (dateStr, inst) => {
     $('.salesAmount').text('0');
   }
 };
+
+// layout.js에서 사용할 수 있도록 전역으로 노출
+window.updateSalesAmount = updateSalesAmount;
 
 const calendarCont = () => {
   const today = new Date();
