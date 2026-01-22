@@ -13,10 +13,8 @@
       $searchInput.on('click.search', '[data-search-input]', function () {
         if($(this).val() !== ''){
           $searchInput.siblings('[data-search-list]').removeClass('hidden');
-          console.log('click1');
         }else{
           $searchInput.siblings('[data-search-list]').addClass('hidden');
-          console.log('click');
         }
       });
   
@@ -47,7 +45,6 @@
         $searchInput.find('[data-search-input]').val('');
         $(this).addClass('hidden');
         $container.find('[data-search-list]').addClass('hidden');
-        console.log('clear');
         
         
         $searchInput.trigger('search:clear', {
@@ -69,6 +66,9 @@
       $(document).on('click.search', function (e) {
         if (!$container.is(e.target) && $container.has(e.target).length === 0) {
           $container.find('[data-search-list]').addClass('hidden');
+        }
+        if($('[data-search-input]').val() === ''){
+          $searchInput.find('[data-search-clear]').addClass('hidden');
         }
       });
 
@@ -215,11 +215,126 @@
         bind($(this));
       });      
     };
+
+    // =========================
+    // Table Enhance
+    // =========================
+
+    App.ui.tableEnhance = App.ui.tableEnhance || {};
+
+    // 타입 판별 유틸
+    function inferCellType(text) {
+      const normalized = text.trim();
+    
+      // ✅ 날짜 + 시간 (공백 포함)
+      const dateTimeLike =
+        /^\d{4}[-./]\d{1,2}[-./]\d{1,2}\s+\d{1,2}:\d{2}(:\d{2})?$/.test(normalized);
+    
+      if (dateTimeLike) return 'date';
+    
+      // ✅ 날짜만
+      const dateLike =
+        /^\d{4}[-./]\d{1,2}[-./]\d{1,2}$/.test(normalized) ||
+        /^\d{1,2}:\d{2}(:\d{2})?$/.test(normalized);
+    
+      if (dateLike) return 'date';
+    
+      // 숫자 (콤마, 소수, 부호, 단위 허용)
+      const numberLike =
+        /^[-+]?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?/.test(normalized);
+    
+      if (numberLike) return 'number';
+    
+      return 'text';
+    }
+
+    App.ui.tableEnhance.init = function (scope) {
+      const $scope = scope ? $(scope) : $(document);
+
+      $scope.find('table[data-enhance-table]').each(function () {
+        const $table = $(this);
+        if ($table.data('enhanceBound')) return;
+        $table.data('enhanceBound', true);
+
+        // 1) 그룹 헤더(th) 중앙 정렬
+        $table.find('th[data-group-head]').each(function () {
+          this.style.textAlign = 'center';
+          this.style.verticalAlign = 'middle';
+        });
+
+        // 2) 자동 정렬 (열 기준)
+        const columnAlignMap = {};
+
+        // --- 1단계: th 기준 선처리 ---
+        $table.find('thead th').each(function (index) {
+          const $th = $(this);
+          const text = $th.text().trim();
+
+          // (1) 명시적 data-align 최우선
+          const explicitAlign = $th.data('align');
+          if (explicitAlign) {
+            columnAlignMap[index] = explicitAlign;
+            return;
+          }
+
+          // (2) "No" 컬럼은 무조건 center
+          if (/^no$/i.test(text)) {
+            columnAlignMap[index] = 'center';
+          }
+        });
+
+        // --- 2단계: button 컬럼 감지 → center ---
+        $table.find('tbody tr').each(function () {
+          $(this).children('td').each(function (index) {
+            if (columnAlignMap[index]) return;
+
+            if ($(this).find('button').length > 0) {
+              columnAlignMap[index] = 'center';
+            }
+          });
+        });
+
+        // --- 3단계: td 기준 자동 판별 ---
+        $table.find('tbody tr').each(function () {
+          $(this).children('td').each(function (index) {
+            // 이미 정렬이 결정된 컬럼은 스킵
+            if (columnAlignMap[index]) return;
+
+            const $td = $(this);
+
+            // 링크/태그 등 복합 콘텐츠는 스킵
+            if ($td.find('a, .tag').length) return;
+
+            const text = $td.text().trim();
+            if (!text) return;
+
+            const type = inferCellType(text);
+            columnAlignMap[index] = (type === 'number') ? 'right' : 'left';
+          });
+        });
+
+        // --- 4단계: th / td에 일괄 적용 ---
+        $table.find('tr').each(function () {
+          $(this).children('th, td').each(function (index) {
+            const align = columnAlignMap[index];
+            if (!align) return;
+
+            this.style.textAlign = align;
+            this.style.verticalAlign = 'middle';
+
+            if (align === 'right') {
+              this.style.fontVariantNumeric = 'tabular-nums';
+            }
+          });
+        });
+      });
+    };
   
     $(function () {
       App.ui.search.init(document);
       App.ui.pagination.init(document);
       App.ui.calendar.init(document);
+      App.ui.tableEnhance.init(document);
       
     });
   })(window.App = window.App || {}, jQuery);
