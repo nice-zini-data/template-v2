@@ -157,10 +157,31 @@
   .mapMarkerOnMap {@apply static top-auto left-auto}
 }
 
+
+/* header */
+@layer components {
+  .header {@apply h-14 px-6 flex justify-start items-center w-full}
+  .headerLogo {@apply w-[141px]}
+  .headerMenuList {@apply flex justify-start items-center gap-4 ml-6}
+  .headerMenuList li {@apply px-1-5 text-[17px]/6 font-semibold text-zinc-600 hover:text-zinc-950}
+  .headerMenuList li.active {@apply !text-zinc-950}
+  .headerNav, .headerUtils {@apply flex justify-start items-center}
+  .headerUtils {@apply gap-4}
+  .adminBtn {@apply px-2 py-1-5 h-9 shadow-default}
+  .userBtn {@apply flex justify-start items-center gap-1 cursor-pointer}
+  .userImg {@apply size-8 mr-1}
+  .userName {@apply text-sm/5 font-semibold text-zinc-950}
+  .userArrow {@apply size-4-5}
+  .userMenu {@apply absolute top-[60px] right-6 min-w-[160px] w-[160px] bg-white rounded-lg shadow-lg z-9 border border-solid border-zinc-800/15 py-2}
+  .userMenuList li {@apply flex justify-start items-center gap-2 text-sm/5 font-medium text-zinc-600 py-3 px-2 hover:bg-zinc-100 hover:text-zinc-950}
+  .userMenuList li .userMenuIcon {@apply size-6 flex justify-center items-center}
+  .userMenuList li .userMenuIcon img {@apply size-4}
+  .userMenuList li.logout {@apply text-red-500 border-t-1 border-solid border-zinc-800/15 hover:text-red-500}  
+}
+
 /* side */
 @layer components {
-  .sideContent {@apply flex justify-start items-start}
-  .sideContentBox {@apply w-full}
+  .sideContent {@apply flex justify-start items-start}  
   .c-side {@apply min-w-[268px] w-[268px] h-full px-6 }
   .c-sideContent {@apply w-full }
   .sideTitle {@apply text-zinc-500 text-md/6 font-bold mb-6}
@@ -172,18 +193,8 @@
   .sideMenuItem.active a {@apply !text-zinc-950}
 }
 
-/* header */
+/* sideContentBox */
 @layer components {
-  .header {@apply h-14 px-6 flex justify-start items-center w-full}
-  .headerLogo {@apply w-[141px]}
-  .headerMenuList {@apply flex justify-start items-center gap-4 ml-6}
-  .headerMenuList li {@apply px-1-5 text-[17px]/6 font-semibold text-zinc-600 hover:text-zinc-950}
-  .headerMenuList li.active {@apply !text-zinc-950}
-  .headerNav, .headerUtils {@apply flex justify-start items-center}
-  .headerUtils {@apply gap-4}
-  .userBtn {@apply flex justify-start items-center gap-1 cursor-pointer}
-  .userImg {@apply size-8 mr-1}
-  .userName {@apply text-sm/5 font-semibold text-zinc-950}
-  .userArrow {@apply size-4-5}
-  .adminBtn {@apply px-2 py-1-5 h-9 shadow-default}
+  .sideContentBox {@apply w-full pt-6 pr-6}
+  .sideContentBoxTitle {@apply text-zinc-950 text-xl/7 font-bold mb-4}
 }

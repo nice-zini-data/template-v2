@@ -21,9 +21,11 @@
 
 /* map */
 
+/* header */
+
 /* side */
 
-/* header */
+/* sideContentBox */
 
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
@@ -1644,14 +1646,174 @@ button.disabled{
   left: auto;
 }
 
+.header{
+  display: flex;
+  height: 56px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.headerLogo{
+  width: 141px;
+}
+
+.headerMenuList{
+  margin-left: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.headerMenuList li{
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: 17px;
+  line-height: 1.5rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(82 82 92 / var(--tw-text-opacity, 1));
+}
+
+.headerMenuList li:hover{
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
+.headerMenuList li.active{
+  --tw-text-opacity: 1 !important;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
+}
+
+.headerMenuList li.\!active{
+  --tw-text-opacity: 1 !important;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
+}
+
+.headerNav, .headerUtils{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.headerUtils{
+  gap: 16px;
+}
+
+.adminBtn{
+  height: 36px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  --tw-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08);
+  --tw-shadow-colored: 0 1px 1px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.userBtn{
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.userImg{
+  margin-right: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.userName{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
+.userArrow{
+  width: 18px;
+  height: 18px;
+}
+
+.userMenu{
+  position: absolute;
+  top: 60px;
+  right: 24px;
+  z-index: 9;
+  width: 160px;
+  min-width: 160px;
+  border-radius: 8px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(39 39 42 / 0.15);
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+  padding-top: 8px;
+  padding-bottom: 8px;
+  --tw-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.06);
+  --tw-shadow-colored: 0 4px 6px -2px var(--tw-shadow-color), 0 10px 15px -3px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.userMenuList li{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(82 82 92 / var(--tw-text-opacity, 1));
+}
+
+.userMenuList li:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
+.userMenuList li .userMenuIcon{
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.userMenuList li .userMenuIcon img{
+  width: 16px;
+  height: 16px;
+}
+
+.userMenuList li.logout{
+  border-top-width: 1px;
+  border-style: solid;
+  border-color: rgb(39 39 42 / 0.15);
+  --tw-text-opacity: 1;
+  color: rgb(251 44 54 / var(--tw-text-opacity, 1));
+}
+
+.userMenuList li.logout:hover{
+  --tw-text-opacity: 1;
+  color: rgb(251 44 54 / var(--tw-text-opacity, 1));
+}
+
 .sideContent{
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-}
-
-.sideContentBox{
-  width: 100%;
 }
 
 .c-side{
@@ -1733,99 +1895,19 @@ button.disabled{
   color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
 }
 
-.header{
-  display: flex;
-  height: 56px;
+.sideContentBox{
   width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 24px;
+  padding-top: 24px;
   padding-right: 24px;
 }
 
-.headerLogo{
-  width: 141px;
-}
-
-.headerMenuList{
-  margin-left: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
-}
-
-.headerMenuList li{
-  padding-left: 6px;
-  padding-right: 6px;
-  font-size: 17px;
-  line-height: 1.5rem;
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(82 82 92 / var(--tw-text-opacity, 1));
-}
-
-.headerMenuList li:hover{
+.sideContentBoxTitle{
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
   --tw-text-opacity: 1;
   color: rgb(9 9 11 / var(--tw-text-opacity, 1));
-}
-
-.headerMenuList li.active{
-  --tw-text-opacity: 1 !important;
-  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
-}
-
-.headerMenuList li.\!active{
-  --tw-text-opacity: 1 !important;
-  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
-}
-
-.headerNav, .headerUtils{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.headerUtils{
-  gap: 16px;
-}
-
-.userBtn{
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-}
-
-.userImg{
-  margin-right: 4px;
-  width: 32px;
-  height: 32px;
-}
-
-.userName{
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
-}
-
-.userArrow{
-  width: 18px;
-  height: 18px;
-}
-
-.adminBtn{
-  height: 36px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  --tw-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08);
-  --tw-shadow-colored: 0 1px 1px 0 var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .pointer-events-none{
@@ -2436,17 +2518,9 @@ button.disabled{
   border-color: rgb(251 44 54 / var(--tw-border-opacity, 1));
 }
 
-.border-b-transparent{
-  border-bottom-color: rgba(255, 255, 255, 0);
-}
-
 .border-b-zinc-100{
   --tw-border-opacity: 1;
   border-bottom-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
-}
-
-.border-b-zinc-800\/6{
-  border-bottom-color: rgb(39 39 42 / 0.06);
 }
 
 .border-t-zinc-100{
