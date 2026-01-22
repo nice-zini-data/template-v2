@@ -175,57 +175,36 @@
 
     function bind($calendar) {
       if ($calendar.data('bound')) return;
-      
-      // pagination 요소는 제외
-      if ($calendar.closest('[data-pagination]').length > 0 || $calendar.is('[data-pagination]')) {
-        return;
-      }
-      
-      // 이미 flatpickr이 적용되어 있다면 제거
-      if ($calendar[0]._flatpickr) {
-        $calendar[0]._flatpickr.destroy();
-      }
-      
+    
+      if ($calendar.closest('[data-pagination]').length > 0 || $calendar.is('[data-pagination]')) return;
+    
+      if ($calendar[0]._flatpickr) $calendar[0]._flatpickr.destroy();
+    
       $calendar.data('bound', true);
-
-      // dayMap과 함수들이 전역에 정의되어 있는지 확인
-      const dayMap = window.dayMap || {};
-      const syncTitle = window.syncTitle || (() => {});
-      const updateCalendarSelectText = window.updateCalendarSelectText || (() => {});
-      const updateSalesAmount = window.updateSalesAmount || (() => {});
-
+    
+      const targetSel = $calendar.data('target') || '#calendarDay';
+      const $target = $(targetSel);
+    
+      const writeSelected = (inst) => {
+        const d = inst.selectedDates?.[0];
+        if (!d) return;
+    
+        const ymd = inst.formatDate(d, 'Y-m-d'); // ✅ 로컬 기준 안전
+        $target.text(ymd); // input이면 .val(ymd)
+      };
+    
       const fp = flatpickr($calendar[0], {
-        inline: true,
         locale: 'ko',
         dateFormat: 'Y-m-d',
         defaultDate: 'today',
         disableMobile: true,
-      
-        onReady: (_, __, inst) => syncTitle(inst),
-      
-        onDayCreate: function (_, __, inst, dayElem) {
-          const d = dayElem.dateObj;
-          const key = inst.formatDate(d, 'Y-m-d');
-        
-          if (dayMap[key]) {
-            const extra = document.createElement('span');
-            extra.className = 'day-extra';
-            extra.textContent = dayMap[key].toLocaleString() + '만'; 
-            dayElem.appendChild(extra);
-          }
+    
+        onReady: function (_, __, inst) {
+          writeSelected(inst); // ✅ 초기값도 반영
         },
-      
-        onChange: (selectedDates, dateStr, inst) => {
-          updateCalendarSelectText(inst);
-          updateSalesAmount(dateStr, inst);
-        },
-        onMonthChange: (_, __, inst) => {
-          syncTitle(inst);
-          updateCalendarSelectText(inst);
-        },
-        onYearChange:  (_, __, inst) => {
-          syncTitle(inst);
-          updateCalendarSelectText(inst);
+    
+        onChange: function (_, __, inst) {
+          writeSelected(inst); // ✅ 날짜 클릭할 때마다 반영
         },
       });
     }
@@ -234,25 +213,7 @@
       const $scope = scope ? $(scope) : $(document);
       $scope.find('[data-calendar]').each(function () {
         bind($(this));
-      });
-      
-      // pagination 요소에 잘못 적용된 flatpickr 제거
-      $scope.find('[data-pagination]').each(function () {
-        const $pagination = $(this);
-        // pagination 요소 자체나 자식 요소에 flatpickr이 적용되어 있다면 제거
-        if (this._flatpickr) {
-          this._flatpickr.destroy();
-        }
-        $pagination.find('.flatpickr-input, [class*="flatpickr"]').each(function () {
-          if (this._flatpickr) {
-            this._flatpickr.destroy();
-          }
-          // flatpickr 클래스 제거
-          $(this).removeClass('flatpickr-input').removeAttr('readonly');
-        });
-        // flatpickr 캘린더 DOM 제거
-        $pagination.find('.flatpickr-calendar').remove();
-      });
+      });      
     };
   
     $(function () {
@@ -260,28 +221,5 @@
       App.ui.pagination.init(document);
       App.ui.calendar.init(document);
       
-      // pagination 요소에 잘못 적용된 flatpickr 제거 (지연 실행)
-      setTimeout(function() {
-        $('[data-pagination]').each(function () {
-          const $pagination = $(this);
-          // pagination 요소 자체에 flatpickr이 있다면 제거
-          if (this._flatpickr) {
-            this._flatpickr.destroy();
-            delete this._flatpickr;
-          }
-          // 자식 요소에서 flatpickr 찾아서 제거
-          $pagination.find('*').each(function () {
-            if (this._flatpickr) {
-              this._flatpickr.destroy();
-              delete this._flatpickr;
-            }
-          });
-          // flatpickr 관련 클래스 및 속성 제거
-          $pagination.removeClass('flatpickr-input').removeAttr('readonly');
-          $pagination.find('.flatpickr-input').removeClass('flatpickr-input').removeAttr('readonly');
-          // flatpickr 캘린더 DOM 제거
-          $pagination.find('.flatpickr-calendar').remove();
-        });
-      }, 100);
     });
   })(window.App = window.App || {}, jQuery);

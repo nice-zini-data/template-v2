@@ -6,9 +6,17 @@
 <body>
   <!-- ✅ layout의 content에 꽂힘 -->
   <section layout:fragment="content">
+    <th:block th:replace="~{fragments/header :: menuHeader}" />
     <div class="sideContent"><!--side 없을 땐 .sideContent 없이 사용-->
       <div th:replace="~{components/side :: side}"></div>
         <div class="sideContentBox">
+          <p class="sideContentBoxTitle">사용자 관리</p>
+
+
+
+
+
+
             <div th:replace="~{components/search :: typingSearch}"></div>
             <div th:replace="~{components/table :: table}"></div>
 

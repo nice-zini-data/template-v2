@@ -23,6 +23,8 @@
 
 /* side */
 
+/* header */
+
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -1065,6 +1067,19 @@ button.disabled{
   background-color: rgb(113 113 123 / 0.08);
 }
 
+.lineBtn{
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
 .lineBtn.primary{
   border-color: rgb(43 127 255 / 0.6);
 }
@@ -1081,6 +1096,15 @@ button.disabled{
 .lineBtn.secondary:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(236 254 255 / var(--tw-bg-opacity, 1));
+}
+
+.lineBtn.warning{
+  border-color: rgb(251 44 54 / 0.15);
+}
+
+.lineBtn.warning:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
 }
 
 .lineBtn.gray{
@@ -1318,12 +1342,21 @@ button.disabled{
 /*calendar*/
 
 #calendarDay{
+  display: none;
+}
+
+.calendarInput{
   height: 40px;
   width: 100%;
   border-radius: 6px;
   border-width: 1px;
   border-style: solid;
   border-color: rgb(39 39 42 / 0.15);
+  background-image: url('/assets/images/icons/calendar_icon_off.svg');
+  background-size: 20px 20px;
+  background-position: center left 12px;
+  background-repeat: no-repeat;
+  padding-left: 40px;
   --tw-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
   --tw-shadow-colored: 0 1px 0 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
@@ -1338,6 +1371,11 @@ button.disabled{
   padding-bottom: 16px !important;
   padding-left: 12px !important;
   padding-right: 12px !important;
+}
+
+.flatpickr-weekdays{
+  margin-bottom: 8px !important;
+  height: 24px !important;
 }
 
 .flatpickr-weekday{
@@ -1441,6 +1479,45 @@ button.disabled{
 .flatpickr-day:nth-child(7n+1).selected{
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
+}
+
+.flatpickr-prev-month, .flatpickr-next-month{
+  top: 16px !important;
+  width: 28px !important;
+  height: 28px !important;
+  background-image: url('/assets/images/icons/calendar_arrow.svg');
+  background-size: 16px 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.flatpickr-prev-month{
+  left: 20px !important;
+  --tw-rotate: 90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.flatpickr-next-month{
+  right: 20px !important;
+  --tw-rotate: -90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.flatpickr-prev-month svg, .flatpickr-next-month svg{
+  display: none !important;
+}
+
+.flatpickr-current-month{
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 0 !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.5rem !important;
+  font-weight: 500 !important;
+  --tw-text-opacity: 1 !important;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
 }
 
 .tableDataDom{
@@ -1654,6 +1731,101 @@ button.disabled{
 .sideMenuItem.\!active a{
   --tw-text-opacity: 1 !important;
   color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
+}
+
+.header{
+  display: flex;
+  height: 56px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.headerLogo{
+  width: 141px;
+}
+
+.headerMenuList{
+  margin-left: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.headerMenuList li{
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: 17px;
+  line-height: 1.5rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(82 82 92 / var(--tw-text-opacity, 1));
+}
+
+.headerMenuList li:hover{
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
+.headerMenuList li.active{
+  --tw-text-opacity: 1 !important;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
+}
+
+.headerMenuList li.\!active{
+  --tw-text-opacity: 1 !important;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1)) !important;
+}
+
+.headerNav, .headerUtils{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.headerUtils{
+  gap: 16px;
+}
+
+.userBtn{
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.userImg{
+  margin-right: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.userName{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
+}
+
+.userArrow{
+  width: 18px;
+  height: 18px;
+}
+
+.adminBtn{
+  height: 36px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  --tw-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.08);
+  --tw-shadow-colored: 0 1px 1px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .pointer-events-none{
@@ -2125,6 +2297,10 @@ button.disabled{
 
 .justify-center{
   justify-content: center;
+}
+
+.\!justify-between{
+  justify-content: space-between !important;
 }
 
 .justify-between{

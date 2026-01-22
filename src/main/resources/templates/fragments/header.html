@@ -1,2 +1,38 @@
 <header th:fragment="header">
+
+</header>
+
+<header th:fragment="logoHeader">
+    <div class="header">
+        <a href="/">
+            <img src="/assets/images/logo/nice_logo.svg" class="headerLogo" alt="logo">
+        </a>
+    </div>
+</header>
+
+<header th:fragment="menuHeader">
+    <div class="header !justify-between">
+        <div class="headerNav">
+            <a href="/">
+                <img src="/assets/images/logo/nice_logo.svg" class="headerLogo" alt="logo">
+            </a>
+            <ul class="headerMenuList">
+                <li>메뉴</li>
+                <li>메뉴</li>
+                <li>메뉴</li>
+                <li>메뉴</li>
+                <li>메뉴</li>
+            </ul>
+        </div>
+        <div class="headerUtils">
+            <div class="">
+                <button type="button" class="adminBtn lineBtn gray"><span>관리자</span></button>
+            </div>
+            <div class="userBtn">
+                <img src="/assets/images/icons/user_img.svg" class="userImg" alt="사용자 이미지 아이콘">
+                <p class="userName">사용자 이름</p>
+                <img src="/assets/images/icons/arrow_gray.svg" class="userArrow" alt="화살표 아이콘">
+            </div>
+        </div>
+    </div>
 </header>

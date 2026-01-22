@@ -111,8 +111,10 @@
   .searchList ul li p span.keyword {@apply text-primary-600}
 
   /*calendar*/
-  #calendarDay {@apply w-full h-10 rounded-md shadow-2xs border-1 border-solid border-zinc-800/15}
+  #calendarDay {@apply hidden}
+  .calendarInput {@apply w-full h-10 rounded-md shadow-2xs border-1 border-solid border-zinc-800/15 pl-10 bg-[url('/assets/images/icons/calendar_icon_off.svg')] bg-no-repeat bg-[center_left_12px] bg-[length:20px_20px]}
   .flatpickr-calendar {@apply !py-4 !px-3 !rounded-md !border-zinc-800/15 !w-fit}
+  .flatpickr-weekdays {@apply !h-6 !mb-2}
   .flatpickr-weekday {@apply !text-xs/4 !font-medium !text-zinc-500 py-1}
   .flatpickr-day {@apply !text-sm/5 !font-medium !text-zinc-950 !size-8 !rounded-sm !items-center !inline-flex !border-none !px-0 !mb-2 hover:!bg-primary-500 hover:!text-white focus:!bg-primary-600 focus:!text-white}
   .flatpickr-day.today {@apply !bg-zinc-800/8 !border-none hover:!bg-primary-600 hover:!text-white focus:!bg-primary-600 focus:!text-white}
@@ -122,6 +124,12 @@
   .flatpickr-day:nth-child(7n).selected {@apply !text-white}
   .flatpickr-day:nth-child(7n+1) {@apply !text-red-500 hover:!text-white}
   .flatpickr-day:nth-child(7n+1).selected {@apply !text-white}
+  .flatpickr-prev-month, .flatpickr-next-month {@apply !size-7 !top-4 bg-[url('/assets/images/icons/calendar_arrow.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
+  .flatpickr-prev-month {@apply !left-5 rotate-90}
+  .flatpickr-next-month {@apply !right-5 -rotate-90 }
+  .flatpickr-prev-month svg, .flatpickr-next-month svg {@apply !hidden}
+  .flatpickr-current-month {@apply !text-md/6 !font-semibold !text-zinc-950 !flex !justify-center !items-center !flex-row-reverse !pt-0}
+  
 }
 
 /*table*/
@@ -162,4 +170,20 @@
   .sideMenuItemIcon {@apply size-4-5}
   .sideMenuItem a {@apply text-md/6 font-medium text-zinc-600 hover:text-zinc-950}
   .sideMenuItem.active a {@apply !text-zinc-950}
+}
+
+/* header */
+@layer components {
+  .header {@apply h-14 px-6 flex justify-start items-center w-full}
+  .headerLogo {@apply w-[141px]}
+  .headerMenuList {@apply flex justify-start items-center gap-4 ml-6}
+  .headerMenuList li {@apply px-1-5 text-[17px]/6 font-semibold text-zinc-600 hover:text-zinc-950}
+  .headerMenuList li.active {@apply !text-zinc-950}
+  .headerNav, .headerUtils {@apply flex justify-start items-center}
+  .headerUtils {@apply gap-4}
+  .userBtn {@apply flex justify-start items-center gap-1 cursor-pointer}
+  .userImg {@apply size-8 mr-1}
+  .userName {@apply text-sm/5 font-semibold text-zinc-950}
+  .userArrow {@apply size-4-5}
+  .adminBtn {@apply px-2 py-1-5 h-9 shadow-default}
 }
