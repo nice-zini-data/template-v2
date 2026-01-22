@@ -39,48 +39,11 @@
     </div>
 </div>
 
-<div th:fragment="adminTable">
-    <div class="tableDataDom" >
-        <table data-enhance-table>
-            <thead>
-                <tr>
-                    <th>No <div class="sortIcon default"></div></th>
-                    <th>번호</th>
-                    <th>번호</th>
-                    <th>번호</th>
-                    <th>번호</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>번호</td>
-                    <td>123</td>
-                    <td>2025-03-31 09:28:37</td>
-                    <td><button class="lineBtn gray">123</button></td>
-                    <td>1234</td>
-                </tr>
-                <tr>
-                    <td>번호</td>
-                    <td>123</td>
-                    <td>번호</td>
-                    <td><button></button></td>
-                    <td>1234건</td>
-                </tr>
-                <tr>
-                    <td>번호</td>
-                    <td>123</td>
-                    <td>번호</td>
-                    <td><button></button></td>
-                    <td>1234</td>
-                </tr>
-                <tr>
-                    <td>번호</td>
-                    <td>123</td>
-                    <td>번호</td>
-                    <td><button></button></td>
-                    <td>1234</td>
-                </tr>
-            </tbody>
-        </table>
+<div th:fragment="adminTable(tableId)">
+    <div class="tableDataDom">
+      <table data-admin-table data-enhance-table th:attr="id=${tableId}">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
     </div>
 </div>

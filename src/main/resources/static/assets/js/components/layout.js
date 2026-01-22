@@ -329,6 +329,69 @@
         });
       });
     };
+
+    // =========================
+    // Admin Table
+    // =========================
+
+    App.ui.adminTable = App.ui.adminTable || {};
+
+    /**
+     * Admin 테이블 렌더링
+     * @param {string} selector - 테이블 선택자 (예: '#homeTable')
+     * @param {Object} options - 테이블 옵션
+     * @param {Array} options.headers - 헤더 배열 [{ text: 'No' }, ...]
+     * @param {Array} options.rows - 행 데이터 배열 [['1', '123', ...], ...]
+     */
+    App.ui.adminTable.render = function (selector, options) {
+      const $table = $(selector);
+      if ($table.length === 0) {
+        console.warn('[ADMIN_TABLE] 테이블을 찾을 수 없습니다:', selector);
+        return;
+      }
+
+      const { headers = [], rows = [] } = options || {};
+
+      // thead 렌더링
+      const $thead = $table.find('thead');
+      $thead.empty();
+      
+      if (headers.length > 0) {
+        const $tr = $('<tr></tr>');
+        headers.forEach(header => {
+          const text = typeof header === 'string' ? header : (header.text || '');
+          const align = header.align || null;
+          const $th = $('<th></th>').text(text);
+          if (align) {
+            $th.attr('data-align', align);
+          }
+          $tr.append($th);
+        });
+        $thead.append($tr);
+      }
+
+      // tbody 렌더링
+      const $tbody = $table.find('tbody');
+      $tbody.empty();
+      
+      rows.forEach(row => {
+        const $tr = $('<tr></tr>');
+        row.forEach(cell => {
+          const $td = $('<td></td>');
+          // HTML 문자열인 경우 html()로, 아니면 text()로
+          if (typeof cell === 'string' && cell.trim().startsWith('<')) {
+            $td.html(cell);
+          } else {
+            $td.text(cell || '');
+          }
+          $tr.append($td);
+        });
+        $tbody.append($tr);
+      });
+
+      // tableEnhance 초기화 (자동 정렬 등 적용)
+      App.ui.tableEnhance.init($table);
+    };
   
     $(function () {
       App.ui.search.init(document);
