@@ -1,5 +1,5 @@
 $(function () {
-    App.ui.adminTable.render('#homeTable', {
+    App.ui.componentTable.render('#homeTable', {
         headers: [
           { text: 'No' },
           { text: '번호' },
