@@ -699,18 +699,6 @@ li{
   cursor: pointer;
 }
 
-.textCenter{
-  text-align: center;
-}
-
-.textRight{
-  text-align: right;
-}
-
-.textLeft{
-  text-align: left;
-}
-
 .inputLabel{
   margin-bottom: 8px;
   display: flex;
@@ -1638,15 +1626,6 @@ button.disabled{
   content: var(--tw-content);
 }
 
-.sortIcon{
-  margin-left: 8px;
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  align-items: center;
-  justify-content: center;
-}
-
 .sortIcon.default{
   background-image: url('/assets/images/icons/sort_flow_default.svg');
   background-size: 16px 16px;
@@ -1933,7 +1912,9 @@ button.disabled{
 }
 
 .sideContentBox{
+  height: calc(100vh - 56px);
   width: 100%;
+  overflow-y: auto;
   padding-top: 24px;
   padding-right: 24px;
 }
@@ -2301,6 +2282,10 @@ button.disabled{
   width: 16px;
 }
 
+.w-\[480px\]{
+  width: 480px;
+}
+
 .w-\[80px\]{
   width: 80px;
 }
@@ -2315,10 +2300,6 @@ button.disabled{
 
 .w-full{
   width: 100%;
-}
-
-.w-\[480px\]{
-  width: 480px;
 }
 
 .min-w-\[140px\]{

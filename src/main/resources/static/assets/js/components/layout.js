@@ -83,88 +83,385 @@
     };
 
     // =========================
-    // Pagination
-    // =========================
+// Table Enhance (네가 만든 것 그대로 사용)
+// =========================
+App.ui.tableEnhance = App.ui.tableEnhance || {};
 
+// 타입 판별 유틸
+function inferCellType(text) {
+  const normalized = text.trim();
+
+  // 날짜 + 시간 (공백 포함) -> 좌측 정렬 대상
+  const dateTimeLike =
+    /^\d{4}[-./]\d{1,2}[-./]\d{1,2}\s+\d{1,2}:\d{2}(:\d{2})?$/.test(normalized);
+  if (dateTimeLike) return 'date';
+
+  // 날짜만 / 시간만 -> 좌측 정렬 대상
+  const dateLike =
+    /^\d{4}[-./]\d{1,2}[-./]\d{1,2}$/.test(normalized) ||
+    /^\d{1,2}:\d{2}(:\d{2})?$/.test(normalized);
+  if (dateLike) return 'date';
+
+  // 숫자(단위 포함 허용) -> 우측 정렬 대상
+  const numberLike =
+    /^[-+]?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?/.test(normalized);
+  if (numberLike) return 'number';
+
+  return 'text';
+}
+
+App.ui.tableEnhance.init = function (scope) {
+  const $scope = scope ? $(scope) : $(document);
+
+  $scope.find('table[data-enhance-table]').each(function () {
+    const $table = $(this);
+    if ($table.data('enhanceBound')) return;
+    $table.data('enhanceBound', true);
+
+    // 그룹 헤더 중앙정렬(옵션)
+    $table.find('th[data-group-head]').each(function () {
+      this.style.textAlign = 'center';
+      this.style.verticalAlign = 'middle';
+    });
+
+    // 열 기준 정렬
+    const columnAlignMap = {};
+
+    // 1) th 기준 선처리: data-align 우선, "No"면 center
+    $table.find('thead th').each(function (index) {
+      const $th = $(this);
+      const thText = $th.text().trim();
+
+      const explicitAlign = $th.data('align');
+      if (explicitAlign) {
+        columnAlignMap[index] = explicitAlign;
+        return;
+      }
+
+      if (/^no$/i.test(thText)) {
+        columnAlignMap[index] = 'center';
+      }
+    });
+
+    // 2) button 있는 컬럼은 center
+    $table.find('tbody tr').each(function () {
+      $(this).children('td').each(function (index) {
+        if (columnAlignMap[index]) return;
+        if ($(this).find('button').length > 0) {
+          columnAlignMap[index] = 'center';
+        }
+      });
+    });
+
+    // 3) td 기준 자동 판별
+    $table.find('tbody tr').each(function () {
+      $(this).children('td').each(function (index) {
+        if (columnAlignMap[index]) return;
+
+        const $td = $(this);
+        if ($td.find('a, .tag').length) return;
+
+        const text = $td.text().trim();
+        if (!text) return;
+
+        const type = inferCellType(text);
+        columnAlignMap[index] = (type === 'number') ? 'right' : 'left';
+      });
+    });
+
+    // 4) th/td 일괄 적용
+    $table.find('tr').each(function () {
+      $(this).children('th, td').each(function (index) {
+        const align = columnAlignMap[index];
+        if (!align) return;
+
+        this.style.textAlign = align;
+        this.style.verticalAlign = 'middle';
+
+        if (align === 'right') {
+          this.style.fontVariantNumeric = 'tabular-nums';
+        }
+      });
+    });
+  });
+};
+
+
+// =========================
+// Admin Table (렌더러)
+// =========================
+App.ui.adminTable = App.ui.adminTable || {};
+
+/**
+ * @param {string} selector - '#homeTable'
+ * @param {Object} options
+ * @param {Array} options.headers - [{text:'No', align?:'left|center|right'}] 또는 ['No','번호',...]
+ * @param {Array} options.rows - [['1','123',...], ...]  (cell은 텍스트 or HTML 문자열 가능)
+ */
+App.ui.adminTable.render = function (selector, options) {
+  const $table = $(selector);
+  if ($table.length === 0) {
+    console.warn('[ADMIN_TABLE] 테이블을 찾을 수 없습니다:', selector);
+    return;
+  }
+
+  const { headers = [], rows = [] } = options || {};
+
+  // thead/tbody 없으면 생성(안전)
+  if ($table.find('thead').length === 0) $table.prepend('<thead></thead>');
+  if ($table.find('tbody').length === 0) $table.append('<tbody></tbody>');
+
+  // thead
+  const $thead = $table.find('thead');
+  $thead.empty();
+
+  if (headers.length > 0) {
+    const $tr = $('<tr></tr>');
+    headers.forEach(h => {
+      const isStr = (typeof h === 'string');
+      const text = isStr ? h : (h.text || '');
+      const align = isStr ? null : (h.align || null);
+
+      const $th = $('<th></th>').text(text);
+      if (align) $th.attr('data-align', align);
+      $tr.append($th);
+    });
+    $thead.append($tr);
+  }
+
+  // tbody
+  const $tbody = $table.find('tbody');
+  $tbody.empty();
+
+  rows.forEach(row => {
+    const $tr = $('<tr></tr>');
+    (row || []).forEach(cell => {
+      const $td = $('<td></td>');
+      if (typeof cell === 'string' && cell.trim().startsWith('<')) $td.html(cell);
+      else $td.text(cell ?? '');
+      $tr.append($td);
+    });
+    $tbody.append($tr);
+  });
+
+  // ✅ 정렬 재적용 (렌더 후 항상 다시 계산)
+  $table.removeData('enhanceBound');
+  App.ui.tableEnhance.init($table.closest('.tableDataDom').length ? $table.closest('.tableDataDom') : $table);
+};
+
+
+    // =========================
+    // Pagination (FINAL)
+    // =========================
+    window.App = window.App || {};
+    App.ui = App.ui || {};
     App.ui.pagination = App.ui.pagination || {};
 
-    // 처음/끝 페이지 체크 및 disabled 클래스 업데이트
-    function updatePaginationState($pagination) {
-      const $pageItems = $pagination.find('[data-page]');
-      if ($pageItems.length === 0) return;
+    (function () {
+      const NS = '.pagination';
 
-      // 현재 활성화된 페이지 번호
-      const currentPage = Number($pagination.find('li.active').data('page')) || 1;
-      
-      // 모든 페이지 번호 배열
-      const pageNumbers = $pageItems.map(function() {
-        return Number($(this).data('page'));
-      }).get();
-      
-      // 처음 페이지와 끝 페이지 찾기
-      const firstPage = Math.min(...pageNumbers);
-      const lastPage = Math.max(...pageNumbers);
-      
-      // 처음 페이지인지 확인
-      const isFirstPage = currentPage === firstPage;
-      // 끝 페이지인지 확인
-      const isLastPage = currentPage === lastPage;
-      
-      // prev, first 버튼 disabled 처리
-      $pagination.find('[data-page-btn="prev"], [data-page-btn="first"]').toggleClass('disabled', isFirstPage);
-      
-      // next, last 버튼 disabled 처리
-      $pagination.find('[data-page-btn="next"], [data-page-btn="last"]').toggleClass('disabled', isLastPage);
-    }
+      function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
-    function bind($pagination) {
-      if ($pagination.data('bound')) return;
-      $pagination.data('bound', true);
+      function getState($p) {
+        return {
+          totalPages: Number($p.data('totalPages')) || 1,
+          currentPage: Number($p.data('currentPage')) || 1,
+          windowSize: Number($p.data('windowSize')) || 5,
+        };
+      }
 
-      // 초기 상태 업데이트
-      updatePaginationState($pagination);
-      
-      $pagination.on('click.pagination', 'li', function (e) {
-        const $li = $(this);
-        
-        // disabled 또는 active 클래스가 있으면 클릭 무시
-        if ($li.hasClass('disabled') || $li.hasClass('active')) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
+      function setState($p, st) {
+        $p.data('totalPages', st.totalPages);
+        $p.data('currentPage', st.currentPage);
+        $p.data('windowSize', st.windowSize);
+      }
+
+      // ✅ 페이지 번호 li를 totalPages/currentPage 기준으로 생성(슬라이딩)
+      function renderPageItems($p) {
+        const st = getState($p);
+        const total = st.totalPages;
+        const cur = st.currentPage;
+        const win = st.windowSize;
+
+        const $ul = $p.find('ul').first();
+        if (!$ul.length) return;
+
+        // 기존 번호 li 제거
+        $ul.find('li[data-page]').remove();
+
+        // 표시할 구간 계산 (1..total에서 cur 중심으로 win개)
+        let start = Math.max(1, cur - Math.floor(win / 2));
+        let end = start + win - 1;
+
+        if (end > total) {
+          end = total;
+          start = Math.max(1, end - win + 1);
         }
-  
-        let payload = {};
-  
-        if ($li.data('pageBtn')) {
-          payload.action = $li.data('pageBtn'); // first | prev | next | last
-        } else if ($li.data('page')) {
-          payload.page = Number($li.data('page'));
-          // 페이지 번호 클릭 시 active 클래스 업데이트
-          $li.addClass('active').siblings().removeClass('active');
-          // 상태 업데이트 (처음/끝 페이지 체크)
-          updatePaginationState($pagination);
+
+        // 삽입 기준: prev/first 다음에 넣고, next/last 앞에 위치
+        const $after = $ul.find('li[data-page-btn="prev"]');
+        const $before = $ul.find('li[data-page-btn="next"]');
+
+        const items = [];
+        for (let p = start; p <= end; p++) {
+          const activeCls = (p === cur) ? 'active' : '';
+          items.push(`<li data-page="${p}" class="${activeCls}">${p}</li>`);
         }
-  
-        // ✅ 페이지로 알림만 보냄
-        $pagination.trigger('pagination:change', payload);
-      });
-      
-      // 외부에서 페이지가 변경될 때도 상태 업데이트
-      $pagination.on('pagination:change', function() {
-        // active 클래스가 업데이트된 후 상태 체크
-        setTimeout(function() {
-          updatePaginationState($pagination);
-        }, 0);
-      });
-    }
-  
-    App.ui.pagination.init = function (scope) {
-      const $scope = scope ? $(scope) : $(document);
-      $scope.find('[data-pagination]').each(function () {
-        bind($(this));
-      });
-    };
+
+        // prev 뒤에 넣기
+        if ($after.length) {
+          $after.after(items.join(''));
+        } else if ($before.length) {
+          $before.before(items.join(''));
+        } else {
+          $ul.append(items.join(''));
+        }
+      }
+
+      // ✅ first/prev/next/last disabled 처리 (총 페이지 기준)
+      function updateDisabled($p) {
+        const st = getState($p);
+        const cur = st.currentPage;
+        const total = st.totalPages;
+
+        $p.find('[data-page-btn="first"], [data-page-btn="prev"]')
+          .toggleClass('disabled', cur <= 1);
+
+        $p.find('[data-page-btn="next"], [data-page-btn="last"]')
+          .toggleClass('disabled', cur >= total);
+      }
+
+      function setActive($p, page) {
+        $p.find('li[data-page]').removeClass('active');
+        $p.find(`li[data-page="${page}"]`).addClass('active');
+      }
+
+      // ✅ 내부 공통: page 변경 처리
+      function applyPage($p, nextPage) {
+        const st = getState($p);
+        const page = clamp(nextPage, 1, st.totalPages);
+
+        st.currentPage = page;
+        setState($p, st);
+
+        renderPageItems($p);
+        setActive($p, page);
+        updateDisabled($p);
+
+        // 외부로 알림
+        $p.trigger('pagination:page', { page });
+      }
+
+      // ✅ 클릭 바인딩 (한 번만)
+      function bind($p) {
+        if ($p.data('bound')) return;
+        $p.data('bound', true);
+
+        $p.off('click' + NS).on('click' + NS, 'li', function (e) {
+          const $li = $(this);
+
+          if ($li.hasClass('disabled')) return;
+
+          const st = getState($p);
+          const cur = st.currentPage;
+
+          // 번호 클릭
+          const page = $li.data('page');
+          if (page) {
+            applyPage($p, Number(page));
+            return;
+          }
+
+          // 버튼 클릭
+          const action = $li.data('pageBtn');
+          if (!action) return;
+
+          if (action === 'first') applyPage($p, 1);
+          if (action === 'prev')  applyPage($p, cur - 1);
+          if (action === 'next')  applyPage($p, cur + 1);
+          if (action === 'last')  applyPage($p, st.totalPages);
+        });
+      }
+
+      // ✅ init: DOM에 있는 paginationWrap에 이벤트만 걸어줌
+      App.ui.pagination.init = function (scope) {
+        const $scope = scope ? $(scope) : $(document);
+        $scope.find('[data-pagination]').each(function () {
+          bind($(this));
+        });
+      };
+
+      /**
+       * connect: 페이지네이션 상태 세팅 + goToPage 연결 + 스크롤 TOP
+       * @param {string|Element|jQuery} target - '#homePagination'
+       * @param {Object} opt
+       * @param {number} opt.totalPages
+       * @param {number} [opt.currentPage=1]
+       * @param {number} [opt.windowSize=5]  // 화면에 보여줄 페이지 li 개수
+       * @param {function} opt.goToPage
+       * @param {string|Element|jQuery} [opt.scrollTarget] // 없으면 window
+       */
+      App.ui.pagination.connect = function (target, opt) {
+        const $p = (target instanceof jQuery) ? target : $(target);
+        if (!$p.length) {
+          console.warn('[PAGINATION] target not found:', target);
+          return;
+        }
+
+        bind($p); // connect만 호출해도 바인딩 되도록
+
+        const total = Math.max(1, Number(opt?.totalPages) || 1);
+        const win = Math.max(1, Number(opt?.windowSize) || 5);
+        let cur = Number(opt?.currentPage) || 1;
+        cur = clamp(cur, 1, total);
+
+        const goToPage = opt?.goToPage;
+        if (typeof goToPage !== 'function') {
+          console.warn('[PAGINATION] goToPage 함수가 필요합니다.');
+          return;
+        }
+
+        setState($p, { totalPages: total, currentPage: cur, windowSize: win });
+        renderPageItems($p);
+        setActive($p, cur);
+        updateDisabled($p);
+
+        // 중복 연결 방지 (id별)
+        $p.off('pagination:page.bridge').on('pagination:page.bridge', function (_e, ev) {
+          goToPage(ev.page);
+          scrollToTop(opt?.scrollTarget);
+        });
+
+        return {
+          setTotalPages(n) {
+            const st = getState($p);
+            st.totalPages = Math.max(1, Number(n) || 1);
+            st.currentPage = clamp(st.currentPage, 1, st.totalPages);
+            setState($p, st);
+            renderPageItems($p);
+            setActive($p, st.currentPage);
+            updateDisabled($p);
+          },
+          setCurrent(n) { applyPage($p, Number(n) || 1); },
+          getCurrent() { return getState($p).currentPage; }
+        };
+      };
+
+      function scrollToTop(target) {
+        if (!target) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+        const $t = (target instanceof jQuery) ? target : $(target);
+        if (!$t.length) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+        $t.stop().animate({ scrollTop: 0 }, 200);
+      }
+    })();
+
+
 
 
     // =========================
@@ -389,8 +686,61 @@
         $tbody.append($tr);
       });
 
-      // tableEnhance 초기화 (자동 정렬 등 적용)
-      App.ui.tableEnhance.init($table);
+      // tableEnhance 재적용(렌더 후 정렬 규칙 다시 계산)
+      $table.removeData('enhanceBound');
+      App.ui.tableEnhance.init($table.closest('.tableDataDom').length ? $table.closest('.tableDataDom') : $table);
+    };
+
+    // =========================
+    // Paged Table Connector (공통 헬퍼)
+    // =========================
+    
+    /**
+     * 테이블과 페이지네이션을 연결하는 공통 헬퍼 함수
+     * connect + slice + render를 한 번에 처리
+     * 
+     * @param {Object} cfg - 설정 객체
+     * @param {string} cfg.tableSel - 테이블 선택자 (예: '#homeTable')
+     * @param {string} cfg.pagingSel - 페이지네이션 선택자 (예: '#homeTablePagination')
+     * @param {Array} cfg.headers - 테이블 헤더 배열 [{ text: 'No' }, ...]
+     * @param {Array} cfg.rows - 전체 행 데이터 배열 [['1', '123', ...], ...]
+     * @param {number} [cfg.pageSize=10] - 페이지당 행 수
+     * @param {number} [cfg.currentPage=1] - 현재 페이지
+     * @param {number} [cfg.windowSize=5] - 페이지네이션에 표시할 페이지 번호 개수
+     * @param {string|Element|jQuery} [cfg.scrollTarget] - 페이지 변경 시 스크롤할 대상
+     */
+    App.ui.connectPagedTable = function (cfg) {
+      const tableSel = cfg.tableSel;
+      const pagingSel = cfg.pagingSel;
+      const headers = cfg.headers || [];
+      const rowsAll = cfg.rows || [];
+      const size = cfg.pageSize || 10;
+
+      const totalPages = Math.max(1, Math.ceil(rowsAll.length / size));
+
+      function getPageRows(page) {
+        const start = (page - 1) * size;
+        return rowsAll.slice(start, start + size);
+      }
+
+      function goToPage(page) {
+        App.ui.adminTable.render(tableSel, {
+          headers,
+          rows: getPageRows(page)
+        });
+      }
+
+      // 최초 렌더
+      goToPage(cfg.currentPage || 1);
+
+      // pagination 연결
+      App.ui.pagination.connect(pagingSel, {
+        totalPages,
+        currentPage: cfg.currentPage || 1,
+        windowSize: cfg.windowSize || 5,
+        goToPage,
+        scrollTarget: cfg.scrollTarget
+      });
     };
   
     $(function () {

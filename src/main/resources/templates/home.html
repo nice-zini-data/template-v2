@@ -5,7 +5,7 @@
   <!-- ✅ layout의 content에 꽂힘 -->
   <section layout:fragment="content">
     
-    <div th:replace="table :: adminTable('homeTable')"></div>
+    <div th:replace="~{components/table :: adminTable('homeTable')}"></div>
 
   </section>
 

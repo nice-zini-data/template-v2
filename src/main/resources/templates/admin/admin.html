@@ -16,10 +16,11 @@
             <div th:replace="~{components/table :: valueTable}"></div>
             <div class="w-[480px]">
               <div th:replace="~{components/table :: adminTable('homeTable')}"></div>
+              <div th:replace="~{components/pagination :: pagination('homeTablePagination')}"></div>
               <div th:replace="~{components/table :: adminTable('homeTable2')}"></div>
+              <div th:replace="~{components/pagination :: pagination('homeTable2Pagination')}"></div>
             </div>
-
-            <div th:replace="~{components/pagination :: pagination}"></div>
+            
             <div th:replace="~{components/calendar :: calendarDay}"></div>
             <div th:replace="~{components/calendar :: calendarDay}"></div>
         </div>
