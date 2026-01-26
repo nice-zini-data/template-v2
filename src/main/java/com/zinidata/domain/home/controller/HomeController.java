@@ -39,4 +39,17 @@ public class HomeController {
         return "home";
     }
 
+    /**
+     * map
+     * 
+     * @param model 뷰 모델 
+     * @return map 
+     */
+    @AuditLog(actionType = AuditActionType.PAGE_VIEW, targetResource = "page:/map")
+    @GetMapping("/map")
+    public String map(Model model) {
+        model.addAttribute("pageTitle", "지도");
+        model.addAttribute("currentPage", "map");
+        return "map";
+    }
 }

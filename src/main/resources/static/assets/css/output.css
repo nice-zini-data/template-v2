@@ -3404,6 +3404,20 @@ button.disabled{
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
+.badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
 .\!\[flex-flow\:column\]{
   flex-flow: column !important;
 }

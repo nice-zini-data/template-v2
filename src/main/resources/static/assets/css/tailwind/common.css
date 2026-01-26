@@ -243,3 +243,7 @@
   .modalFooter {@apply flex justify-between items-center gap-2}
   .modalFooter button {@apply w-full h-9 text-md/6 font-medium}
 }
+
+@layer utilities {
+  .badge {@apply rounded-sm px-1 py-0-5 text-sm/5 font-semibold inline-flex justify-center items-center}
+}
