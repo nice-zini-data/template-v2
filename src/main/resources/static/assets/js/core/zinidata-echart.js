@@ -607,7 +607,7 @@ function renderEchartTableLegend(chartInstance, containerSelector, seriesData) {
           ${seriesData.map((series, idx) => `
             <tr class="legend-row" data-series="${series.name}">
               <td class="fixText">
-                <div class="flexLeft">
+                <div class="flexStart">
                   <span class="iconBox size-3" style="background-color:${series.itemStyle?.color || chartColors[idx] || '#ccc'}"></span>
                   <span>${series.name}</span>
                 </div>
@@ -713,7 +713,7 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
           ${seriesData.map((series, idx) => `
             <tr class="legend-row" data-series="${series.name}">
               <td class="fixText">
-                <div class="flexLeft">
+                <div class="flexStart">
                   <span class="iconBox size-3" style="background-color:${series.itemStyle?.color || chartColors[idx] || '#ccc'}"></span>
                   <span>${series.name}</span>
                 </div>

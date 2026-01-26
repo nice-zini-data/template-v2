@@ -80,11 +80,17 @@
   .bgBtn.secondary {@apply bg-cyan-600 hover:bg-cyan-500}
   .bgBtn.warning {@apply bg-red-700 hover:bg-red-600}
   .bgBtn.gray {@apply text-zinc-950 bg-zinc-800/4 hover:bg-zinc-500/8}
+  .bgBtn.black {@apply text-white bg-zinc-950 hover:bg-zinc-800}
   .lineBtn {@apply rounded-md text-zinc-950 text-md/6 font-medium bg-white border border-solid}
   .lineBtn.primary {@apply border-primary-500/60 hover:bg-zinc-50}
   .lineBtn.secondary {@apply border-cyan-500/60 hover:bg-cyan-50}
   .lineBtn.warning {@apply border-red-500/15 hover:bg-red-50}
   .lineBtn.gray {@apply border-zinc-500/15 hover:bg-zinc-50}
+  .lineBtn.black {@apply border-zinc-950/15 hover:bg-zinc-50}
+  .toggleBtn {@apply w-[42px] h-6 rounded-full bg-zinc-200 relative m-auto}
+  .toggleBtn:after {@apply content-[''] block absolute top-[3px] left-[3px] size-4-5 rounded-full bg-white shadow-sm duration-300}
+  .toggleBtn.active {@apply bg-green-500}
+  .toggleBtn.active:after {@apply left-[21px] duration-300}
 }
 
 /* pagination, calendar, search */
@@ -103,7 +109,7 @@
   /*search*/
   .c-searchbox {@apply relative}
   .searchInput {@apply relative}
-  .searchIcon {@apply size-6 absolute left-3 top-1/2 -translate-y-1/2}
+  .searchIcon {@apply size-6 absolute left-3 top-1/2 -translate-y-1/2 flex justify-center items-center}
   .searchInput .inputCustom {@apply pl-[46px]}
   .searchInput .searchBtn {@apply absolute right-3 top-1/2 -translate-y-1/2}
   .searchList {@apply absolute left-0 top-[52px] w-full bg-white rounded-lg border border-solid border-zinc-800/25 py-2 z-[2] max-h-[316px] overflow-y-auto}
@@ -115,7 +121,7 @@
 
   /*calendar*/
   #calendarDay {@apply hidden}
-  .calendarInput {@apply w-full h-10 rounded-md shadow-2xs border-1 border-solid border-zinc-800/15 pl-10 bg-[url('/assets/images/icons/calendar_icon_off.svg')] bg-no-repeat bg-[center_left_12px] bg-[length:20px_20px]}
+  .calendarInput {@apply w-full h-10 rounded-md shadow-2xs border-1 border-solid border-zinc-800/15 pl-10 text-md/6 bg-[url('/assets/images/icons/calendar_icon_off.svg')] bg-no-repeat bg-[center_left_12px] bg-[length:20px_20px]}
   .flatpickr-calendar {@apply !py-4 !px-3 !rounded-md !border-zinc-800/15 !w-fit}
   .flatpickr-weekdays {@apply !h-6 !mb-2}
   .flatpickr-weekday {@apply !text-xs/4 !font-medium !text-zinc-500 py-1}
@@ -139,7 +145,7 @@
 @layer components {
   .tableDataDom {@apply overflow-auto pb-1-5;}
   .tableDataDom table {@apply w-full text-sm/5 text-center table-auto whitespace-nowrap}
-  .tableDataDom tr {@apply border-b-1 border-solid border-zinc-800/8 hover:bg-[rgba(39,39,42,0.02)]}
+  .tableDataDom tr {@apply border-b-1 border-solid border-zinc-800/8}
   .tableDataDom tr:last-child {@apply border-b-0}
   .tableDataDom thead tr:hover{@apply bg-transparent}
   .tableDataDom th {@apply bg-zinc-50}
@@ -147,6 +153,7 @@
   .tableDataDom table td {@apply text-sm/5 font-normal text-zinc-700 py-2 px-3 cursor-pointer tabular-nums}
   .tableDataDom table td.sticky {@apply bg-white}
   .tableDataDom table td .iconBox {@apply rounded-sm mr-2}
+  .tableDataDom table td button {@apply m-auto text-sm/4 h-7}
   .tableScrollOn th.fixText {@apply bg-zinc-50}
   .tableScrollOn .fixText {@apply sticky left-0 z-1 bg-white}
   .tableScrollOn .fixText:after{@apply content-[''] absolute top-0 -right-3 w-3 h-full block bg-[linear-gradient(270deg,transparent,rgba(0,0,0,0.06)_100%)]}
@@ -154,6 +161,7 @@
   .sortIcon.default {@apply bg-[url('/assets/images/icons/sort_flow_default.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
   .sortIcon.asc {@apply bg-[url('/assets/images/icons/sort_flow_asc.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
   .sortIcon.desc {@apply bg-[url('/assets/images/icons/sort_flow_desc.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
+  
 }
 
 /* map */
@@ -203,4 +211,9 @@
 @layer components {
   .sideContentBox {@apply w-full pt-6 pr-6 h-[calc(100vh-56px)] overflow-y-auto}
   .sideContentBoxTitle {@apply text-zinc-950 text-xl/7 font-bold mb-4}
+  .filterBoxWrap {@apply flex justify-between items-center}
+  .filterLeft {@apply flex justify-start items-center gap-2}
+  .filterRight {@apply flex justify-end items-center gap-2}
+  .h36Box input {@apply !h-9}
+  .filterGubunText {@apply text-md/6 text-zinc-500}
 }
