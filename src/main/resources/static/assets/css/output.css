@@ -1758,6 +1758,27 @@ button.disabled{
   left: auto;
 }
 
+.\!map{
+  height: 100%;
+}
+
+.map{
+  height: 100%;
+}
+
+.headerMap{
+  margin-top: 56px;
+  padding-top: 56px;
+}
+
+.mapHeader{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+}
+
 .header{
   display: flex;
   height: 56px;
@@ -3915,9 +3936,9 @@ input[type="checkbox"], input[type="radio"] {
   text-overflow: ellipsis;
 }
 
-#mapContainer {
-  height:calc(100vh - 58px);
-  height:calc(var(--vh, 1vh) * 100 - 58px);
+.mapBox {
+  height:100vh;
+  height:calc(var(--vh, 1vh) * 100);
 }
 
 .loadingWrap {
