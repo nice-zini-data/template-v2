@@ -217,3 +217,29 @@
   .h36Box input {@apply !h-9}
   .filterGubunText {@apply text-md/6 text-zinc-500}
 }
+
+@layer components {
+  .alertModal {@apply hidden fixed top-6 left-1/2 -translate-x-1/2 z-[102] rounded-md p-3 border border-solid justify-center items-center shadow-lg;animation: modalShow 4s forwards}
+  .alertModal .alertIcon {@apply size-4 mr-2}
+  .alertModal .alertText {@apply text-sm/5 font-medium}
+  .alertModal.success {@apply flex bg-green-50 border-green-600/30}
+  .alertModal.success .alertIcon{background:url('/assets/images/icons/success_icon_green.svg') no-repeat center center / 16px 16px}
+  .alertModal.success .alertText {@apply text-green-700}
+  .alertModal.fail {@apply flex bg-red-50 border-red-500/30}
+  .alertModal.fail .alertIcon{background:url('/assets/images/icons/error_icon_red.svg') no-repeat center center / 16px 16px}
+  .alertModal.fail .alertText {@apply text-red-700}
+  .modalLayout {@apply fixed top-0 left-0 z-[99] w-full h-full hidden;}
+  .modalLayout.active {@apply block}
+  .modalInner {@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[480px] z-10 max-h-[90vh] bg-white p-5 rounded-2xl border-1 border-solid border-zinc-800/15}
+  .modalBg {@apply absolute top-0 left-0 w-full h-full bg-black opacity-15 cursor-pointer}
+  .modalContent{@apply overflow-y-scroll }
+  .modalContent::-webkit-scrollbar{@apply w-1 bg-transparent}
+  .modalContent::-webkit-scrollbar-thumb{@apply bg-zinc-300 rounded-md cursor-pointer}
+  .modalContent p {@apply text-sm/5 text-zinc-600 font-normal}
+  .modalTitle{@apply text-lg/7 text-zinc-950 font-bold pb-1-5}
+  .modalSubTitle{@apply text-sm/5 text-zinc-500 font-normal pb-4}
+  .modalContText {@apply mb-4 p-2 bg-zinc-800/6 rounded-[2px] text-sm/5 font-medium text-zinc-950 }
+  .modalClose{@apply absolute top-5 right-5 size-7 cursor-pointer flex justify-center items-center}
+  .modalFooter {@apply flex justify-between items-center gap-2}
+  .modalFooter button {@apply w-full h-9 text-md/6 font-medium}
+}

@@ -1,0 +1,30 @@
+<!-- 알림 -->
+<div th:fragment="alert">
+    <div class="alertModal">
+        <div class="alertIcon"></div>
+        <p class="alertText">안내 문구가 들어갑니다.</p>
+    </div>
+</div>
+
+
+<div th:fragment="modal(showButton2, button1Text, button1Class, button2Text, button2Class)">
+    <div class="modalLayout">
+        <div class="modalInner">
+            <button class="modalClose close" type="button"><img src="/assets/images/icons/remove_dark_icon.svg" class="size-5" alt=""></button>
+            <div class="modalContent">
+                <p class="modalTitle">Title</p>
+                <p class="modalSubTitle">전달할 내용을 기재합니다.</p>
+                <div class="modalContText">
+                    <p>전달할 내용을 기재합니다.</p>
+                    <p>전달할 내용을 기재합니다.</p>
+                </div>
+            </div>       
+            <div class="modalFooter">
+                <button type="button" th:class="${button1Class ?: 'bgBtn gray'}" th:text="${button1Text ?: '버튼'}"></button>     
+                <button type="button" th:if="${showButton2 != null and showButton2}" th:class="${button2Class ?: 'bgBtn primary'}" th:text="${button2Text ?: '버튼'}"></button>     
+            </div>
+        </div>
+            
+        <div class="modalBg"></div>
+    </div>
+</div>

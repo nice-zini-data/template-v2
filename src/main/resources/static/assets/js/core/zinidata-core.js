@@ -142,7 +142,7 @@ $(document).ready(function() {
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        Zinidata.showAlert(errorMessage, 'doneRed');
+                        Zinidata.showAlert(errorMessage, 'fail');
                     }
                 }
             };
@@ -160,7 +160,7 @@ $(document).ready(function() {
         /**
          * 알림 메시지 표시
          * @param {string} message - 표시할 메시지
-         * @param {string} type - 알림 타입 (doneRed, doneGreen 등)
+         * @param {string} type - 알림 타입 (fail, success 등)
          * @param {Function} afterFunc - 알림 완료 후 실행할 함수
          */
         showAlert: function(message, type, afterFunc) {
@@ -176,20 +176,21 @@ $(document).ready(function() {
             // alertModal이 없으면 동적으로 생성
             if ($modal.length === 0) {
                 $('body').append(
-                    '<div class="alertModal" style="transform: translateX(-50%);">' +
+                    '<div class="alertModal">' +
                         '<div class="alertIcon"></div>' +
                         '<div class="alertText"></div>' +
                     '</div>'
                 );
                 $modal = $('.alertModal');
                 $text = $('.alertText');
-            } else {
+            } 
+            // else {
                 // 기존 모달도 중앙 정렬 보정
-                $modal.css('transform', 'translateX(-50%)');
-            }
+            //     $modal.css('transform', 'translateX(-50%)');
+            // }
             
             // 1. 기존 클래스 모두 제거 (애니메이션 리셋)
-            $modal.removeClass('doneRed doneGreen flex');
+            $modal.removeClass('success fail');
             
             // 2. 강제로 리플로우 발생시켜 CSS 변경사항 즉시 적용
             if ($modal[0]) {

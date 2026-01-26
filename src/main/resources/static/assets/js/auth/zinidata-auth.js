@@ -168,7 +168,7 @@ $(document).ready(function() {
 
             // SMS 인증 완료 여부 확인
             // if (!window.certYn || window.certYn !== 'Y') {
-            //     Zinidata.showAlert('휴대폰 인증을 완료해주세요.', 'doneRed');
+            //     Zinidata.showAlert('휴대폰 인증을 완료해주세요.', 'fail');
             //     $('#phone').focus();
             //     return false;
             // }
@@ -214,16 +214,16 @@ $(document).ready(function() {
                         self.handleLoginSuccess(response.data);
                     } else {
                         console.error('[AUTH] NIBS 계약 로그인 실패:', response);
-                        Zinidata.showAlert(response.message || '사용자 확인 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(response.message || '사용자 확인 중 오류가 발생했습니다.', 'fail');
 
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('[AUTH] NIBS 계약 로그인 API 오류:', error);
                     if (xhr.responseJSON) {
-                        Zinidata.showAlert(xhr.responseJSON.message || '사용자 확인 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(xhr.responseJSON.message || '사용자 확인 중 오류가 발생했습니다.', 'fail');
                     } else {
-                        Zinidata.showAlert('네트워크 오류가 발생했습니다. 다시 시도해주세요.', 'doneRed');
+                        Zinidata.showAlert('네트워크 오류가 발생했습니다. 다시 시도해주세요.', 'fail');
                     }
                 }
             });
@@ -266,16 +266,16 @@ $(document).ready(function() {
                             self.registerAndLogin(formData);
                         }
                     } else {
-                        Zinidata.showAlert(response.message || '사용자 확인 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(response.message || '사용자 확인 중 오류가 발생했습니다.', 'fail');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('[AUTH] 사용자 확인 API 오류:', error);
                     
                     if (xhr.responseJSON) {
-                        Zinidata.showAlert(xhr.responseJSON.message || '사용자 확인 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(xhr.responseJSON.message || '사용자 확인 중 오류가 발생했습니다.', 'fail');
                     } else {
-                        Zinidata.showAlert('사용자 확인 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert('사용자 확인 중 오류가 발생했습니다.', 'fail');
                     }
                 }
             });
@@ -354,23 +354,23 @@ $(document).ready(function() {
                     
                     if (response.success === true) {
                         // 회원가입 성공 후 자동 로그인
-                        Zinidata.showAlert('회원가입이 완료되었습니다. 자동으로 로그인합니다.', 'doneGreen');
+                        Zinidata.showAlert('회원가입이 완료되었습니다. 자동으로 로그인합니다.', 'success');
                         
                         // 약간의 지연 후 로그인 시도
                         setTimeout(function() {
                             self.attemptLogin(formData);
                         }, 1000);
                     } else {
-                        Zinidata.showAlert(response.message || '회원가입 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(response.message || '회원가입 중 오류가 발생했습니다.', 'fail');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('[AUTH] 회원가입 API 오류:', error);
                     
                     if (xhr.responseJSON) {
-                        Zinidata.showAlert(xhr.responseJSON.message || '회원가입 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert(xhr.responseJSON.message || '회원가입 중 오류가 발생했습니다.', 'fail');
                     } else {
-                        Zinidata.showAlert('회원가입 중 오류가 발생했습니다.', 'doneRed');
+                        Zinidata.showAlert('회원가입 중 오류가 발생했습니다.', 'fail');
                     }
                 }
             });
@@ -401,7 +401,7 @@ $(document).ready(function() {
                 // }
                 
                 // 3. 성공 메시지
-                Zinidata.showAlert('로그인되었습니다.', 'doneGreen');
+                Zinidata.showAlert('로그인되었습니다.', 'success');
                 
                 // 4. 페이지 이동
                 setTimeout(function() {
@@ -441,7 +441,7 @@ $(document).ready(function() {
             
             // 오류 메시지 표시
             const errorMessage = response.message || '알 수 없는 오류가 발생했습니다.';
-            Zinidata.showAlert(errorMessage, 'doneRed');
+            Zinidata.showAlert(errorMessage, 'fail');
         },
 
         // ============================== 회원가입 함수 ==============================
@@ -846,7 +846,7 @@ $(document).ready(function() {
             
             // 휴대폰 인증 확인
             if (!Zinidata.cert || !Zinidata.cert.isCertified()) {
-                Zinidata.showAlert('휴대폰 인증을 진행해주세요.', 'doneRed');
+                Zinidata.showAlert('휴대폰 인증을 진행해주세요.', 'fail');
                 $("#phone").focus();
                 return;
             }
@@ -870,7 +870,7 @@ $(document).ready(function() {
             }
             
             if (!$("#userId").data('validated')) {
-                Zinidata.showAlert('사용 가능한 아이디를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('사용 가능한 아이디를 입력해주세요.', 'fail');
                 $("#userId").focus();
                 return false;
             }
@@ -880,7 +880,7 @@ $(document).ready(function() {
             }
             
             if (!$("#password").data('validated')) {
-                Zinidata.showAlert('비밀번호가 유효하지 않습니다. 조건을 확인해주세요.', 'doneRed');
+                Zinidata.showAlert('비밀번호가 유효하지 않습니다. 조건을 확인해주세요.', 'fail');
                 $("#password").focus();
                 return false;
             }
@@ -894,19 +894,19 @@ $(document).ready(function() {
             }
             
             if (!$("#email").data('validated')) {
-                Zinidata.showAlert('사용 가능한 이메일을 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('사용 가능한 이메일을 입력해주세요.', 'fail');
                 $("#email").focus();
                 return false;
             }
             
             if (!$("#privacyCheck").is(':checked')) {
-                Zinidata.showAlert('[필수] 개인정보 수집 이용 동의에 체크해주세요.', 'doneRed');
+                Zinidata.showAlert('[필수] 개인정보 수집 이용 동의에 체크해주세요.', 'fail');
                 $("#privacyCheck").focus();
                 return false;
             }
             
             if (!$("#privacyCheck02").is(':checked')) {
-                Zinidata.showAlert('[필수] 개인정보 수집 이용 동의(두 번째)에 체크해주세요.', 'doneRed');
+                Zinidata.showAlert('[필수] 개인정보 수집 이용 동의(두 번째)에 체크해주세요.', 'fail');
                 $("#privacyCheck02").focus();
                 return false;
             }
@@ -969,7 +969,7 @@ $(document).ready(function() {
         handleSignupSuccess: function(response) {
             console.log('[AUTH] 회원가입 성공:', response);
             
-            Zinidata.showAlert('회원가입이 완료되었습니다.', 'doneGreen');
+            Zinidata.showAlert('회원가입이 완료되었습니다.', 'success');
             
             setTimeout(function() {
                 window.location.href = '/auth/login?message=' + encodeURIComponent('회원가입이 완료되었습니다. 로그인해주세요.');
@@ -987,11 +987,11 @@ $(document).ready(function() {
             // 특정 에러 코드 처리
             if (response.code) {
                 if (response.code === '1009') {
-                    Zinidata.showAlert(errorMessage, 'doneRed');
+                    Zinidata.showAlert(errorMessage, 'fail');
                     $("#userId").focus();
                     return;
                 } else if (response.code === '1011') {
-                    Zinidata.showAlert(errorMessage, 'doneRed');
+                    Zinidata.showAlert(errorMessage, 'fail');
                     $("#phone").focus();
                     return;
                 } else if (response.code === '3001') {
@@ -1010,7 +1010,7 @@ $(document).ready(function() {
                 }
             }
             
-            Zinidata.showAlert(errorMessage, 'doneRed');
+            Zinidata.showAlert(errorMessage, 'fail');
         },
 
         // ============================== 아이디/비밀번호 찾기 모듈 ==============================
@@ -1082,7 +1082,7 @@ $(document).ready(function() {
             
             // 휴대폰 인증 확인
             if (!Zinidata.cert || !Zinidata.cert.isCertified()) {
-                Zinidata.showAlert('휴대폰 인증을 진행해주세요.', 'doneRed');
+                Zinidata.showAlert('휴대폰 인증을 진행해주세요.', 'fail');
                 $("#phone").focus();
                 return;
             }
@@ -1104,19 +1104,19 @@ $(document).ready(function() {
             const phone = $("#phone").val().trim();
             
             if (!name) {
-                Zinidata.showAlert('이름을 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('이름을 입력해주세요.', 'fail');
                 $("#name").focus();
                 return false;
             }
             
             if (!phone) {
-                Zinidata.showAlert('휴대폰 번호를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('휴대폰 번호를 입력해주세요.', 'fail');
                 $("#phone").focus();
                 return false;
             }
             
             if (phone.length !== 11) {
-                Zinidata.showAlert('올바른 휴대폰 번호를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('올바른 휴대폰 번호를 입력해주세요.', 'fail');
                 $("#phone").focus();
                 return false;
             }
@@ -1194,7 +1194,7 @@ $(document).ready(function() {
             if (response.code === 'USER_NOT_FOUND' || errorMessage.includes('가입한 내역이 없습니다')) {
                 this.showErrorMessage();
             } else {
-                Zinidata.showAlert(errorMessage, 'doneRed');
+                Zinidata.showAlert(errorMessage, 'fail');
             }
         },
 
@@ -1258,7 +1258,7 @@ $(document).ready(function() {
                 
                 if (!resultData) {
                     console.warn('[AUTH] 아이디 찾기 결과 데이터가 없습니다. 아이디 찾기 페이지로 이동합니다.');
-                    Zinidata.showAlert('잘못된 접근입니다.', 'doneRed');
+                    Zinidata.showAlert('잘못된 접근입니다.', 'fail');
                     setTimeout(function() {
                         window.location.href = '/auth/findId';
                     }, 1500);
@@ -1278,7 +1278,7 @@ $(document).ready(function() {
                 
             } catch (error) {
                 console.error('[AUTH] 아이디 찾기 결과 로드 오류:', error);
-                Zinidata.showAlert('결과를 불러오는 중 오류가 발생했습니다.', 'doneRed');
+                Zinidata.showAlert('결과를 불러오는 중 오류가 발생했습니다.', 'fail');
                 setTimeout(function() {
                     window.location.href = '/auth/findId';
                 }, 1500);
@@ -1337,20 +1337,20 @@ $(document).ready(function() {
             const phone = $('#phone').val().trim();
             
             if (!userId) {
-                Zinidata.showAlert('아이디를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('아이디를 입력해주세요.', 'fail');
                 $('#userId').focus();
                 return false;
             }
             
             if (!phone) {
-                Zinidata.showAlert('휴대폰 번호를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('휴대폰 번호를 입력해주세요.', 'fail');
                 $('#phone').focus();
                 return false;
             }
             
             // SMS 인증 완료 여부 확인
             if (!window.certYn || window.certYn !== 'Y') {
-                Zinidata.showAlert('휴대폰 인증을 완료해주세요.', 'doneRed');
+                Zinidata.showAlert('휴대폰 인증을 완료해주세요.', 'fail');
                 return false;
             }
             
@@ -1395,7 +1395,7 @@ $(document).ready(function() {
             console.log('[AUTH] 비밀번호 찾기 성공 처리');
             
             // 성공 알림
-            Zinidata.showAlert('인증이 완료되었습니다.\n비밀번호 변경 페이지로 이동합니다.', 'doneGreen', function() {
+            Zinidata.showAlert('인증이 완료되었습니다.\n비밀번호 변경 페이지로 이동합니다.', 'success', function() {
                 // 비밀번호 변경 페이지로 이동
                 window.location.href = '/auth/findPasswordResult';
             });
@@ -1413,7 +1413,7 @@ $(document).ready(function() {
                 errorMessage = xhr.responseJSON.message;
             }
             
-            Zinidata.showAlert(errorMessage, 'doneRed');
+            Zinidata.showAlert(errorMessage, 'fail');
         },
 
         // ============================== 비밀번호 변경 모듈 ==============================
@@ -1503,25 +1503,25 @@ $(document).ready(function() {
             const confirmPassword = $('#confirmPassword').val();
             
             if (!newPassword) {
-                Zinidata.showAlert('새 비밀번호를 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('새 비밀번호를 입력해주세요.', 'fail');
                 $('#newPassword').focus();
                 return false;
             }
             
             if (!this.validateChangePasswordConditions(newPassword)) {
-                Zinidata.showAlert('비밀번호 조건을 만족해주세요.', 'doneRed');
+                Zinidata.showAlert('비밀번호 조건을 만족해주세요.', 'fail');
                 $('#newPassword').focus();
                 return false;
             }
             
             if (!confirmPassword) {
-                Zinidata.showAlert('비밀번호 확인을 입력해주세요.', 'doneRed');
+                Zinidata.showAlert('비밀번호 확인을 입력해주세요.', 'fail');
                 $('#confirmPassword').focus();
                 return false;
             }
             
             if (newPassword !== confirmPassword) {
-                Zinidata.showAlert('비밀번호가 일치하지 않습니다.', 'doneRed');
+                Zinidata.showAlert('비밀번호가 일치하지 않습니다.', 'fail');
                 $('#confirmPassword').focus();
                 return false;
             }
@@ -1611,7 +1611,7 @@ $(document).ready(function() {
             console.log('[AUTH] 비밀번호 변경 성공 처리');
             
             // 성공 알림
-            Zinidata.showAlert('비밀번호가 성공적으로 변경되었습니다.\n로그인 페이지로 이동합니다.', 'doneGreen', function() {
+            Zinidata.showAlert('비밀번호가 성공적으로 변경되었습니다.\n로그인 페이지로 이동합니다.', 'success', function() {
                 // 로그인 페이지로 이동
                 window.location.href = '/auth/login';
             });
@@ -1629,7 +1629,7 @@ $(document).ready(function() {
                 errorMessage = xhr.responseJSON.message;
             }
             
-            Zinidata.showAlert(errorMessage, 'doneRed');
+            Zinidata.showAlert(errorMessage, 'fail');
         },
 
         // ============================== 로그아웃 함수 ==============================
@@ -1715,7 +1715,7 @@ $(document).ready(function() {
                 } catch (error) {
                     console.error('[AUTH] 카카오 로그인 시작 실패:', error);
                     this.hideLoading();
-                    Zinidata.showAlert('카카오 로그인 중 오류가 발생했습니다.', 'doneRed');
+                    Zinidata.showAlert('카카오 로그인 중 오류가 발생했습니다.', 'fail');
                 }
             },
             
@@ -1728,7 +1728,7 @@ $(document).ready(function() {
                 try {
                     // 로그인 상태 확인
                     if (!Zinidata.auth.session.isLoggedIn()) {
-                        Zinidata.showAlert('로그인 후 이용해주세요.', 'doneRed');
+                        Zinidata.showAlert('로그인 후 이용해주세요.', 'fail');
                         return;
                     }
                     
@@ -1741,7 +1741,7 @@ $(document).ready(function() {
                 } catch (error) {
                     console.error('[AUTH] 카카오 계정 연동 시작 실패:', error);
                     this.hideLoading();
-                    Zinidata.showAlert('카카오 계정 연동 중 오류가 발생했습니다.', 'doneRed');
+                    Zinidata.showAlert('카카오 계정 연동 중 오류가 발생했습니다.', 'fail');
                 }
             },
             
@@ -1849,7 +1849,7 @@ $(document).ready(function() {
             }
             
             // 성공 메시지
-            Zinidata.showAlert('로그아웃되었습니다.', 'doneGreen');
+            Zinidata.showAlert('로그아웃되었습니다.', 'success');
             
             setTimeout(function() {
                 window.location.href = '/auth/login';
@@ -2077,7 +2077,7 @@ $(document).ready(function() {
                 console.log('[AUTH] === 세션 타임아웃 감지 - 자동 로그아웃 처리 ===');
                 
                 // ✅ 표준: 프로젝트 표준 알림 함수 사용
-                Zinidata.showAlert('세션이 만료되었습니다. 다시 로그인해주세요.', 'doneRed', function() {
+                Zinidata.showAlert('세션이 만료되었습니다. 다시 로그인해주세요.', 'fail', function() {
                     // ✅ 표준: 클라이언트 정리 및 리다이렉트
                     self.clear();
                     window.location.href = '/auth/login';
@@ -2092,7 +2092,7 @@ $(document).ready(function() {
              */
             requireAuth: function() {
                 if (!Zinidata.auth.session.isLoggedIn()) {
-                    Zinidata.showAlert('로그인이 필요합니다.', 'doneRed');
+                    Zinidata.showAlert('로그인이 필요합니다.', 'fail');
                     setTimeout(function() {
                         const currentUrl = encodeURIComponent(window.location.href);
                         window.location.href = '/auth/login?returnUrl=' + currentUrl;

@@ -467,6 +467,13 @@ input[type="checkbox"], input[type="radio"] {display: none;}
     100% {opacity: 0.6;}
 }
 
+
+@keyframes requestModalShow {
+    0%{transform:translateY(100%) translateX(-50%)}
+    100%{transform:translateY(0) translateX(-50%)}
+}
+
+
 @media all and (max-width:1366px) {
     html, body {
         margin: 0;

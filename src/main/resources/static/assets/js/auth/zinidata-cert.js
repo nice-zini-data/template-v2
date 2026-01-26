@@ -138,14 +138,14 @@ $(document).ready(function() {
             
             // 시간 초과 체크
             if (this.state.timeLeft < 0) {
-                Zinidata.showAlert('인증 시간이 초과되었습니다. 인증번호를 재요청해주세요.', "doneRed");
+                Zinidata.showAlert('인증 시간이 초과되었습니다. 인증번호를 재요청해주세요.', "fail");
                 return;
             }
 
             // 인증번호 입력 체크
             var verifyCode = $("#verifyCode").val();
             if (!verifyCode || verifyCode.trim() === '') {
-                Zinidata.showAlert("인증번호를 입력해주세요.", "doneRed");
+                Zinidata.showAlert("인증번호를 입력해주세요.", "fail");
                 $("#verifyCode").focus();
                 return;
             }
@@ -190,14 +190,14 @@ $(document).ready(function() {
             var phoneNumber = $("#phone").val();
             
             if (!phoneNumber || phoneNumber.trim() === '') {
-                Zinidata.showAlert("휴대폰번호를 입력해주세요.", "doneRed");
+                Zinidata.showAlert("휴대폰번호를 입력해주세요.", "fail");
                 $("#phone").focus();
                 return false;
             }
 
             // 공통함수로 휴대폰 번호 유효성 검사
             if (!Zinidata.validation.phone(phoneNumber)) {
-                Zinidata.showAlert("올바른 휴대폰번호 형식이 아닙니다. (010-XXXX-XXXX 또는 +82 10-XXXX-XXXX)", "doneRed");
+                Zinidata.showAlert("올바른 휴대폰번호 형식이 아닙니다. (010-XXXX-XXXX 또는 +82 10-XXXX-XXXX)", "fail");
                 $("#phone").focus();
                 return false;
             }
@@ -222,7 +222,7 @@ $(document).ready(function() {
             this.updateUIAfterSend();
             
             // 성공 메시지
-            Zinidata.showAlert(response.message || "인증번호가 발송되었습니다.", "doneGreen");
+            Zinidata.showAlert(response.message || "인증번호가 발송되었습니다.", "success");
         },
 
         /**
@@ -242,7 +242,7 @@ $(document).ready(function() {
             this.updateUIAfterVerify();
             
             // 성공 메시지
-            Zinidata.showAlert(response.message || "휴대폰 인증이 완료되었습니다.", "doneGreen");
+            Zinidata.showAlert(response.message || "휴대폰 인증이 완료되었습니다.", "success");
         },
 
         /**
@@ -252,7 +252,7 @@ $(document).ready(function() {
             console.log(`=== ${type} 오류 ===`, response);
             
             var errorMessage = response.message || '알 수 없는 오류가 발생했습니다.';
-            Zinidata.showAlert(errorMessage, "doneRed");
+            Zinidata.showAlert(errorMessage, "fail");
             
             // 인증번호 확인 실패 시 인증 상태 초기화
             if (type === '인증번호 확인') {
@@ -359,7 +359,7 @@ $(document).ready(function() {
             $("#getCert").prop('disabled', true);
             $("#getCert").addClass("wh_time_n");
             
-            Zinidata.showAlert('인증 시간이 만료되었습니다. 인증번호를 재요청해주세요.', 'doneRed');
+            Zinidata.showAlert('인증 시간이 만료되었습니다. 인증번호를 재요청해주세요.', 'fail');
         },
 
         /**

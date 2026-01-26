@@ -221,7 +221,7 @@ $(document).ready(function() {
                 Zinidata.hideLoading($button);
                 
                 // 성공 메시지
-                Zinidata.showAlert('회원가입이 완료되었습니다!', 'doneGreen');
+                Zinidata.showAlert('회원가입이 완료되었습니다!', 'success');
                 
                 // 메인 페이지로 이동
                 setTimeout(function() {
@@ -242,7 +242,7 @@ $(document).ready(function() {
                 }
                 
                 // 오류 메시지 표시
-                Zinidata.showAlert(errorMessage, 'doneRed');
+                Zinidata.showAlert(errorMessage, 'fail');
                 
                 // 버튼 상태 복원 (공통함수 활용)
                 Zinidata.hideLoading($button, config.buttonText);
@@ -317,7 +317,7 @@ $(document).ready(function() {
                 
                 if (!kakaoId || !existingLoginId) {
                     console.error('카카오 연동 데이터가 없습니다:', { kakaoId, existingLoginId });
-                    Zinidata.showAlert('연동에 필요한 정보가 없습니다. 다시 시도해주세요.', 'doneRed');
+                    Zinidata.showAlert('연동에 필요한 정보가 없습니다. 다시 시도해주세요.', 'fail');
                     return;
                 }
                 
@@ -347,12 +347,12 @@ $(document).ready(function() {
                             Zinidata.hideLoading(linkBtn);
                             
                             // 성공 메시지 표시 (프로젝트 표준 알림)
-                            Zinidata.showAlert('카카오 계정이 성공적으로 연결되었습니다.', 'doneGreen', function() {
+                            Zinidata.showAlert('카카오 계정이 성공적으로 연결되었습니다.', 'success', function() {
                                 // 메인 페이지로 리다이렉트
                                 window.location.href = '/';
                             });
                         } else {
-                            Zinidata.showAlert('계정 연결에 실패했습니다: ' + (response.message || '알 수 없는 오류'), 'doneRed');
+                            Zinidata.showAlert('계정 연결에 실패했습니다: ' + (response.message || '알 수 없는 오류'), 'fail');
                             Zinidata.hideLoading(linkBtn);
                         }
                     },
@@ -371,7 +371,7 @@ $(document).ready(function() {
                             console.error('응답 파싱 오류:', e);
                         }
                         
-                        Zinidata.showAlert(errorMessage, 'doneRed');
+                        Zinidata.showAlert(errorMessage, 'fail');
                         Zinidata.hideLoading(linkBtn);
                     }
                 });

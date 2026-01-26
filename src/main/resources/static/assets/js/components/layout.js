@@ -744,12 +744,36 @@ App.ui.adminTable.render = function (selector, options) {
         scrollTarget: cfg.scrollTarget
       });
     };
+
+    // =========================
+    // Modal
+    // =========================
+    
+    /**
+     * 모달 닫기 기능 초기화
+     * .modalLayout 내부의 .close 또는 .modalBg 클릭 시 active 클래스 제거
+     */
+    App.ui.modal = App.ui.modal || {};
+    
+    App.ui.modal.init = function (scope) {
+      const $scope = scope ? $(scope) : $(document);
+      
+      // 이벤트 위임: .modalLayout 내부의 .close 또는 .modalBg 클릭 시
+      $scope.on('click.modal', '.modalLayout .close, .modalLayout .modalBg', function (e) {
+        e.stopPropagation();
+        const $modalLayout = $(this).closest('.modalLayout');
+        $modalLayout.removeClass('active');
+      });
+    };
+
+    
   
     $(function () {
       App.ui.search.init(document);
       App.ui.pagination.init(document);
       App.ui.calendar.init(document);
       App.ui.tableEnhance.init(document);
+      App.ui.modal.init(document);
       
     });
   })(window.App = window.App || {}, jQuery);

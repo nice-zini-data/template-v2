@@ -594,7 +594,7 @@ $(document).ready(function() {
             // 프리미엄보고서 모바일 접근 차단
             if (url && (url.includes('explorer/premium') || url.includes('/explorer/premium'))) {
                 if (Zinidata.device.isMobile) {
-                    Zinidata.showAlert('프리미엄 보고서는 PC에서\n확인 가능합니다.', 'doneRed');
+                    Zinidata.showAlert('프리미엄 보고서는 PC에서\n확인 가능합니다.', 'fail');
                     return; // 이동 중단
                 }
             }
@@ -627,7 +627,7 @@ $(document).ready(function() {
                 
                 // BetterBoss 기능이 비활성화된 경우
                 if (!window.BETTERBOSS_ENABLED) {
-                    Zinidata.showAlert('BetterBoss 기능이 현재 비활성화되어 있습니다.', 'doneRed');
+                    Zinidata.showAlert('BetterBoss 기능이 현재 비활성화되어 있습니다.', 'fail');
                     return;
                 }
                 
@@ -680,7 +680,7 @@ $(document).ready(function() {
                 }, 100);
             } else {
                 console.error('[BETTERBOSS] JWT 토큰 생성 실패:', response.message);
-                Zinidata.showAlert('JWT 토큰 생성에 실패했습니다: ' + response.message, 'doneRed');
+                Zinidata.showAlert('JWT 토큰 생성에 실패했습니다: ' + response.message, 'fail');
             }
         },
 
@@ -699,10 +699,10 @@ $(document).ready(function() {
             });
             
             if (xhr.status === 401) {
-                Zinidata.showAlert('로그인이 필요합니다. 다시 로그인해주세요.', 'doneRed');
+                Zinidata.showAlert('로그인이 필요합니다. 다시 로그인해주세요.', 'fail');
                 return;
             } else {
-                Zinidata.showAlert('JWT 토큰 생성 중 오류가 발생했습니다.', 'doneRed');
+                Zinidata.showAlert('JWT 토큰 생성 중 오류가 발생했습니다.', 'fail');
             }
         },
 
@@ -718,7 +718,7 @@ $(document).ready(function() {
             
             // BetterBoss 기능이 비활성화된 경우
             if (!window.BETTERBOSS_ENABLED) {
-                Zinidata.showAlert('BetterBoss 기능이 현재 비활성화되어 있습니다.', 'doneRed');
+                Zinidata.showAlert('BetterBoss 기능이 현재 비활성화되어 있습니다.', 'fail');
                 return;
             }
             
