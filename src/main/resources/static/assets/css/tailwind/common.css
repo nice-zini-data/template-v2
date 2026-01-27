@@ -169,9 +169,9 @@
   /* 지도 마커(네이버 커스텀 마커 content용) */
   .selectionMarkerWrapper {@apply relative -translate-x-1/2 -translate-y-full}
   .mapMarkerOnMap {@apply static top-auto left-auto}
-  .map {@apply h-full}
-  .headerMap {@apply mt-14 pt-14}
+  .map {@apply h-full}  
   .mapHeader {@apply fixed top-0 left-0 w-full z-10}
+  .menuHeader .headerMap {@apply pt-14}
 }
 
 

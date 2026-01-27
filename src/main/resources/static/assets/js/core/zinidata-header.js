@@ -16,6 +16,7 @@
 
 $(function(){
     userMenu();
+    headerGubun();
 });
 
 //사용자 메뉴 토글
@@ -23,4 +24,13 @@ const userMenu = () => {
     $('.userBtn').on('click', function() {
         $('.userMenu').slideToggle('500');
     });
+}
+
+const headerGubun = () => {
+    const header = $('header').parent();
+    if(header.hasClass('mapHeader')){
+        header.parent().addClass('menuHeader');
+    }else{
+        header.parent().removeClass('menuHeader');
+    }
 }

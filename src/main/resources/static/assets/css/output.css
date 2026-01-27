@@ -1766,17 +1766,16 @@ button.disabled{
   height: 100%;
 }
 
-.headerMap{
-  margin-top: 56px;
-  padding-top: 56px;
-}
-
 .mapHeader{
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10;
   width: 100%;
+}
+
+.menuHeader .headerMap{
+  padding-top: 56px;
 }
 
 .header{
