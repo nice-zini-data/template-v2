@@ -13,7 +13,7 @@
 <header th:fragment="menuHeader">
     <div class="header !justify-between">
         <div class="headerNav">
-            <a href="/">
+            <a href="/map">
                 <img src="/assets/images/logo/nice_logo.svg" class="headerLogo" alt="logo">
             </a>
             <ul class="headerMenuList">
@@ -26,7 +26,7 @@
         </div>
         <div class="headerUtils">
             <div class="">
-                <button type="button" class="adminBtn lineBtn gray"><span>관리자</span></button>
+                <button type="button" class="adminBtn lineBtn gray" onclick="window.location.href='/admin/admin'"><span>관리자</span></button>
             </div>
             <div class="userWrap">
                 <div class="userBtn">

@@ -4,10 +4,13 @@
 <body>
   <!-- ✅ layout의 content에 꽂힘 -->
   <section layout:fragment="content">
-    <div class="mapHeader">
+    <!-- <div class="mapHeader">
       <th:block th:replace="~{fragments/header :: menuHeader}" />
-    </div>
+    </div> -->
     <div class="mapBox headerMap">
+        <div class="mapTopSearch">
+            <div th:replace="~{components/search :: typingSearch}"></div>
+        </div>
       <div class="map" id="mapContainer">
       </div>
     </div>
@@ -50,79 +53,6 @@
                     </div>
                 </div>
                 <div class="sheetList" id="requestListBox">
-                </div>
-            </div>
-
-            <!--상세-->
-            <div class="sheetDetail asDetail hidden">
-                <div class="sheetDetailContent">
-                    <p class="checkBadge installBadge mb-1 serviceGb0 hidden">신규 설치</p>
-                    <p class="checkBadge asBadge mb-1 serviceGb1 hidden">A/S</p>
-                    <p class="text-lg/7 font-bold text-zinc-800 installNm"></p>
-                    <div class="flexBetween !items-start">
-                        <p class="areaCopyTxt installAddr"></p>
-                        <button type="button" class="btn areaCopyBtn flex justify-content items-center gap-0-5 text-sm/5 font-medium text-zinc-500 w-[80px]"><img src="/assets/images/icons/file_icon_gray.svg" class="size-4" alt="">주소복사</button>
-                    </div>
-                    <div class="flexBetween pt-4 mt-4 border-t-1 border-solid border-t-zinc-100">
-                        <p class="text-sm/5 font-medium text-zinc-400">제안금액</p>
-                        <p class="text-lg/7 font-bold priceText payAmt"></p>
-                    </div>
-                </div>
-                <!--설치만 해당 ST-->
-                <div class="sheetDetailContent serviceGb0 hidden">
-                    <p class="sheetDetailTitle">요청 내용</p>
-                    <div class="grayBox">
-                        <p class="serviceContent"></p>
-                    </div>
-                </div>
-                <!--설치만 해당 ED-->
-                <!--A/S만 해당 ST-->
-                <div class="sheetDetailContent serviceGb1 hidden">
-                    <p class="sheetDetailTitle">문제 증상</p>
-                    <div>
-                        <ul class="subInfoList">
-                            <li>
-                                <p class="subInfoListTitle">사용 단말기</p>
-                                <p class="subInfoListTxt vanId"></p>
-                            </li>
-                        </ul>
-                        <div class="grayBox mt-4">
-                            <p class="serviceContent"></p>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm/5 font-medium text-zinc-400 mt-4">문제 증상 사진</p>
-                        <div class="fileList symptom mt-2"></div>
-                    </div>  
-                </div>
-                <!--A/S만 해당 ED-->
-                <div class="sheetDetailContent relative">
-                    <a href="tel:" class="callBtn" id="callRequesterBtn">
-                        <img src="/assets/images/icons/call_icon.svg" class="size-4-5" alt="">
-                        <p>요청자에게 문의</p>
-                    </a>
-                    <p class="sheetDetailTitle">요청자 정보</p>
-                    <ul class="subInfoList">
-                        <li>
-                            <p class="subInfoListTitle">요청자 이름</p>
-                            <p class="subInfoListTxt crtName"></p>
-                        </li>
-                        <li>
-                            <p class="subInfoListTitle">대리점 연락처</p>
-                            <p class="subInfoListTxt storeCallNumber"></p>
-                        </li>
-                        <li>
-                            <p class="subInfoListTitle">휴대폰 번호</p>
-                            <p class="subInfoListTxt crtPhoneNumber"></p>
-                        </li>
-                        <li>
-                            <p class="subInfoListTitle">요청일</p>
-                            <p class="subInfoListTxt strCrtDt"></p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="sheetBottom">
-                    <button type="button" class="btn text-white w-full h-12 rounded-full text-md/6 font-medium" id="requestExecuteBtn">수락하기</button>
                 </div>
             </div>
         </div>

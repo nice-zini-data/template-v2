@@ -172,6 +172,22 @@
   .map {@apply h-full}  
   .mapHeader {@apply fixed top-0 left-0 w-full z-10}
   .menuHeader .headerMap {@apply pt-14}
+  .mapTopSearch {@apply fixed top-4 left-5 w-[350px] z-9}
+
+  #sheet {@apply absolute left-0 right-0 bottom-0 h-[calc(100vh-80px)] max-lg:h-[calc(100vh-170px)] rounded-t-2xl shadow-[0_-12px_30px_0_rgba(0,0,0,0.08)] touch-none max-w-5xl mx-auto}
+  #sheet .sheetHeader{@apply flex items-center justify-center cursor-pointer relative h-[72px] rounded-t-2xl bg-white}
+  #sheet .sheetHeader::before{@apply content-[''] block w-9 h-[5px] rounded-full bg-[#ccc]  absolute top-[5px] left-1/2 -translate-x-1/2}
+  .sheetTab {@apply py-3 px-5 border-b-1 border-solid border-b-zinc-800/6 w-full h-full pt-7}
+  .sheetTab ul {@apply flex justify-start items-center gap-2 h-auto overflow-hidden}
+  .sheetTab li {@apply py-1-5 px-2 rounded-full border-1 border-solid border-zinc-800/10 shadow-default text-sm/5 font-semibold text-zinc-700}
+  .sheetTab li.active {@apply text-primary-600 border-primary-600 bg-primary-600/10}
+  .subSheetTab {@apply !pt-[11px] !pb-0 !h-12 !bg-zinc-50 !border-b-0}
+  .subSheetTab li {@apply bg-white}
+  .subSheetTab li.active {@apply !bg-white}
+  .sheetContent {@apply !bg-zinc-50 h-[calc(100%-72px)]}
+  .sheetInner {@apply py-6 px-5}
+  .sheetList {@apply py-5}
+  .mapReSearch {@apply absolute -top-[68px] right-5 size-12 flex justify-center items-center rounded-full bg-white border-1 border-solid border-zinc-800/10 z-9}
 }
 
 
