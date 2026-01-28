@@ -166,6 +166,7 @@
   /*chart*/
   .minChartBox .chartBox {@apply h-[250px]}/*임시*/
   .maxChartBox .chartBox {@apply h-[450px]}/*임시*/
+  .pieChartBox .chartBox {@apply h-[260px]}/*임시*/
 }
 
 /* map */

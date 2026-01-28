@@ -1719,6 +1719,12 @@ button.disabled{
 
 /*임시*/
 
+.pieChartBox .chartBox{
+  height: 260px;
+}
+
+/*임시*/
+
 /* 지도 마커(네이버 커스텀 마커 content용) */
 
 .selectionMarkerWrapper{

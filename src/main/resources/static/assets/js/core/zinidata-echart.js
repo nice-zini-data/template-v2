@@ -487,7 +487,7 @@ const pieChartOption = () => {
                 orient: 'vertical',
                 align: 'left',
                 top: '20%',
-                left: '48%',
+                left: '58%',
                 itemWidth: 13,
                 itemGap: 20,
                 textStyle: {
@@ -495,34 +495,29 @@ const pieChartOption = () => {
                     fontWeight: '500',
                     fontFamily: 'SUIT',
                     color: '#09090B',
-                },
-
-            },
-            {
-                orient: 'vertical',
-                align: 'left',
-                top: '20%',
-                left: '75%',
-                itemWidth: 13,
-                itemGap: 20,
-                textStyle: {
-                    fontSize: isVerySmall ? '12px' : isSmall ? '12px' : '13px',
-                    fontWeight: '500',
-                    fontFamily: 'SUIT',
-                    color: '#09090B'
+                    rich: {
+                        name: {
+                            width: 100,
+                            align: 'left'
+                        },
+                        value: {
+                            width: 60,
+                            align: 'right'
+                        }
+                    }
                 },
             }
         ],
         grid: {
-            top: '5%',
-            left:'5%'
+            top: 0,
+            left:0
         },
         series: [
             {
                 name: [],
                 type: 'pie',
-                radius: ['55%', '90%'],
-                center: ['50%', '30%'],
+                radius: ['60%', '95%'],
+                center: ['30%', '50%'],
                 data: [],
                 selectedMode: false,
                 itemStyle: {
@@ -687,12 +682,15 @@ function renderEchartTableLegend(chartInstance, containerSelector, seriesData) {
         }
     }
   
+    // pie 차트인지 확인 (xAxisData가 없고 seriesData가 pie 형태인 경우)
+    const isPieChart = xAxisData.length === 0 && seriesData.length > 0 && seriesData[0].data && seriesData[0].data.length === 1;
+    
     let html = `
       <table class="legend-table">
         <thead>
           <tr>
             <th class="fixText">항목</th>
-               ${xAxisData.map(c => `<th class="text-right">${c}</th>`).join('')}
+            ${isPieChart ? '<th class="text-right">값</th>' : xAxisData.map(c => `<th class="text-right">${c}</th>`).join('')}
           </tr>
         </thead>
         <tbody>
@@ -1044,6 +1042,117 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
       // pie 데이터 주입(페이지에서 data로 내려주는 경우)
       if (normalizedType === 'pie' && data.data && opt.series && opt.series[0]) {
         opt.series[0].data = data.data;
+        
+        // valType 추출 (첫 번째 항목의 valType 사용, 없으면 series[0].valType, 없으면 meta.unit)
+        const valType = data.data[0]?.valType || (data.series && data.series[0]?.valType) || meta.unit || '';
+        
+        // 범례가 6개 이상이면 오른쪽 legend 추가하고 데이터 분배
+        if (data.data.length >= 6 && opt.legend && opt.legend[0]) {
+          const legendNames = data.data.map(d => d.name || d);
+          const midPoint = Math.ceil(legendNames.length / 2);
+          
+          // 왼쪽 legend에 앞부분 (formatter 추가)
+          opt.legend[0].data = legendNames.slice(0, midPoint);
+          opt.legend[0].formatter = function(name) {
+            const dataItem = data.data.find(item => (item.name || item) === name);
+            const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
+            return `{name|${name}} {value|${value}${valType}}`;
+          };
+          opt.legend[0].textStyle = {
+            ...opt.legend[0].textStyle,
+            rich: {
+              name: {
+                width: 100,
+                align: 'left'
+              },
+              value: {
+                width: 60,
+                align: 'right'
+              }
+            }
+          };
+          
+          // 오른쪽 legend 추가 (뒷부분, formatter 포함)
+          opt.legend.push({
+            orient: 'vertical',
+            align: 'left',
+            top: '20%',
+            left: '80%',
+            itemWidth: 13,
+            itemGap: 20,
+            data: legendNames.slice(midPoint),
+            formatter: function(name) {
+              const dataItem = data.data.find(item => (item.name || item) === name);
+              const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
+              return `{name|${name}} {value|${value}${valType}}`;
+            },
+            textStyle: {
+              fontSize: isVerySmall ? '12px' : isSmall ? '12px' : '13px',
+              fontWeight: '500',
+              fontFamily: 'SUIT',
+              color: '#09090B',
+              rich: {
+                name: {
+                  width: 100,
+                  align: 'left'
+                },
+                value: {
+                  width: 60,
+                  align: 'right'
+                }
+              }
+            },
+          });
+        } else if (opt.legend && opt.legend[0]) {
+          // 6개 미만이면 왼쪽 legend에만 모든 데이터 (formatter 추가)
+          const legendNames = data.data.map(d => d.name || d);
+          opt.legend[0].data = legendNames;
+          opt.legend[0].formatter = function(name) {
+            const dataItem = data.data.find(item => (item.name || item) === name);
+            const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
+            return `{name|${name}} {value|${value}${valType}}`;
+          };
+          opt.legend[0].textStyle = {
+            ...opt.legend[0].textStyle,
+            rich: {
+              name: {
+                width: 100,
+                align: 'left'
+              },
+              value: {
+                width: 60,
+                align: 'right'
+              }
+            }
+          };
+        }
+        
+        // tooltip에 valType 추가
+        if (opt.tooltip) {
+          const originalFormatter = opt.tooltip.formatter;
+          opt.tooltip.formatter = function(params) {
+            if (params && typeof params === 'object') {
+              const dataItem = data.data.find(item => (item.name || item) === params.name);
+              const itemValType = dataItem?.valType || valType;
+              const value = params.value != null ? params.value.toLocaleString() : '-';
+              return `${params.name}: ${value}${itemValType}`;
+            }
+            if (typeof originalFormatter === 'function') {
+              return originalFormatter(params);
+            }
+            return '';
+          };
+        }
+        
+        // series에 valType 저장 (테이블용)
+        if (opt.series[0]) {
+          opt.series[0].valType = valType;
+          // 각 data 항목에도 valType 저장
+          opt.series[0].data = data.data.map(item => ({
+            ...item,
+            valType: item.valType || valType
+          }));
+        }
       }
 
       // 툴팁에 valType 추가 (bar 차트만)
@@ -1089,10 +1198,20 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
   
       // 테이블 연동
       if (meta.legendTarget) {
-        // series.valType 없으면 data-zd-unit을 테이블 단위로 쓰고 싶다면:
-        opt.series.forEach(s => { if(!s.valType) s.valType = meta.unit; });
-  
-        renderEchartTableLegend(chart, meta.legendTarget, opt.series);
+        if (normalizedType === 'pie' && opt.series && opt.series[0] && opt.series[0].data) {
+          // pie 차트: data 배열을 series 형태로 변환
+          const pieSeriesData = opt.series[0].data.map(item => ({
+            name: item.name || item,
+            data: [item.value || item.val || 0],
+            valType: item.valType || opt.series[0].valType || meta.unit || '',
+            itemStyle: item.itemStyle || {}
+          }));
+          renderEchartTableLegend(chart, meta.legendTarget, pieSeriesData);
+        } else {
+          // bar 차트: series.valType 없으면 data-zd-unit을 테이블 단위로 쓰고 싶다면:
+          opt.series.forEach(s => { if(!s.valType) s.valType = meta.unit; });
+          renderEchartTableLegend(chart, meta.legendTarget, opt.series);
+        }
       }
     }
   

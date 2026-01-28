@@ -13,6 +13,9 @@
         
         <div class="m-auto w-1/2">
             <!--0은 소수점 없음, 1은 소수점 1자리-->
+            <div class="pieChartBox">
+                <div th:replace="components/chart :: chart('testChart06','pie','명',1,'testChart06Table')"></div> 
+            </div>
             <div class="minChartBox">
                 <div th:replace="components/chart :: chart('testChart01','bar-x','원',0,'testChart01Table')"></div> 
             </div>
@@ -28,9 +31,7 @@
             <div class="maxChartBox">
                 <div th:replace="components/chart :: chart('testChart05','bar-total-y','%',1,'testChart05Table')"></div> 
             </div>
-            <div class="maxChartBox">
-                <div th:replace="components/chart :: chart('testChart06','pie','%',1,'testChart06Table')"></div> 
-            </div>
+            
         </div>
         
     </div>
@@ -90,9 +91,15 @@
 
         window.ZD_CHART_DATA['testChart06'] = {
             data: [
-                { name: '남성', value: 120 },
-                { name: '여성', value: 180 },
-                { name: '기타', value: 60 }
+                { name: '남성', value: 120, valType: '명' },
+                { name: '여성', value: 180, valType: '명' },
+                { name: '기타', value: 60, valType: '명' },
+                { name: '기타2', value: 180, valType: '명' },
+                { name: '기타3', value: 180, valType: '명' },
+                { name: '기타4', value: 180, valType: '명' },
+                { name: '기타5', value: 180, valType: '명' },
+                { name: '기타6', value: 180, valType: '명' },
+                { name: '기타7', value: 180, valType: '명' },
             ]
         };
 
