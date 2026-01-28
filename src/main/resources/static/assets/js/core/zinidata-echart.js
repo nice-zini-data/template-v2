@@ -487,7 +487,7 @@ const pieChartOption = () => {
                 orient: 'vertical',
                 align: 'left',
                 top: '20%',
-                left: '58%',
+                left: '50%',
                 itemWidth: 13,
                 itemGap: 20,
                 textStyle: {
@@ -1046,62 +1046,93 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
         // valType 추출 (첫 번째 항목의 valType 사용, 없으면 series[0].valType, 없으면 meta.unit)
         const valType = data.data[0]?.valType || (data.series && data.series[0]?.valType) || meta.unit || '';
         
-        // 범례가 6개 이상이면 오른쪽 legend 추가하고 데이터 분배
+        // 범례 formatter 함수 정의
+        const legendFormatter = function(name) {
+          const dataItem = data.data.find(item => (item.name || item) === name);
+          const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
+          return `{name|${name}} {value|${value}${valType}}`;
+        };
+        
+        const legendTextStyle = {
+          fontSize: isVerySmall ? '12px' : isSmall ? '12px' : '13px',
+          fontWeight: '500',
+          fontFamily: 'SUIT',
+          color: '#09090B',
+          rich: {
+            name: {
+              width: 100,
+              align: 'left'
+            },
+            value: {
+              width: 60,
+              align: 'right'
+            }
+          }
+        };
+        
+        // 범례가 6개 이상이면 기본은 한 줄로 세로 나열 (768px 미만)
         if (data.data.length >= 6 && opt.legend && opt.legend[0]) {
           const legendNames = data.data.map(d => d.name || d);
           const midPoint = Math.ceil(legendNames.length / 2);
           
-          // 왼쪽 legend에 앞부분 (formatter 추가)
-          opt.legend[0].data = legendNames.slice(0, midPoint);
-          opt.legend[0].formatter = function(name) {
-            const dataItem = data.data.find(item => (item.name || item) === name);
-            const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
-            return `{name|${name}} {value|${value}${valType}}`;
-          };
+          // 기본: 768px 미만일 때 모든 항목을 한 줄로 세로 나열
+          opt.legend[0].data = legendNames;
+          opt.legend[0].formatter = legendFormatter;
+          opt.legend[0].top = '60%';
+          opt.legend[0].width = '100%';
+          opt.legend[0].left = '20%';
           opt.legend[0].textStyle = {
             ...opt.legend[0].textStyle,
-            rich: {
-              name: {
-                width: 100,
-                align: 'left'
-              },
-              value: {
-                width: 60,
-                align: 'right'
-              }
-            }
+            ...legendTextStyle
           };
           
-          // 오른쪽 legend 추가 (뒷부분, formatter 포함)
-          opt.legend.push({
-            orient: 'vertical',
-            align: 'left',
-            top: '20%',
-            left: '80%',
-            itemWidth: 13,
-            itemGap: 20,
-            data: legendNames.slice(midPoint),
-            formatter: function(name) {
-              const dataItem = data.data.find(item => (item.name || item) === name);
-              const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
-              return `{name|${name}} {value|${value}${valType}}`;
-            },
-            textStyle: {
-              fontSize: isVerySmall ? '12px' : isSmall ? '12px' : '13px',
-              fontWeight: '500',
-              fontFamily: 'SUIT',
-              color: '#09090B',
-              rich: {
-                name: {
-                  width: 100,
-                  align: 'left'
+          // 768px 미만일 때 파이 차트 위치 및 크기 조정
+          if (!opt.media) {
+            opt.media = [];
+          }
+          opt.media.push({
+            query: { maxWidth: 767 },
+            option: {
+              series: [{
+                center: ['50%', '30%'],
+                radius: ['35%', '50%']
+              }],
+              legend: [{
+                top: '60%',
+                width: '100%'
+              }]
+            }
+          });
+          
+          // 768px 이상에서 왼쪽/오른쪽으로 분할
+          opt.media.push({
+            query: { minWidth: 768 },
+            option: {
+              legend: [
+                {
+                  orient: 'vertical',
+                  align: 'left',
+                  top: '20%',
+                  left: '48%',
+                  itemWidth: 13,
+                  itemGap: 20,
+                  data: legendNames.slice(0, midPoint),
+                  formatter: legendFormatter,
+                  textStyle: legendTextStyle
                 },
-                value: {
-                  width: 60,
-                  align: 'right'
+                {
+                  orient: 'vertical',
+                  align: 'left',
+                  top: '20%',
+                  left: '75%',
+                  itemWidth: 13,
+                  itemGap: 20,
+                  data: legendNames.slice(midPoint),
+                  formatter: legendFormatter,
+                  textStyle: legendTextStyle
                 }
-              }
-            },
+              ]
+            }
           });
         } else if (opt.legend && opt.legend[0]) {
           // 6개 미만이면 왼쪽 legend에만 모든 데이터 (formatter 추가)
@@ -1112,6 +1143,8 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
             const value = dataItem ? (dataItem.value || dataItem.val || '') : '';
             return `{name|${name}} {value|${value}${valType}}`;
           };
+          opt.legend[0].top = '60%';
+          opt.legend[0].width = '100%';
           opt.legend[0].textStyle = {
             ...opt.legend[0].textStyle,
             rich: {
@@ -1125,6 +1158,24 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
               }
             }
           };
+          
+          // 768px 미만일 때 파이 차트 위치 및 크기 조정
+          if (!opt.media) {
+            opt.media = [];
+          }
+          opt.media.push({
+            query: { maxWidth: 767 },
+            option: {
+              series: [{
+                center: ['50%', '0%'],
+                radius: ['48%', '76%']
+              }],
+              legend: [{
+                top: '60%',
+                width: '100%'
+              }]
+            }
+          });
         }
         
         // tooltip에 valType 추가
