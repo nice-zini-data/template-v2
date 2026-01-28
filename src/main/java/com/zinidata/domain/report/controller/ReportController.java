@@ -26,12 +26,11 @@ public class ReportController {
      * @param model 뷰 모델
      * @return 보고서 페이지 뷰 이름
      */
-    @AuditLog(actionType = AuditActionType.PAGE_VIEW, targetResource = "page:/report")
+    @AuditLog(actionType = AuditActionType.PAGE_VIEW, targetResource = "page:/report/report")
     @GetMapping("")
     public String report(Model model) {
         model.addAttribute("pageTitle", "보고서");
         model.addAttribute("currentPage", "report/report");
         return "report/report";
     }
-
 }

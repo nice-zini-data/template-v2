@@ -16,6 +16,27 @@
         <div class="maxChartBox">
           <div th:replace="components/chart :: chart('ratioChart','bar-y','%',1,'ratioChartTable')"></div> 
         </div>
+        <div class="m-auto w-1/2">
+            <div class="minChartBox">
+                <div th:replace="components/chart :: chart('testChart01','bar-x','원',0,'testChart01Table')"></div> 
+              </div>
+              <div class="maxChartBox">
+                <div th:replace="components/chart :: chart('testChart02','bar-y','%',1,'testChart02Table')"></div> 
+              </div>
+              <div class="maxChartBox">
+                 <div th:replace="components/chart :: chart('testChart03','bar-center','%',1,'testChart03Table')"></div> 
+              </div>
+              <div class="maxChartBox">
+                <div th:replace="components/chart :: chart('testChart04','bar-total-x','%',1,'testChart04Table')"></div> 
+              </div>
+              <div class="maxChartBox">
+                <div th:replace="components/chart :: chart('testChart05','bar-total-y','%',1,'testChart05Table')"></div> 
+              </div>
+              <div class="maxChartBox">
+                <div th:replace="components/chart :: chart('testChart06','pie','%',1,'testChart06Table')"></div> 
+              </div>
+        </div>
+        
     </div>
     
 
@@ -46,6 +67,55 @@
             { name: '비율2', data: [23.4, 41.2, 18.9, 33.0], valType: '%'  }
             ]
         };
+
+        window.ZD_CHART_DATA['testChart01'] = {
+          xAxis: ['1월', '2월', '3월', '4월'],
+          series: [
+            { name: '매출', data: [1200000, 980000, 1500000, 1100000], valType: '원' },
+            { name: '매출2', data: [1200000, 980000, 1500000, 1100000], valType: '원' }
+          ]
+        };
+
+        window.ZD_CHART_DATA['testChart02'] = {
+            yAxis: ['A가맹점', 'B가맹점', 'C가맹점', 'D가맹점'],
+            series: [
+            { name: '비율', data: [23.4, 41.2, 18.9, 33.0], valType: '%'  },
+            { name: '비율2', data: [23.4, 41.2, 18.9, 33.0], valType: '%'  }
+            ]
+        };
+
+        window.ZD_CHART_DATA['testChart03'] = {
+            yAxis: ['매출증가', '매출감소', '방문객증가', '방문객감소'],
+            series: [
+                { name: '증감률', data: [12, -8, 15, -5], valType: '%' }
+            ]
+        };
+
+        window.ZD_CHART_DATA['testChart04'] = {
+            xAxis: ['1월', '2월', '3월', '4월'],
+            series: [
+                { name: '달성률', data: [75, 82, 68, 91], valType: '%' },
+                { name: '달성률2', data: [75, 82, 68, 91], valType: '%' }
+            ]
+        };
+
+        window.ZD_CHART_DATA['testChart05'] = {
+            yAxis: ['A가맹점', 'B가맹점', 'C가맹점', 'D가맹점'],
+            series: [
+                { name: '달성률', data: [65, 88, 72, 94], valType: '%' },
+                { name: '달성률2', data: [65, 88, 72, 94], valType: '%' }
+            ]
+        };
+
+        window.ZD_CHART_DATA['testChart06'] = {
+            data: [
+                { name: '남성', value: 120 },
+                { name: '여성', value: 180 },
+                { name: '기타', value: 60 }
+            ]
+        };
+
+
         
         ZDCharts.init();
       </script>
