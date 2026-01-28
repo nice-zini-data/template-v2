@@ -180,7 +180,7 @@ const basicBarChartOptionY = () => {
                 type: 'bar',
                 barWidth: '24px',
                 itemStyle: {
-                    barBorderRadius: [2, 2, 0, 0]
+                    barBorderRadius: [0, 2, 2, 0]
                 }
             }
         ],
@@ -270,7 +270,7 @@ const basicBarChartOptionCenter = () => {
                 type: 'bar',
                 barWidth: '24px',
                 itemStyle: {
-                    barBorderRadius: [2, 2, 0, 0]
+                    barBorderRadius: [2, 2, 2, 2]
                 }
             }
         ],
@@ -362,6 +362,7 @@ const basicBarChartOptionTotalMaxX = () => {
         series: [
             {
                 type: 'bar',
+                stack: 'total',
                 barWidth: '24px',
                 itemStyle: {
                     barBorderRadius: [2, 2, 0, 0]
@@ -459,9 +460,10 @@ const basicBarChartOptionTotalMaxY = () => {
         series: [
             {
                 type: 'bar',
+                stack: 'total',
                 barWidth: '24px',
                 itemStyle: {
-                    barBorderRadius: [2, 2, 0, 0]
+                    barBorderRadius: [0, 2, 2, 0]
                 }
             }
         ],
