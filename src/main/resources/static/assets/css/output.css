@@ -17,7 +17,7 @@
 
 /* pagination, calendar, search */
 
-/*table*/
+/*table, chart*/
 
 /* map */
 
@@ -699,6 +699,11 @@ li{
   cursor: pointer;
 }
 
+.contentBox{
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
 .inputLabel{
   margin-bottom: 8px;
   display: flex;
@@ -714,25 +719,6 @@ li{
 .inputLabel span{
   --tw-text-opacity: 1;
   color: rgb(159 159 169 / var(--tw-text-opacity, 1));
-}
-
-.\!inputCustom{
-  height: 48px;
-  width: 100%;
-  border-radius: 8px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: rgb(39 39 42 / 0.15);
-  padding-left: 12px;
-  padding-right: 12px;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 400;
-  --tw-text-opacity: 1;
-  color: rgb(9 9 11 / var(--tw-text-opacity, 1));
-  --tw-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
-  --tw-shadow-colored: 0 1px 0 0 var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .inputCustom{
@@ -754,13 +740,6 @@ li{
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.\!inputCustom:focus{
-  --tw-border-opacity: 1 !important;
-  border-color: rgb(43 127 255 / var(--tw-border-opacity, 1)) !important;
-  outline: 2px solid transparent !important;
-  outline-offset: 2px !important;
-}
-
 .inputCustom:focus{
   --tw-border-opacity: 1 !important;
   border-color: rgb(43 127 255 / var(--tw-border-opacity, 1)) !important;
@@ -768,23 +747,10 @@ li{
   outline-offset: 2px !important;
 }
 
-.\!inputCustom:hover{
-  border-color: rgb(43 127 255 / 0.3);
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
 .inputCustom:hover{
   border-color: rgb(43 127 255 / 0.3);
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-.\!inputCustom.disabled{
-  pointer-events: none;
-  border-color: rgb(39 39 42 / var(--tw-border-opacity, 1));
-  --tw-border-opacity: 0.1;
-  background-color: rgb(39 39 42 / 0.08);
 }
 
 .inputCustom.disabled{
@@ -1368,10 +1334,6 @@ button.disabled{
   padding-left: 46px;
 }
 
-.searchInput .\!inputCustom{
-  padding-left: 46px;
-}
-
 .searchInput .searchBtn{
   position: absolute;
   right: 12px;
@@ -1743,6 +1705,20 @@ button.disabled{
   background-repeat: no-repeat;
 }
 
+/*chart*/
+
+.minChartBox .chartBox{
+  height: 250px;
+}
+
+/*임시*/
+
+.maxChartBox .chartBox{
+  height: 450px;
+}
+
+/*임시*/
+
 /* 지도 마커(네이버 커스텀 마커 content용) */
 
 .selectionMarkerWrapper{
@@ -1894,26 +1870,12 @@ button.disabled{
   color: rgb(21 93 252 / var(--tw-text-opacity, 1));
 }
 
-.subSheetTab{
-  height: 48px !important;
-  border-bottom-width: 0 !important;
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1)) !important;
-  padding-top: 11px !important;
-  padding-bottom: 0 !important;
-}
-
-.subSheetTab li{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-}
-
-.subSheetTab li.active{
+.subSheetTab li.\!active{
   --tw-bg-opacity: 1 !important;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
 }
 
-.subSheetTab li.\!active{
+.subSheetTab li.active{
   --tw-bg-opacity: 1 !important;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
 }
@@ -2511,14 +2473,6 @@ button.disabled{
   margin-right: auto;
 }
 
-.\!mb-0{
-  margin-bottom: 0 !important;
-}
-
-.mb-0{
-  margin-bottom: 0;
-}
-
 .mb-1{
   margin-bottom: 4px;
 }
@@ -2527,24 +2481,8 @@ button.disabled{
   margin-bottom: 40px;
 }
 
-.mb-2{
-  margin-bottom: 8px;
-}
-
 .mb-2-5{
   margin-bottom: 10px;
-}
-
-.mb-3{
-  margin-bottom: 12px;
-}
-
-.mb-3-5{
-  margin-bottom: 14px;
-}
-
-.mb-4{
-  margin-bottom: 16px;
 }
 
 .mb-5{
@@ -2557,10 +2495,6 @@ button.disabled{
 
 .ml-2{
   margin-left: 8px;
-}
-
-.mr-10{
-  margin-right: 40px;
 }
 
 .mr-2{
@@ -2577,10 +2511,6 @@ button.disabled{
 
 .mt-10{
   margin-top: 40px;
-}
-
-.mt-12{
-  margin-top: 48px;
 }
 
 .mt-2{
@@ -2660,16 +2590,6 @@ button.disabled{
   height: 40px;
 }
 
-.size-12{
-  width: 48px;
-  height: 48px;
-}
-
-.size-14{
-  width: 56px;
-  height: 56px;
-}
-
 .size-3{
   width: 12px;
   height: 12px;
@@ -2678,11 +2598,6 @@ button.disabled{
 .size-4{
   width: 16px;
   height: 16px;
-}
-
-.size-4-5{
-  width: 18px;
-  height: 18px;
 }
 
 .size-5{
@@ -2700,11 +2615,6 @@ button.disabled{
   height: 28px;
 }
 
-.size-full{
-  width: 100%;
-  height: 100%;
-}
-
 .h-1{
   height: 4px;
 }
@@ -2715,10 +2625,6 @@ button.disabled{
 
 .h-10{
   height: 40px;
-}
-
-.h-12{
-  height: 48px;
 }
 
 .h-3{
@@ -2733,10 +2639,6 @@ button.disabled{
   height: 20px;
 }
 
-.h-7{
-  height: 28px;
-}
-
 .h-8{
   height: 32px;
 }
@@ -2745,20 +2647,8 @@ button.disabled{
   height: 36px;
 }
 
-.h-\[160px\]{
-  height: 160px;
-}
-
 .h-\[16px\]{
   height: 16px;
-}
-
-.h-\[220px\]{
-  height: 220px;
-}
-
-.min-h-\[120px\]{
-  min-height: 120px;
 }
 
 .min-h-screen{
@@ -2775,14 +2665,6 @@ button.disabled{
 
 .w-1\/2{
   width: 50%;
-}
-
-.w-1\/3{
-  width: 33.333333%;
-}
-
-.w-2\/3{
-  width: 66.666667%;
 }
 
 .w-3{
@@ -2807,18 +2689,6 @@ button.disabled{
 
 .w-\[60px\]{
   width: 60px;
-}
-
-.w-\[80px\]{
-  width: 80px;
-}
-
-.w-\[92px\]{
-  width: 92px;
-}
-
-.w-\[calc\(100\%-92px\)\]{
-  width: calc(100% - 92px);
 }
 
 .w-full{
@@ -2902,24 +2772,8 @@ button.disabled{
   flex-wrap: wrap;
 }
 
-.\!items-start{
-  align-items: flex-start !important;
-}
-
-.\!items-end{
-  align-items: flex-end !important;
-}
-
 .items-center{
   align-items: center;
-}
-
-.items-stretch{
-  align-items: stretch;
-}
-
-.justify-start{
-  justify-content: flex-start;
 }
 
 .justify-center{
@@ -2930,14 +2784,6 @@ button.disabled{
   justify-content: space-between !important;
 }
 
-.justify-between{
-  justify-content: space-between;
-}
-
-.\!gap-1{
-  gap: 4px !important;
-}
-
 .gap-0-5{
   gap: 2px;
 }
@@ -2946,42 +2792,18 @@ button.disabled{
   gap: 4px;
 }
 
-.gap-1-5{
-  gap: 6px;
-}
-
 .gap-1\.5{
   gap: 0.375rem;
-}
-
-.gap-12{
-  gap: 48px;
 }
 
 .gap-2{
   gap: 8px;
 }
 
-.gap-5{
-  gap: 20px;
-}
-
 .space-x-3 > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
   margin-right: calc(12px * var(--tw-space-x-reverse));
   margin-left: calc(12px * calc(1 - var(--tw-space-x-reverse)));
-}
-
-.overflow-auto{
-  overflow: auto;
-}
-
-.overflow-hidden{
-  overflow: hidden;
-}
-
-.overflow-y-auto{
-  overflow-y: auto;
 }
 
 .truncate{
@@ -3014,28 +2836,8 @@ button.disabled{
   border-width: 1px;
 }
 
-.border-0{
-  border-width: 0;
-}
-
-.\!border-b-0{
-  border-bottom-width: 0 !important;
-}
-
 .border-b{
   border-bottom-width: 1px;
-}
-
-.border-b-\[12px\]{
-  border-bottom-width: 12px;
-}
-
-.border-t-1{
-  border-top-width: 1px;
-}
-
-.border-solid{
-  border-style: solid;
 }
 
 .border-gray-100{
@@ -3061,20 +2863,6 @@ button.disabled{
 .border-red-500{
   --tw-border-opacity: 1;
   border-color: rgb(251 44 54 / var(--tw-border-opacity, 1));
-}
-
-.border-b-zinc-100{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
-}
-
-.border-t-zinc-100{
-  --tw-border-opacity: 1;
-  border-top-color: rgb(244 244 245 / var(--tw-border-opacity, 1));
-}
-
-.border-t-zinc-800\/10{
-  border-top-color: rgb(39 39 42 / 0.1);
 }
 
 .bg-blue-100{
@@ -3131,16 +2919,6 @@ button.disabled{
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
 }
 
-.bg-zinc-100{
-  --tw-bg-opacity: 1;
-  background-color: rgb(244 244 245 / var(--tw-bg-opacity, 1));
-}
-
-.bg-zinc-50{
-  --tw-bg-opacity: 1;
-  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
-}
-
 .\!p-3{
   padding: 12px !important;
 }
@@ -3149,16 +2927,8 @@ button.disabled{
   padding: 4px;
 }
 
-.p-2-5{
-  padding: 10px;
-}
-
 .p-4{
   padding: 16px;
-}
-
-.p-5{
-  padding: 20px;
 }
 
 .px-2{
@@ -3166,24 +2936,9 @@ button.disabled{
   padding-right: 8px;
 }
 
-.px-3{
-  padding-left: 12px;
-  padding-right: 12px;
-}
-
-.px-3-5{
-  padding-left: 14px;
-  padding-right: 14px;
-}
-
 .px-4{
   padding-left: 16px;
   padding-right: 16px;
-}
-
-.px-5{
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .px-6{
@@ -3211,42 +2966,14 @@ button.disabled{
   padding-bottom: 6px;
 }
 
-.py-2{
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
 .py-3{
   padding-top: 12px;
   padding-bottom: 12px;
 }
 
-.py-3-5{
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-.py-4{
-  padding-top: 16px;
-  padding-bottom: 16px;
-}
-
-.py-6{
-  padding-top: 24px;
-  padding-bottom: 24px;
-}
-
 .py-8{
   padding-top: 32px;
   padding-bottom: 32px;
-}
-
-.\!pb-0{
-  padding-bottom: 0 !important;
-}
-
-.pb-0{
-  padding-bottom: 0;
 }
 
 .pb-1-5{
@@ -3273,70 +3000,16 @@ button.disabled{
   padding-bottom: 24px;
 }
 
-.pb-\[120px\]{
-  padding-bottom: 120px;
-}
-
-.pb-\[140px\]{
-  padding-bottom: 140px;
-}
-
 .pr-12{
   padding-right: 48px;
-}
-
-.pr-\[42px\]{
-  padding-right: 42px;
-}
-
-.pr-\[64px\]{
-  padding-right: 64px;
-}
-
-.pt-10{
-  padding-top: 40px;
-}
-
-.pt-12{
-  padding-top: 48px;
-}
-
-.pt-2{
-  padding-top: 8px;
 }
 
 .pt-3{
   padding-top: 12px;
 }
 
-.pt-4{
-  padding-top: 16px;
-}
-
-.pt-5{
-  padding-top: 20px;
-}
-
-.text-left{
-  text-align: left;
-}
-
-.text-center{
-  text-align: center;
-}
-
 .text-right{
   text-align: right;
-}
-
-.text-base\/6{
-  font-size: 1.0rem;
-  line-height: 1.5rem;
-}
-
-.text-lg\/7{
-  font-size: 1.125rem;
-  line-height: 1.75rem;
 }
 
 .text-md\/6{
@@ -3351,11 +3024,6 @@ button.disabled{
 .text-sm\/5{
   font-size: 0.875rem;
   line-height: 1.25rem;
-}
-
-.text-sm\/6{
-  font-size: 0.875rem;
-  line-height: 1.5rem;
 }
 
 .text-xl\/7{
@@ -3392,16 +3060,6 @@ button.disabled{
 .tabular-nums{
   --tw-numeric-spacing: tabular-nums;
   font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
-}
-
-.\!text-blue-500{
-  --tw-text-opacity: 1 !important;
-  color: rgb(43 127 255 / var(--tw-text-opacity, 1)) !important;
-}
-
-.\!text-rose-500{
-  --tw-text-opacity: 1 !important;
-  color: rgb(255 32 86 / var(--tw-text-opacity, 1)) !important;
 }
 
 .text-blue-500{
@@ -3454,11 +3112,6 @@ button.disabled{
   color: rgb(245 74 0 / var(--tw-text-opacity, 1));
 }
 
-.text-primary-600{
-  --tw-text-opacity: 1;
-  color: rgb(21 93 252 / var(--tw-text-opacity, 1));
-}
-
 .text-red-500{
   --tw-text-opacity: 1;
   color: rgb(251 44 54 / var(--tw-text-opacity, 1));
@@ -3469,24 +3122,9 @@ button.disabled{
   color: rgb(231 0 11 / var(--tw-text-opacity, 1));
 }
 
-.text-rose-500{
-  --tw-text-opacity: 1;
-  color: rgb(255 32 86 / var(--tw-text-opacity, 1));
-}
-
-.text-rose-600{
-  --tw-text-opacity: 1;
-  color: rgb(236 0 63 / var(--tw-text-opacity, 1));
-}
-
 .text-slate-800{
   --tw-text-opacity: 1;
   color: rgb(29 41 61 / var(--tw-text-opacity, 1));
-}
-
-.text-white{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
 .text-yellow-600{
@@ -3504,16 +3142,6 @@ button.disabled{
   color: rgb(113 113 123 / var(--tw-text-opacity, 1));
 }
 
-.text-zinc-600{
-  --tw-text-opacity: 1;
-  color: rgb(82 82 92 / var(--tw-text-opacity, 1));
-}
-
-.text-zinc-700{
-  --tw-text-opacity: 1;
-  color: rgb(63 63 70 / var(--tw-text-opacity, 1));
-}
-
 .text-zinc-800{
   --tw-text-opacity: 1;
   color: rgb(39 39 42 / var(--tw-text-opacity, 1));
@@ -3521,10 +3149,6 @@ button.disabled{
 
 .underline{
   text-decoration-line: underline;
-}
-
-.underline-offset-2{
-  text-underline-offset: 2px;
 }
 
 .opacity-25{
@@ -3612,10 +3236,6 @@ button.disabled{
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
-}
-
-.\!\[flex-flow\:column\]{
-  flex-flow: column !important;
 }
 
 :root {
@@ -4833,42 +4453,5 @@ input[type="checkbox"], input[type="radio"] {
 
   .md\:mt-20{
     margin-top: 80px;
-  }
-}
-
-@media (max-width: 768px){
-  .max-md\:mb-\[140px\]{
-    margin-bottom: 140px;
-  }
-
-  .max-md\:mr-0{
-    margin-right: 0;
-  }
-
-  .max-md\:w-full{
-    width: 100%;
-  }
-
-  .max-md\:flex-col{
-    flex-direction: column;
-  }
-
-  .max-md\:\!bg-white{
-    --tw-bg-opacity: 1 !important;
-    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
-  }
-
-  .max-md\:pb-0{
-    padding-bottom: 0;
-  }
-}
-
-@media (max-width: 480px){
-  .max-xs\:w-full{
-    width: 100%;
-  }
-
-  .max-xs\:flex-col{
-    flex-direction: column;
   }
 }

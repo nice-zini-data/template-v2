@@ -79,7 +79,25 @@ const basicBarChartOptionX = () => {
                 fontFamily: 'SUIT'
             }
         },
-        series: []
+        series: [
+            {
+                type: 'bar',
+                barWidth: '24px',
+                itemStyle: {
+                    barBorderRadius: [2, 2, 0, 0]
+                }
+            }
+        ],
+        media: [
+            {
+                query: { maxWidth: 400 },
+                option: {
+                    series: [{
+                        barWidth: '20px'
+                    }]
+                }
+            }
+        ]
     };
 }
 
@@ -157,7 +175,25 @@ const basicBarChartOptionY = () => {
                 fontFamily: 'SUIT'
             }
         },
-        series: []
+        series: [
+            {
+                type: 'bar',
+                barWidth: '24px',
+                itemStyle: {
+                    barBorderRadius: [2, 2, 0, 0]
+                }
+            }
+        ],
+        media: [
+            {
+                query: { maxWidth: 400 },
+                option: {
+                    series: [{
+                        barWidth: '20px'
+                    }]
+                }
+            }
+        ]
     };
 }
 
@@ -229,7 +265,25 @@ const basicBarChartOptionCenter = () => {
                 fontFamily: 'SUIT'
             }
         },
-        series: []
+        series: [
+            {
+                type: 'bar',
+                barWidth: '24px',
+                itemStyle: {
+                    barBorderRadius: [2, 2, 0, 0]
+                }
+            }
+        ],
+        media: [
+            {
+                query: { maxWidth: 400 },
+                option: {
+                    series: [{
+                        barWidth: '20px'
+                    }]
+                }
+            }
+        ]
     };
 }
 
@@ -305,7 +359,25 @@ const basicBarChartOptionTotalMaxX = () => {
                 fontFamily: 'SUIT'
             }
         },
-        series: []
+        series: [
+            {
+                type: 'bar',
+                barWidth: '24px',
+                itemStyle: {
+                    barBorderRadius: [2, 2, 0, 0]
+                }
+            }
+        ],
+        media: [
+            {
+                query: { maxWidth: 400 },
+                option: {
+                    series: [{
+                        barWidth: '20px'
+                    }]
+                }
+            }
+        ]
     };
 }
 
@@ -384,7 +456,25 @@ const basicBarChartOptionTotalMaxY = () => {
                 fontFamily: 'SUIT'
             }
         },
-        series: []
+        series: [
+            {
+                type: 'bar',
+                barWidth: '24px',
+                itemStyle: {
+                    barBorderRadius: [2, 2, 0, 0]
+                }
+            }
+        ],
+        media: [
+            {
+                query: { maxWidth: 400 },
+                option: {
+                    series: [{
+                        barWidth: '20px'
+                    }]
+                }
+            }
+        ]
     };
 }
 
@@ -784,3 +874,275 @@ function renderEchartTableLegend2(chartInstance, containerSelector, seriesData) 
     }
   }
   
+
+  (function(){
+    // 차트 인스턴스 저장소 (리사이즈용)
+    const chartInstances = new Map();
+    
+    function getMeta(el){
+      let decimals = 0;
+      if (el.dataset.zdDecimals) {
+        const parsed = Number(el.dataset.zdDecimals);
+        // toLocaleString의 minimumFractionDigits/maximumFractionDigits는 0-20 사이여야 함
+        decimals = isNaN(parsed) ? 0 : Math.max(0, Math.min(20, Math.floor(parsed)));
+      }
+      return {
+        unit: el.dataset.zdUnit || '',
+        decimals: decimals,
+        legendTarget: el.dataset.zdLegendTarget || ''
+      };
+    }
+  
+    function formatValue(v, meta){
+      if (v == null || isNaN(v)) return '-';
+      // decimals 값을 안전하게 처리 (0-20 범위)
+      const decimals = Math.max(0, Math.min(20, Math.floor(meta.decimals || 0)));
+      const num = Number(v).toLocaleString('ko-KR', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+      // unit이 있고, "${unit}" 같은 템플릿 문자열이 아닐 때만 추가
+      const unit = meta.unit || '';
+      if (unit && unit.trim() && !unit.includes('${') && !unit.includes('${unit}')) {
+        return `${num}${unit}`;
+      }
+      return num;
+    }
+  
+    function buildOption(type){
+      // 너가 가진 공통 option 함수 “세팅 방식” 그대로 사용(전역 option 세팅)
+      // 타입 정규화 (공백 제거, 소문자 변환)
+      const normalizedType = (type || '').trim().toLowerCase();
+      
+      if(normalizedType === 'bar-x') {
+        basicBarChartOptionX();
+      } else if(normalizedType === 'bar-y') {
+        console.log('[ZDCharts] buildOption: Calling basicBarChartOptionY()');
+        basicBarChartOptionY();
+      } else if(normalizedType === 'bar-center') {
+        basicBarChartOptionCenter();
+      } else if(normalizedType === 'bar-total-x') {
+        basicBarChartOptionTotalMaxX();
+      } else if(normalizedType === 'bar-total-y') {
+        basicBarChartOptionTotalMaxY();
+      } else if(normalizedType === 'pie') {
+        pieChartOption();
+      } else {
+        console.warn('[ZDCharts] Unknown chart type:', type, '- using bar-x as default');
+        basicBarChartOptionX();
+      }
+  
+      // ⚠️ 차트 여러 개면 option 공유로 꼬일 수 있어서 복사본 반환
+      return JSON.parse(JSON.stringify(option));
+    }
+  
+    function injectUnitFormatters(opt, meta){
+      // yAxis 처리 (배열 또는 객체, value 타입만 - category 타입은 제외)
+      if (opt.yAxis) {
+        if (Array.isArray(opt.yAxis)) {
+          opt.yAxis.forEach(axis => {
+            if (axis && axis.type === 'value' && axis.axisLabel) {
+              axis.axisLabel.formatter = function(v){ return formatValue(v, meta); };
+            }
+          });
+        } else if (opt.yAxis.type === 'value' && opt.yAxis.axisLabel) {
+          opt.yAxis.axisLabel.formatter = function(v){ return formatValue(v, meta); };
+        }
+      }
+      
+      // xAxis 처리 (배열 또는 객체, value 타입만)
+      if (opt.xAxis) {
+        if (Array.isArray(opt.xAxis)) {
+          opt.xAxis.forEach(axis => {
+            if (axis && axis.type === 'value' && axis.axisLabel) {
+              axis.axisLabel.formatter = function(v){ return formatValue(v, meta); };
+            }
+          });
+        } else if (opt.xAxis.type === 'value' && opt.xAxis.axisLabel) {
+          opt.xAxis.axisLabel.formatter = function(v){ return formatValue(v, meta); };
+        }
+      }
+      
+      return opt;
+    }
+  
+    function renderOne(el){
+      const id = el.id;
+      const type = el.dataset.zdChart;
+      const data = window.ZD_CHART_DATA && window.ZD_CHART_DATA[id];
+      if(!id || !type || !data) return;
+
+      const meta = getMeta(el);
+      
+      // 타입 정규화 (buildOption과 동일하게)
+      const normalizedType = (type || '').trim().toLowerCase();
+      
+      let opt = buildOption(type);
+      opt = injectUnitFormatters(opt, meta);
+      
+      // 디버깅: 타입 확인
+      console.log('[ZDCharts] Chart ID:', id);
+      console.log('[ZDCharts] Original Type:', type, 'Normalized:', normalizedType);
+      console.log('[ZDCharts] Option check - xAxis type:', opt.xAxis?.type, 'yAxis type:', opt.yAxis?.type);
+      console.log('[ZDCharts] yAxis data before:', opt.yAxis?.data);
+      console.log('[ZDCharts] Data provided - xAxis:', data.xAxis, 'yAxis:', data.yAxis);
+
+      // 축 데이터 주입
+      if (data.xAxis && opt.xAxis) {
+        if (Array.isArray(opt.xAxis) && opt.xAxis[0]) {
+          opt.xAxis[0].data = data.xAxis;
+        } else if (!Array.isArray(opt.xAxis)) {
+          opt.xAxis.data = data.xAxis;
+        }
+      }
+      if (data.yAxis && opt.yAxis) {
+        if (Array.isArray(opt.yAxis) && opt.yAxis[0]) {
+          opt.yAxis[0].data = data.yAxis;
+          console.log('[ZDCharts] yAxis data set (array):', opt.yAxis[0].data);
+        } else if (!Array.isArray(opt.yAxis)) {
+          opt.yAxis.data = data.yAxis;
+          console.log('[ZDCharts] yAxis data set (object):', opt.yAxis.data);
+        }
+      }
+
+      // series 주입 - 기존 옵션 보존하면서 병합
+      if (data.series) {
+        const isBarChart = normalizedType.startsWith('bar');
+        const isPieChart = normalizedType === 'pie';
+        
+        if (isPieChart && opt.series && opt.series[0]) {
+          // pie 차트: 기존 opt.series[0]의 모든 옵션 보존, data.series의 데이터만 병합
+          const baseSeries = opt.series[0];
+          opt.series = data.series.map((s, idx) => ({
+            ...baseSeries,  // 기존 옵션들 (radius, center, label, itemStyle 등)
+            ...s,           // data.series의 옵션으로 덮어쓰기
+            type: s.type || 'pie',
+            data: s.data || baseSeries.data
+          }));
+        } else {
+          // bar 차트: 기본 series 템플릿(barWidth, itemStyle 등) 보존하면서 병합
+          const baseSeriesTemplate = opt.series && opt.series[0] ? opt.series[0] : {
+            type: 'bar',
+            barWidth: '24px',
+            itemStyle: {
+              barBorderRadius: [2, 2, 0, 0]
+            }
+          };
+          opt.series = data.series.map((s, idx) => {
+            // 기본 템플릿 사용 (name, data는 제외하고 공통 옵션만)
+            return {
+              ...baseSeriesTemplate,  // 기본 옵션 (barWidth, itemStyle 등)
+              ...s,                    // data.series로 덮어쓰기 (name, data, color 등)
+              type: s.type || (isBarChart ? 'bar' : 'bar')
+            };
+          });
+        }
+      }
+
+      // pie 데이터 주입(페이지에서 data로 내려주는 경우)
+      if (normalizedType === 'pie' && data.data && opt.series && opt.series[0]) {
+        opt.series[0].data = data.data;
+      }
+
+      // 툴팁에 valType 추가 (bar 차트만)
+      if (normalizedType.startsWith('bar') && opt.tooltip && opt.series) {
+        const originalFormatter = opt.tooltip.formatter;
+        opt.tooltip.formatter = function(params) {
+          // params가 배열이면 (axis trigger)
+          if (Array.isArray(params)) {
+            let tooltip = `${params[0].axisValue}<br/>`;
+            params.forEach(p => {
+              const seriesIndex = p.seriesIndex;
+              const series = opt.series[seriesIndex];
+              const valType = series?.valType || '';
+              const value = p.value != null ? p.value.toLocaleString() : '-';
+              tooltip += `${p.marker} ${p.seriesName} ${value}${valType}<br/>`;
+            });
+            return tooltip;
+          } 
+          // params가 단일 객체면 (item trigger - pie 차트 등)
+          else if (params && typeof params === 'object') {
+            const seriesIndex = params.seriesIndex;
+            const series = opt.series[seriesIndex];
+            const valType = series?.valType || '';
+            const value = params.value != null ? params.value.toLocaleString() : '-';
+            return `${params.marker}${params.name}<br/>${params.seriesName}: ${value}${valType}`;
+          }
+          // 기존 formatter가 있으면 사용
+          if (typeof originalFormatter === 'function') {
+            return originalFormatter(params);
+          }
+          return '';
+        };
+      }
+
+      const chart = echarts.init(el);
+      chart.setOption(opt);
+      
+      // 차트 인스턴스 저장 (리사이즈용)
+      chartInstances.set(id, chart);
+  
+      // 파이 중앙 텍스트(기존 함수 재사용)
+      if (normalizedType === 'pie') attachPieCenter(chart, id);
+  
+      // 테이블 연동
+      if (meta.legendTarget) {
+        // series.valType 없으면 data-zd-unit을 테이블 단위로 쓰고 싶다면:
+        opt.series.forEach(s => { if(!s.valType) s.valType = meta.unit; });
+  
+        renderEchartTableLegend(chart, meta.legendTarget, opt.series);
+      }
+    }
+  
+    // 리사이즈 이벤트 핸들러 (디바운싱 적용)
+    let resizeTimer = null;
+    function handleResize() {
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
+      resizeTimer = setTimeout(() => {
+        chartInstances.forEach((chart, id) => {
+          try {
+            if (chart && !chart.isDisposed()) {
+              chart.resize();
+            }
+          } catch (e) {
+            console.warn('[ZDCharts] Resize error for chart:', id, e);
+            // 에러 발생 시 인스턴스 제거
+            chartInstances.delete(id);
+          }
+        });
+      }, 150); // 150ms 디바운싱
+    }
+    
+    // window resize 이벤트 리스너 등록 (한 번만)
+    if (!window._zdChartsResizeListener) {
+      window.addEventListener('resize', handleResize);
+      window._zdChartsResizeListener = true;
+    }
+  
+    window.ZDCharts = window.ZDCharts || {};
+    window.ZDCharts.init = function(root){
+      const base = root || document;
+      base.querySelectorAll('[data-zd-chart]').forEach(renderOne);
+    };
+    
+    // 차트 인스턴스 제거 함수 (필요시 사용)
+    window.ZDCharts.dispose = function(chartId) {
+      if (chartId) {
+        const chart = chartInstances.get(chartId);
+        if (chart && !chart.isDisposed()) {
+          chart.dispose();
+        }
+        chartInstances.delete(chartId);
+      } else {
+        // 모든 차트 제거
+        chartInstances.forEach((chart, id) => {
+          if (chart && !chart.isDisposed()) {
+            chart.dispose();
+          }
+        });
+        chartInstances.clear();
+      }
+    };
+  })();

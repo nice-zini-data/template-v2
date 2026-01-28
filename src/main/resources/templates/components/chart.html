@@ -1,0 +1,7 @@
+<div th:fragment="chart(id, type, unit, decimals, tableId)">
+    <div class="chartBox" th:id="${id}" th:attr="data-zd-chart=${type},data-zd-unit=${unit},data-zd-decimals=${decimals},data-zd-legend-target=${'#' + tableId}">
+    </div>
+    <div class="reportTable">
+        <div class="tableDataDom tableScrollOn" th:id="${tableId}"></div>
+    </div>
+</div>

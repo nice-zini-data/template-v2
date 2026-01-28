@@ -17,6 +17,7 @@
   .textCenter {@apply text-center}
   .textRight {@apply text-right}
   .textLeft {@apply text-left}
+  .contentBox {@apply overflow-y-auto h-[calc(100vh-56px)]}
 }
 
 /* form */
@@ -141,7 +142,7 @@
   
 }
 
-/*table*/
+/*table, chart*/
 @layer components {
   .tableDataDom {@apply overflow-auto pb-1-5;}
   .tableDataDom table {@apply w-full text-sm/5 text-center table-auto whitespace-nowrap}
@@ -162,6 +163,9 @@
   .sortIcon.asc {@apply bg-[url('/assets/images/icons/sort_flow_asc.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
   .sortIcon.desc {@apply bg-[url('/assets/images/icons/sort_flow_desc.svg')] bg-no-repeat bg-center bg-[length:16px_16px]}
   
+  /*chart*/
+  .minChartBox .chartBox {@apply h-[250px]}/*임시*/
+  .maxChartBox .chartBox {@apply h-[450px]}/*임시*/
 }
 
 /* map */

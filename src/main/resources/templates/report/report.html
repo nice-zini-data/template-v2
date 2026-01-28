@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    <th:block layout:fragment="pageCss">
+        <link rel="stylesheet" href="/assets/lib/jquery/flatpickr.min.css">        
+    </th:block>
+<body>
+  <!-- ✅ layout의 content에 꽂힘 -->
+  <section layout:fragment="content">
+    <th:block th:replace="~{fragments/header :: menuHeader}" />
+    <div class="contentBox">
+        <div class="badge"><p>카테고리</p></div>
+
+        <div class="minChartBox">
+          <div th:replace="components/chart :: chart('salesChart','bar-x','원',0,'salesChartTable')"></div> 
+        </div>
+        <div class="maxChartBox">
+          <div th:replace="components/chart :: chart('ratioChart','bar-y','%',1,'ratioChartTable')"></div> 
+        </div>
+    </div>
+    
+
+  </section>
+
+  <!-- ✅ 페이지별 스크립트: layout의 pageScripts 슬롯에 꽂힘 -->
+  <th:block layout:fragment="pageScripts">
+    <script src="/assets/lib/echart/echarts.min.js"></script>
+    <script src="/assets/js/core/zinidata-echart.js"></script>
+    <script src="/assets/js/report/report.js"></script>
+
+    <script>
+        window.ZD_CHART_DATA = window.ZD_CHART_DATA || {};
+      
+        // 세로막대
+        window.ZD_CHART_DATA['salesChart'] = {
+          xAxis: ['1월', '2월', '3월', '4월'],
+          series: [
+            { name: '매출', data: [1200000, 980000, 1500000, 1100000], valType: '원' },
+            { name: '매출2', data: [1200000, 980000, 1500000, 1100000], valType: '원' }
+          ]
+        };
+
+        window.ZD_CHART_DATA['ratioChart'] = {
+            yAxis: ['A가맹점', 'B가맹점', 'C가맹점', 'D가맹점'],
+            series: [
+            { name: '비율', data: [23.4, 41.2, 18.9, 33.0], valType: '%'  },
+            { name: '비율2', data: [23.4, 41.2, 18.9, 33.0], valType: '%'  }
+            ]
+        };
+        
+        ZDCharts.init();
+      </script>
+  </th:block>
+
+</body>
+</html>
+
+
+
+
+
